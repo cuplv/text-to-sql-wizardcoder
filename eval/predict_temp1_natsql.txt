@@ -1,0 +1,625 @@
+ select count ( _ ) from _ | select count ( singer.* )  from singer  | ###
+ select count ( _ ) from _ | select count ( singer.* )  from singer  | ###
+select _ from _ order by _ asc | select singer.Name , singer.Country , singer.Age from singer  order by singer.Age asc | ###
+ select _ from _ order by _ desc | select singer.Name , singer.Country , singer.Age from singer  order by singer.Age desc | ###
+ select avg ( _ ) , min ( _ ) , max ( _ ) from _ where _ | select avg ( singer.Age )  , min ( singer.Age )  , max ( singer.Age )  from singer  where  singer.Country = "France" | ###
+ select avg ( _ ) , min ( _ ) , max ( _ ) from _ where _ | select avg ( SINGER.AGE )  , min ( SINGER.AGE )  , max ( SINGER.AGE )  from SINGER  where  SINGER.COUNTRY = "France"  | ###
+ select _ from _ order by _ asc limit _ | select song.song_name , song.song_release_year from song  order by singe.age asc limit 1 | ###
+ select _ from _ order by _ asc limit _ | select singer.Name , singer.Song_Release_Year from singer  order by singer.Age asc limit 10 | ###
+ select distinct _ from _ where _ | select  distinct singer.Country from singer  where  singer.Age > 20 | ###
+ select distinct _ from _ where _ and count ( _ ) >= _ group by _ | select  distinct singer.Country from singer  where  singer.Age > 20  and  count ( song.* )  >= 1  group by singer.Country , concert.Theme | ###
+ select _ , count ( _ ) from _ group by _ | select singer.Country , count ( singer.* )  from singer  group by singer.Country | ###
+select count ( _ ) , _ from _ group by _ | select count ( singer.* )  , singer.Country from singer  group by singer.Country | ###
+ select _ from _ where @.@ > avg ( _ ) | select song.song_name from song  where  @.@ > avg ( singer.age )   | ###
+ select _ from _ where @.@ > avg ( _ ) | select song.song_name from singer  where  @.@ > avg ( singer.age )   | ###
+ select _ from _ where _ and _ between _ and _ | select staidium.Location , staidium.Name from staidium  where  staidium.Capacity between 5000 and 10000  and  staidium.Capacity between 5000 and 10000 | ###
+ select _ from _ where _ between _ and _ | select stadium.Location , stadium.Name from stadium  where  stadium.Capacity between 5000 and 10000 | ###
+ select max ( _ ) , avg ( _ ) from _ | select max ( stadium.Capacity )  , avg ( stadium.Average )  from stadium  | ###
+ select max ( _ ) , avg ( _ ) from _ | select max ( stadium.Capacity )  , avg ( stadium.Average )  from stadium  | ###
+ select _ from _ order by _ desc limit _ | select stadium.Name , stadium.Capacity from stadium  order by stadium.Average desc limit 1 | ###
+ select _ from _ order by _ desc limit _ | select stadium.Name , stadium.Capacity from stadium  order by stadium.Average desc limit 1 | ###
+ select count ( _ ) from _ where _ or _ | select count ( concert.* )  from concert  where  concert.Year = 2014  or  concert.Year = 2015 | ###
+ select count ( _ ) from _ where _ or _ | select count ( concert.* )  from concert  where  concert.Year = 2014  or  concert.Year = 2015 | ###
+ select _ , count ( _ ) from _ group by _ | select staidium.Name , count ( concert.* )  from staidium  group by staidium.Stadium_ID | ###
+ select count ( _ ) , _ from _ group by _ | select count ( concert.* )  , concert.Stadium_ID from concert  group by concert.Stadium_ID | ###
+ select _ from _ where _ or count ( _ ) >= _ group by _ order by count ( _ ) desc limit _ | select staidium.Name , stadium.Capacity from concert  where  concert.Year >= 2014  or  count ( concert.* )  >= 3  group by concert.Stadium_ID  order by count ( concert.* )  desc limit 1 | ###
+ select _ from _ where _ order by _ desc limit _ | select staidium.Name , stadium.Capacity from stadium  where  concert.Year > 2013  order by concert.Concert_ID desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select concert.Year from concert  group by concert.Year  order by count ( concert.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select concert.Year from concert  group by concert.Year  order by count ( concert.* )  desc limit 1 | ###
+ select _ from _ where _ | select staidium.Name from staidium  where  concert."Concert Name" = "" | ###
+ select _ from _ where @.@ not in _ | select staidium.Name from staidium  where  @.@ not in concert.*  | ###
+ select _ from _ where @.@ join _ and _ and @.@ join _ and _ | select singer.Country from singer  where  @.@ join singer_in_concert.*  and  singer.Age > 40  and  @.@ join singer_in_concert.*  and  singer.Age < 30  | ###
+ select _ from _ where @.@ not in _ and _ | select staidium.Name from staidium  where  @.@ not in concert.*  and  concert.Year != 2014 | ###
+ select _ from _ where @.@ not in _ and _ | select staidium.Name from staidium  where  @.@ not in concert.*  and  concert.Year = 2014 | ###
+ select _ , count ( _ ) from _ group by _ | select concert.Concert_Name , concert.Theme , count ( singe r.* )  from concert  group by concert.Concert_ID , concert.Theme | ###
+ select _ from _ where count ( _ ) > _ group by _ | select concert.Concert_Name , concert.Theme , count ( singe r.* )  from concert  where  count ( singe r.* )  > 1  group by concert.Concert_Name , concert.Theme | ###
+ select _ , count ( _ ) from _ group by _ | select singer.Name , count ( concert.* )  from singer  group by singer.Singer_ID , singer.Name | ###
+select _ , count ( _ ) from _ group by _ | select singer.Name , count ( concert.* )  from singer  group by singer.Singer_ID | ###
+ select _ from _ where _ | select singer.Name from concert  where  concert.Year = 2014 | ###
+ select _ from _ where _ | select singer.Name from concert  where  concert.Year = 2014  | ###
+ select _ from _ where @.@ join _ and _ like _ | select singer.Name , singer.Country from song  where  @.@ join song.Singer_ID  and  song.Song_Name like "%Hey%" | ###
+ select _ from _ where @.@ join _ and _ like _ | select singer.Name , singer.Country from song  where  @.@ join song.*  and  song.Song_Name like "%Hey%" | ###
+ select _ from _ where _ and @.@ in _ and _ | select staidium.Name , stadium.Location from stadium  where  concert.Year = 2014  and  @.@ in concert.*  and  concert.Year = 2015 | ###
+ select _ from _ where _ and @.@ in _ and _ | select staidium.Name , stadium.Location from concert  where  concert.Year = 2014  and  @.@ in concert.*  and  concert.Year = 2015  | ###
+ select count ( _ ) from _ where @.@ join _ and _ order by _ desc limit _ | select count ( concert.* )  from concert  where  @.@ join singer_in_concert.*  and  staidium.capacity = max ( stadium.capacity )   order by concert.year desc limit 1000  | ###
+ select count ( _ ) from _ where @.@ join _ and _ order by _ desc limit _ | select count ( concert.* )  from concert  where  @.@ join singer_in_concert.*  and  staidium.capacity = max ( stadium.capacity )   order by concert.year desc limit 1 | ###
+ select count ( _ ) from _ where _ | select count ( pet.* )  from pet  where  pet.Weight > 10 | ###
+ select count ( _ ) from _ where _ and @.@ > _ group by _ | select count ( pet.* )  from pet  where  pet.Weight > 10  and  @.@ > pet.Weight  group by pet.PetType , pet.City_Code | ###
+ select _ from _ order by _ asc limit _ | select pets.Weight from student  order by student.Age asc limit 1 | ###
+ select _ from _ order by _ asc limit _ | select min ( _ )  from _  order by _ asc limit _ | select min ( pets.Weight )  from student  order by student.Age asc limit 1 | ###
+ select max ( _ ) , _ from _ group by _ | select max ( pets.Weight )  , pets.PetType from pets  group by pets.PetType | ###
+ select max ( _ ) , _ from _ group by _ | select max ( pets.Weight )  , pets.PetType from pets  group by pets.PetType | ###
+ select count ( _ ) from _ where _ and @.@ > _ | select count ( has_pet.* )  from student  where  student.Age > 20  and  @.@ > student.StuID | ###
+ select count ( _ ) from _ where @.@ join _ and _ | select count ( has_pet.* )  from student  where  @.@ join has_pet.*  and  student.AGE > 20  | ###
+ select count ( _ ) from _ where _ | select count ( pet.* )  from student  where  student.sex = "F"  and  pet.PetType = "Dog" | ###
+ select count ( _ ) from _ where @.@ join _ and _ | select count ( pet.* )  from student  where  @.@ join has_pet.*  and  student.SEX = "F"  | ###
+ select count ( distinct _ ) from _ | select count (  distinct pet.PetType )  from pet  | ###
+ select count ( distinct _ ) from _ | select count (  distinct pets.PetType )  from pets  | ###
+ select _ from _ where @.@ join _ and _ or _ | select student.FNAME from student  where  @.@ join has_pet.*  and  pets.PETTYPE = "cat"  or  pets.PETTYPE = "dog"  | ###
+ select _ from _ where @.@ join _ and _ or _ | select student.FNAME from student  where  @.@ join has_pet.*  and  pets.PETTYPE = "cat"  or  pets.PETTYPE = "dog"  | ###
+ select _ from _ where @.@ join _ and _ and @.@ join _ and _ | select student.fname from student  where  @.@ join has_pet.*  and  pets.PetType = "cat"  and  pets.PetType = "dog"  | ###
+ select _ from _ where @.@ join _ and _ and @.@ join _ and _ | select student.FNAME from student  where  @.@ join has_pet.*  and  pets.PETTYPE = "cat"  and  @.@ join has_pet.*  and  pets.PETTYPE = "dog"  | ###
+ select _ from _ where except_ @.@ is _ and _ | select student.Major , student.Age from student  where  except_  @.@ is pets.*  and  pets.PetType = "Cat" | ###
+ select _ from _ where @.@ not in _ and _ | select student.Major , student.Age from student  where  @.@ not in has_pet.*  and  student.StuID = has_pet.StuID | ###
+ select _ from _ where except_ @.@ is _ and _ | select student.STUID from student  where  except_  @.@ is has_pet.*  and  pets.PETTYPE = "Cat" | ###
+ select _ from _ where except_ @.@ is _ and _ | select student.STUID from student  where  except_  @.@ is has_pet.*  and  pets.PETTYPE = "cat"  | ###
+ select _ from _ where @.@ join _ and _ except_ @.@ join _ and _ | select student.fname , student.age from student  where  @.@ join has_pet.*  and  pets.PetType = "Dog"  except_  @.@ join has_pet.*  and  pets.PetType = "Cat"  | ###
+ select _ from _ where @.@ join _ and _ except_ @.@ join _ and _ | select student.FNAME from student  where  @.@ join has_pet.*  and  pets.PETTYPE = "Dog"  except_  @.@ join has_pet.*  and  pets.PETTYPE = "Cat"  | ###
+ select _ from _ order by _ asc limit _ | select pettype , weight from pets  order by pet_age asc limit 1 | ###
+ select _ from _ order by _ asc limit _ | select pettype , weight from pets  order by pet_age asc limit 1 | ###
+ select _ from _ where @.@ > _ | select pets.PetID , pets.Weight from pets  where  @.@ > student.Age  | ###
+ select _ from _ where _ | select pets.PetID , pets.Weight from pets  where  student.Age > 1 | ###
+ select avg ( _ ) , max ( _ ) , _ from _ group by _ | select avg ( student.Age )  , max ( student.Age )  , pets.PetType from student  group by pets.PetType | ###
+ select avg ( _ ) , max ( _ ) , _ from _ group by _ | select avg ( pet_age )  , max ( pet_age )  , pettype from pets  group by pettype | ###
+ select avg ( _ ) , _ from _ group by _ | select avg ( pets.Weight )  , pets.PetType from pets  group by pets.PetType | ###
+ select avg ( _ ) , _ from _ group by _ | select avg ( pets.Weight )  , pets.PetType from pets  group by pets.PetType | ###
+ select _ from _ where @.@ join _ | select student.fname , student.age from student  where  @.@ join has_pet.* | ###
+ select distinct _ from _ where @.@ join _ | select  distinct student.fname , student.age from student  where  @.@ join has_pet.*  | ###
+ select _ from _ where @.@ join _ and _ | select has_pet.PetID from student  where  @.@ join has_pet.*  and  student.Lname = "Smith" | ###
+ select _ from _ where @.@ join _ and _ | select has_pet.PetID from student  where  @.@ join has_pet.*  and  student.Lname = "Smith" | ###
+ select count ( _ ) , _ from _ where @.@ join _ group by _ | select count ( has_pet.* )  , student.STUID from student  where  @.@ join has_pet.*  group by student.STUID | ###
+ select count ( _ ) , _ from _ where @.@ join _ group by _ | select count ( has_pet.* )  , student.STUID from student  where  @.@ join has_pet.*  group by student.STUID | ###
+ select _ from _ where count ( _ ) > _ group by _ | select student.FNAME , student.GENDER from student  where  count ( has_pet.* )  > 1  group by student.STUID | ###
+ select _ from _ where count ( _ ) > _ group by _ | select student.FNAME , student.GENDER from student  where  count ( has_pet.* )  > 1  group by student.STUID | ###
+ select _ from _ where _ | select student.LNAME from student  where  pets.PET_AGE = 3  and  has_pet.PETID = pets.PETID  and  has_pet.STUID = student.STUID | ###
+ select _ from _ where _ and @.@ in _ and _ | select student.lnam from student  where  student.Age = 3  and  @.@ in has_pet.*  and  pets.PetType = "cat"  | ###
+ select avg ( _ ) from _ where @.@ not in _ | select avg ( student.Age )  from student  where  @.@ not in has_pet.*  | ###
+ select avg ( _ ) from _ where @.@ not in _ | select avg ( student.Age )  from student  where  @.@ not in has_pet.*  | ###
+ select count ( _ ) from _ | select count ( continents.* )  from continents  | ###
+ select count ( _ ) from _ | select count ( continents.* )  from continents  | ###
+ select _ , count ( _ ) from _ group by _ | select continents.Continents , count ( countries.* )  from countries  group by continents.Continents | ###
+ select _ , count ( _ ) from _ group by _ | select continents.ContID , continents.Continent , count ( countries.* )  from continents  group by continents.Continent , continents.ContID | ###
+ select count ( _ ) from _ | select count ( countries.* )  from countries  | ###
+ select count ( _ ) from _ | select count ( countries.* )  from countries  | ###
+ select _ , count ( _ ) from _ group by _ order by count ( _ ) desc | select car_makers.Fullname , car_makers.id , count ( model_list.* )  from car_makers  group by car_makers.Maker  order by count ( model_list.* )  desc | ###
+ select _ from _ | select car_makers.Fullname , car_makers.id , count ( model_list.* )  from car_makers  join model_list  on model_list.Maker = car_makers.ID  group by car_makers.id , car_makers.Fullname | ###
+ select _ from _ order by _ asc limit _ | select cars_data.Model from cars_data  order by cars_data.HorsePower asc limit 1 | ###
+ select _ from _ order by _ asc limit _ | select model_list.Model from cars_data  order by cars_data.HorsePower asc limit 1  | ###
+ select _ from _ where @.@ < avg ( _ ) | select model_list.Model from model_list  where  @.@ < avg ( cars_data.Weight )   | ###
+ select _ from _ where @.@ < avg ( _ ) | select model_list.Model from cars_data  where  @.@ < avg ( cars_data.Weight )   | ###
+ select _ from _ where _ | select car_makers.Fullname from car_makers  where  cars_data.Year = 1970  | ###
+ select distinct _ from _ where _ | select  distinct car_makers.MAKER from car_makers  where  cars_data.YEAR = 1970 | ###
+ select _ from _ where _ order by _ asc limit _ | select cars_data.Make , cars_data.Year from cars_data  where  cars_data.Year = min ( _ )  order by cars_data.Year asc limit _ | select cars_data.Make , cars_data.Year from cars_data  where  cars_data.Year = min ( cars_data.Year )  order by cars_data.Year asc limit _ | ###
+ select _ from _ order by _ asc limit _ | select car_makers.MAKER , cars_data.YEAR from cars_data  order by cars_data.YEAR asc limit 1 | ###
+ select distinct _ from _ where _ | select  distinct models.Model from models  where  models.Year > 1980 | ###
+ select distinct _ from _ where _ | select  distinct models.* from cars_data  where  cars_data.Year > 1980  | ###
+ select _ , count ( _ ) from _ group by _ | select continents.Continent , count ( distinct car_makers.Makr )  from continents  group by continents.Continent | ###
+ select _ , count ( _ ) from _ group by _ | select continents.Continent , count ( car_makers.* )  from continents  group by continents.Continent | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select countries.CountryName from countries  group by countries.Continent  order by count ( car_makers.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select countries.CountryName from car_makers  group by countries.Continent  order by count ( car_makers.* )  desc limit 1 | ###
+ select count ( _ ) , _ from _ group by _ | select count ( model_list.* )  , car_makers.fullname from car_makers  group by car_makers.makr | ###
+ select count ( _ ) , _ from _ group by _ | select count ( model_list.* )  , car_makers.id , car_makers.fullname from car_makers  group by car_makers.maker , car_makers.id , car_makers.fullname | ###
+ select _ from _ where _ | select cars_data.Accelerate from car_names  where  car_names.Make = "AMC"  and  car_names.Model = "Hornet Sportabout (Sw)" | ###
+ select _ from _ where _ | select cars_data.accelerate from cars_data  where  car_names.Model = "amc hornet"  and  car_names.Make = "sportabout (sw)" | ###
+ select count ( _ ) from _ where _ | select count ( car_makers.* )  from countries  where  countries.Continent = "Europe" | ###
+ select count ( _ ) from _ where _ | select count ( car_makers.* )  from countries  where  countries.Continent = "Europe" | ###
+ select count ( _ ) from _ where _ | select count ( model_list.* )  from countries  where  countries.CountryName = "USA" | ###
+ select count ( _ ) from _ where _ | select count ( model_list.* )  from countries  where  countries.CountryName = "United States" | ###
+ select avg ( _ ) from _ where _ | select avg ( cars_data.MPG )  from cars_data  where  cars_data.CYLINDERS = 4 | ###
+ select avg ( _ ) from _ where _ | select avg ( cars_data.MPG )  from cars_data  where  cars_data.CYLINDERS = 4 | ###
+ select _ from _ where _ | select min ( _ ) from _ where _ | select min ( cars_data.Weight )  from cars_data  where  cars_data.Cylinders = 8  and  cars_data.Year = 1974 | ###
+ select min ( _ ) from _ where _ | select min ( cars_data.Weight )  from cars_data  where  cars_data.Cylinders = 8  and  cars_data.Year = 1974  | ###
+ select _ from _ | select car_makers.maker , model_list.model from car_makers  join  model_list on car_makers.id = model_list.maker | ###
+ select _ from _ | select car_makers.maker , model_list.model from car_makers  join  model_list on car_makers.id = model_list.maker | ###
+ select _ from _ where count ( _ ) >= _ group by _ | select countries.CountryName , countries.CountryID from countries  where  count ( car_makers.* )  >= 1  group by countries.CountryID , countries.CountryName | ###
+ select _ from _ where @.@ join _ and count ( _ ) >= _ group by _ | select countries.CountryName , countries.CountryID from countries  where  @.@ join car_makers.*  and  count ( car_makers.* )  >= 1  group by countries.CountryID , countries.CountryName | ###
+ select count ( _ ) from _ where _ | select count ( cars_data.* )  from cars_data  where  cars_data.horsepower > 150  | ###
+ select count ( _ ) from _ where _ | select count ( cars_data.* )  from cars_data  where  cars_data.horsepower > 150  | ###
+ select avg ( _ ) , _ from _ group by _ | select avg ( cars_data.Weight )  , cars_data.Year from cars_data  group by cars_data.Year | ###
+ select avg ( _ ) , _ from _ group by _ | select avg ( cars_data.Weight )  , cars_data.Year from cars_data  group by cars_data.Year | ###
+ select _ from _ where count ( _ ) >= _ and @.@ in _ group by _ | select countries.CountryName from countries  where  count ( car_makers.* )  >= 3  and  @.@ in countries.Continent and countries.Continent = "Europe"  group by countries.CountryName , countries.Continent | ###
+ select _ from _ where count ( _ ) >= _ and @.@ in _ and _ | select countries.CountryName from countries  where  count ( manufacturers.* )  >= 3  and  @.@ in manufacturers.*  and  countries.Continent = "Europe"   | ###
+ select _ from _ where _ group by _ order by max ( _ ) asc limit _ | select cars_data.horsepwer , car_makers.macker from cars_data  where  cars_data.cylinder = 3  group by car_names.model  order by max ( cars_data.horsepower )  asc limit 2 | ###
+ select _ from _ where _ and count ( _ ) >= _ group by _ order by _ desc limit _ | select cars_data.Horsepower , car_makers.Makr from cars_data  where  cars_data.Cylinders = 3  and  count ( cars_data.* )  >= 4  group by car_names.Model  order by cars_data.Horsepower desc limit 1 | ###
+ select _ from _ group by _ order by max ( _ ) asc limit _ | select cars_data.Model from cars_data  group by cars_data.Model  order by max ( cars_data.Mpg )  asc limit 1 | ###
+ select _ from _ order by _ desc limit _ | select cars_data.Model from cars_data  order by cars_data.MPG desc limit 1  | ###
+ select avg ( _ ) from _ where _ | select avg ( cars_data.horsepower )  from cars_data  where  cars_data.year < 1980  | ###
+ select avg ( _ ) from _ where @.@ < _ and _ | select avg ( cars_data.horsepower )  from cars_data  where  @.@ < cars_data.year  and  cars_data.year < 1980  | ###
+ select avg ( _ ) from _ where _ | select avg ( cars_data.EDISPL )  from cars_data  where  car_names.Model = "volvo"  | ###
+ select avg ( _ ) from _ where _ | select avg ( cars_data.EDISPL )  from cars_data  where  car_makers.MAKER = "Volvo"  | ###
+ select max ( _ ) , _ from _ group by _ | select max ( cars_data.accelerate )  , cars_data.cylinders from cars_data  group by cars_data.cylinders | ###
+ select max ( _ ) from _ group by _ | select max ( cars_data.accelerate )  from cars_data  group by cars_data.cylinders | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select model_list.Model from model_list  group by model_list.MakeR  order by count ( model_list.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( distinct _ ) desc limit _ | select model_list.Model from model_list  group by model_list.Model  order by count (  distinct model_list.Version )  desc limit 1 | ###
+ select count ( _ ) from _ where _ | select count ( cars_data.* )  from cars_data  where  cars_data.cylinders > 4  | ###
+ select count ( _ ) from _ where _ | select count ( cars_data.* )  from cars_data  where  cars_data.cylinders > 4  | ###
+ select count ( _ ) from _ where _ | select count ( cars_data.* )  from cars_data  where  cars_data.Year = 1980  | ###
+ select count ( _ ) from _ where _ | select count ( cars_data.* )  from cars_data  where  cars_data.Year = 1980 | ###
+ select count ( _ ) from _ where _ | select count ( model_list.* )  from car_makers  where  car_makers.MAKER = "American Motor Company" | ###
+ select count ( _ ) from _ where _ | select count ( model_list.* )  from car_makers  where  car_makers.mkr = "American Motor Company"  | ###
+ select _ from _ where count ( _ ) > _ group by _ | select car_makers.Fullname , car_makers.id from car_makers  where  count ( car_names.* )  > 3  group by car_makers.id , car_makers.Makr | ###
+ select _ from _ where count ( _ ) > _ group by _ | select car_makers.full_name , car_makers.id from car_makers  where  count ( model_list.* )  > 3  group by car_makers.id , car_makers.macker | ###
+ select distinct _ from _ where _ or @.@ > _ and _ | select  distinct model_list.Model from car_makers  where  car_makers.Fullname = "General Motors"  or  @.@ > cars_data.Weight  and  car_makers.Fullname = "General Motors" | ###
+ select distinct _ from _ where _ or @.@ > _ and _ | select  distinct model_list.Model from car_makers  where  car_makers.Makr = "General Motors"  or  @.@ > cars_data.Weight  and  cars_data.Weight > 3500  | ###
+ select _ from _ where _ and @.@ >= _ and @.@ <= _ | select cars_data.Year from cars_data  where  cars_data.Weight >= 3000  and  cars_data.Weight <= 4000  | ###
+ select distinct _ from _ where _ and @.@ in _ and _ | select  distinct cars_data.Year from cars_data  where  cars_data.Weight < 4000  and  @.@ in cars_data.*  and  cars_data.Weight > 3000  | ###
+ select _ from _ order by _ desc limit _ | select cars_data.horsepower from cars_data  order by cars_data.accelerate desc limit 1  | ###
+ select _ from _ order by _ desc limit _ | select cars_data.horsepower from cars_data  order by cars_data.accelerate desc limit 1  | ###
+ select count ( _ ) from _ where @.@ join _ and _ order by _ asc limit _ | select count ( cars_data.* )  from cars_data  where  @.@ join model_list.*  and  model_list.Model = "Volvo"  order by cars_data.Accelerate asc limit 1 | ###
+ select count ( _ ) from _ where @.@ join _ and min ( _ ) by _ | select count ( cars_data.* )  from cars_data  where  @.@ join models_in_use.*  and  min ( cars_data.accelerate )   by models_in_use.Model  | ###
+ select count ( _ ) from _ where @.@ > max ( _ ) | select count ( cars_data.* )  from cars_data  where  @.@ > max ( cars_data.accelerate )   | ###
+ select count ( _ ) from _ where @.@ > max ( _ ) | select count ( cars_data.* )  from cars_data  where  @.@ > max ( cars_data.accelerate )   | ###
+ select count ( _ ) from _ where count ( _ ) > _ group by _ | select count ( countries.* )  from countries  where  count ( car_makers.* )  > 2  group by countries.Continent | ###
+ select count ( _ ) from _ where count ( _ ) > _ group by _ | select count ( countries.* )  from countries  where  count ( car_makers.* )  > 2  group by countries.Continent | ###
+ select count ( _ ) from _ where _ and count ( _ ) >= _ group by _ | select count ( cars_data.* )  from cars_data  where  cars_data.Cylinders > 6  and  count ( cars_data.* )  >= 4  group by cars_data.Make , cars_data.Model | ###
+ select count ( _ ) from _ where _ and count ( _ ) >= _ group by _ | select count ( cars_data.* )  from cars_data  where  cars_data.Cylinder > 6  and  count ( cars_data.* )  >= 6  group by cars_data.Make , cars_data.Model | ###
+ select _ from _ where _ order by _ desc limit _ | select car_names.Model from cars_data  where  cars_data.Cylinders = 4  order by cars_data.HorsePower desc limit 1  | ###
+ select _ from _ where _ group by _ order by sum ( _ ) desc limit _ | select cars_data.Model from cars_data  where  cars_data.Cylinders = 4  group by cars_data.Model  order by sum ( cars_data.HorsePower )  desc limit 1 | ###
+ select _ from _ where @.@ > min ( _ ) and _ | select car_makers.id , car_makers.maker from cars_data  where  @.@ > min ( cars_data.horsepower )   and  cars_data.cylinders <= 3  | ###
+ select _ from _ where @.@ not in min ( _ ) and _ | select car_makers.Make, car_makers.Fullname from cars_data  where  @.@ not in min ( cars_data.HorsePower )   and  cars_data.Cylinders < 4  | ###
+ select max ( _ ) from _ where _ or @.@ < _ and _ | select max ( cars_data.MPG )  from cars_data  where  cars_data.CYLINDERS = 8  or  @.@ < cars_data.YEAR  and  cars_data.YEAR < 1980  | ###
+ select max ( _ ) from _ where _ or @.@ in _ and _ | select max ( cars_data.MPG )  from cars_data  where  cars_data.CYLINDERS = 8  or  @.@ in cars_data.*  and  cars_data.YEAR < 1980  | ###
+ select _ from _ where _ and @.@ not in _ and _ | select model_list.Model from model_list  where  cars_data.Mpg < 3500  and  @.@ not in car_makers.*  and  car_makers.Makr = "Ford Motor Company" | ###
+ select distinct _ from _ where _ and @.@ not in _ and _ | select  distinct models.* from models  where  cars_data.weight < 3500  and  @.@ not in cars_data.*  and  car_makers.mfr != "Ford Motor Company"  | ###
+ select _ from _ where not exists _ group by _ | select countries.CountryName from countries  where  not  exists  car_makers.*  group by countries.Continent, countries.CountryName | ###
+ select _ from _ where except_ @.@ is _ and _ | select countries.CountryName from countries  where  except_  @.@ is car_makers.*  and  car_makers.Makr = "Toyota"  | ###
+ select _ from _ where count ( _ ) >= _ and count ( _ ) > _ group by _ | select car_makers.id , car_makers.mkr from car_makers  where  count ( model_list.* )  >= 2  and  count ( car_makers.* )  > 3  group by car_makers.id , car_makers.mkr | ###
+ select _ from _ where count ( _ ) >= _ and count ( _ ) > _ group by _ | select car_makers.ID , car_makers.MAKER from car_makers  where  count ( model_list.* )  >= 2  and  count ( cars_data.* )  > 3  group by car_makers.MAKER , car_makers.ID | ###
+ select _ from _ where count ( _ ) >= _ or @.@ join _ and _ | select countries.CountryID , countries.CountryName from countries  where  count ( car_makers.* )  >= 4  or  @.@ join cars_data.*  and  car_makers.Makr = "fiat"  | ###
+ select _ from _ where count ( _ ) > _ or @.@ join _ and _ | select countries.CountryID , countries.CountryName from countries  where  count ( car_makers.* )  > 3  or  @.@ join cars_data.*  and  car_makers.Makr = "Fiat"  | ###
+ select _ from _ where _ | select airlines.Country from airlines  where  airlines.Airline = "JetBlue Airways"  | ###
+ select _ from _ where _ | select airlines.Country from airlines  where  airlines.Airline = "JetBlue Airways"  | ###
+ select _ from _ where _ | select airlines.Abbreviation from airlines  where  airlines.Airline = "JetBlue Airways" | ###
+ select _ from _ where _ | select airlines.abbreviation from airlines  where  airlines.airline = "JetBlue Airways"  | ###
+ select _ from _ where _ | select airlines.Airline , airlines.Abbreviation from airlines  where  airlines.Country = "USA" | ###
+ select _ from _ where _ | select airlines.Airline , airlines.Abbreviation from airlines  where  airlines.Country = "USA" | ###
+ select _ from _ where @.@ join _ and _ | select airports.AirportCode , airports.AirportName from airports  where  @.@ join flights.*  and  airports.City = "Anthony" | ###
+ select _ from _ where _ | select airports.AirportCode , airports.AirportName from airports  where  airports.City = "Anthony" | ###
+ select count ( _ ) from _ | select count ( airlines.* )  from airlines  | ###
+ select count ( _ ) from _ | select count ( airlines.* )  from airlines  | ###
+ select count ( _ ) from _ | select count ( airports.* )  from airports  | ###
+ select count ( _ ) from _ | select count ( airports.* )  from airports  | ###
+ select count ( _ ) from _ | select count ( flights.* )  from flights  | ###
+ select count ( _ ) from _ | select count ( flights.* )  from flights  | ###
+ select _ from _ where _ | select airlines.Airline from airlines  where  airlines.Abbreviation = "UAL" | ###
+ select _ from _ where _ | select airlines.* from airlines  where  airlines.abbreviation = "UAL" | ###
+ select count ( _ ) from _ where _ | select count ( airlines.* )  from airlines  where  airlines.country = "USA" | ###
+ select count ( _ ) from _ where _ | select count ( airlines.* )  from airlines  where  airlines.Country = "USA"  | ###
+ select _ from _ where _ | select airports.City , airports.Country from airports  where  airports.AirportCode = "ALTON" | ###
+ select _ from _ where _ | select airports.City , airports.Country from airports  where  airports.AirportCode = "ALTON"  | ###
+ select _ from _ where _ | select airports.AirportName from airports  where  airports.AirportCode = "AKO"  | ###
+ select _ from _ where _ | select airports.AirportName from airports  where  airports.AirportCode = "AKO"  | ###
+ select _ from _ where _ | select airports.AirportName from airports  where  airports.City = "Aberdeen" | ###
+ select _ from _ where @.@ join _ and _ | select airports.AirportName from airports  where  @.@ join flights.*  and  airports.City = "Aberdeen" | ###
+ select count ( _ ) from _ where _ | select count ( flights.* )  from airports  where  airports.airportcode = "APG" | ###
+ select count ( _ ) from _ where _ | select count ( flights.* )  from flights  where  flights.airline = "APG" | ###
+ select count ( _ ) from _ where _ | select count ( flights.* )  from flights  where  airports.airportcode = "ATO" | ###
+ select count ( _ ) from _ where _ | select count ( flights.* )  from airports  where  airports.airportcode = "ATO" | ###
+ select count ( _ ) from _ where _ | select count ( flights.* )  from airports  where  airports.CITY = "Aberdeen" | ###
+ select count ( _ ) from _ where _ | select count ( flights.* )  from airports  where  airports.airportcode = "ABR" | ###
+ select count ( _ ) from _ where _ | select count ( flights.* )  from airports  where  airports.CITY = "Aberdeen" | ###
+ select count ( _ ) from _ where _ | select count ( flights.* )  from airports  where  airports.CITY = "Aberdeen" | ###
+select count ( _ ) from _ where _ | select count ( flights.* )  from airports  where  airports.city = "Aberdeen"  and  flights.destairport = "Ashley" | ###
+ select count ( _ ) from _ where _ | select count ( flights.* )  from airports  where  airports.airportname = "Aberdeen"  and  airports.airportname = "Ashley" | ###
+ select count ( _ ) from _ where _ | select count ( flights.* )  from airlines  where  airlines.airline = "JetBlue Airways" | ###
+ select count ( _ ) from _ where _ | select count ( flights.* )  from airlines  where  airlines.airline = "JetBlue"  and  airports.airportname = "Chicago O'Hare"  | ###
+select count ( _ ) from _ where _ | select count ( flights.* )  from airlines  where  airlines.airline = "United Airlines"  and  airports.airportname = "Asheville, NC"  | ###
+select count ( _ ) from _ where _ | select count ( flights.* )  from airports  where  airports.airportname = "ASY"  and  airports.country = "United States" | ###
+select count ( _ ) from _ where _ | select count ( flights.* )  from airports  where  airports.airportname = "AHD"  and  airlines.airline = "United Airlines" | ###
+ select count ( _ ) from _ where _ | select count ( flights.* )  from airports  where  airports.airportname = "Athens"  and  airlines.airline = "United Airlines" | ###
+ select count ( _ ) from _ where _ | select count ( flights.* )  from airlines  where  airlines.airline = "United Airlines"  and  airports.city = "Aberdeen" | ###
+ select count ( _ ) from _ where _ | select count ( flights.* )  from airlines  where  airlines.airline = "United Airlines"  and  airports.airportname = "Aberdeen" | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select airports.city from flights  group by flights.sourceairport  order by count ( flights.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select airports.city from airports  group by flights.destairport  order by count ( flights.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select airports.city from flights  group by flights.sourceairport  order by count ( flights.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select airports.city from airports  group by flights.sourceairport  order by count ( flights.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select airports.AirportCode from airports  group by airports.AirportCode  order by count ( flights.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select airports.AirportCode from airports  group by airports.AirportCode  order by count ( flights.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) asc limit _ | select airports.AirportCode from airports  group by airports.City  order by count ( flights.* )  asc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) asc limit _ | select airports.AirportCode from airports  group by airports.AirportCode  order by count ( flights.* )  asc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select airlines.Airline from airlines  group by airlines.Airline  order by count ( flights.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select airlines.Airline from airlines  group by airlines.Airline  order by count ( flights.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) asc limit _ | select airlines.Abbreviation , airlines.Country from airlines  group by airlines.Airline  order by count ( flights.* )  asc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) asc limit _ | select airlines.Abbreviation , airlines.Country from airlines  group by airlines.Airline  order by count ( flights.* )  asc limit 1 | ###
+ select _ from _ where @.@ join _ and _ | select airlines.* from flights  where  @.@ join flights.*  and  airports.airportname = "AHD" | ###
+ select _ from _ where @.@ join _ and _ | select airlines.* from flights  where  @.@ join flights.*  and  airports.AIRPORTNAME = "AHT" | ###
+ select _ from _ where @.@ join _ and _ | select airlines.* from flights  where  @.@ join flights.*  and  airports.airportname = "AHD" | ###
+ select _ from _ where @.@ join _ and _ | select airlines.* from flights  where  @.@ join flights.*  and  airports.AIRPORTNAME = "Athens"  | ###
+ select _ from _ where @.@ join _ and _ and @.@ join _ and _ | select airlines.* from airlines  where  @.@ join flights.*  and  airports.airportcode = "APG"  and  airports.airportcode = "CVO"  | ###
+ select _ from _ where @.@ join _ and _ and @.@ join _ and _ | select airlines.* from airlines  where  @.@ join flights.*  and  airports.AirportCode = "APG"  and  airports.AirportCode = "CVO"  | ###
+ select _ from _ where @.@ join _ and _ except_ @.@ join _ and _ | select airlines.* from airlines  where  @.@ join flights.*  and  airports.airportcode = "CVO"  except_  @.@ join flights.*  and  airports.airportcode = "APG" | ###
+ select _ from _ where @.@ join _ and _ except_ @.@ join _ and _ | select airlines.* from airports  where  @.@ join flights.*  and  airports.AIRPORTCODE = "CVO"  except_  @.@ join flights.*  and  airports.AIRPORTCODE = "APG"  | ###
+ select _ from _ where count ( _ ) >= _ group by _ | select airlines.* from flights  where  count ( flights.* )  >= 10  group by flights.airline , airlines.uid | ###
+ select _ from _ where count ( _ ) >= _ group by _ | select airlines.Airline from airlines  where  count ( flights.* )  >= 10  group by airlines.Airline , airlines.Country | ###
+ select _ from _ where count ( _ ) < _ group by _ | select airlines.Airline from airlines  where  count ( flights.* )  < 200  group by airlines.Airline | ###
+ select _ from _ where count ( _ ) < _ group by _ | select airlines.Airline from airlines  where  count ( flights.* )  < 200  group by airlines.Airline | ###
+ select _ from _ where _ | select flights.flightno from airlines  where  airlines.airline = "United Airlines" | ###
+ select _ from _ where _ | select flights.flightno from airlines  where  airlines.airline = "United Airlines" | ###
+ select _ from _ where @.@ join _ and _ | select flights.flightno from flights  where  @.@ join flights.*  and  airports.airportname = "APG" | ###
+ select _ from _ where @.@ join _ and _ | select flights.flightno from airports  where  @.@ join flights.*  and  airports.airportcode = "APG" | ###
+ select _ from _ where @.@ join _ and _ | select flights.flightno from flights  where  @.@ join flights.*  and  airports.airportname = "Aberdeen" | ###
+ select _ from _ where @.@ join _ and _ | select flights.flightno from airports  where  @.@ join flights.*  and  airports.airportname = "Aberdeen Penn" | ###
+ select _ from _ where @.@ join _ and _ | select flights.flightno from flights  where  @.@ join flights.*  and  airports.city = "Aberdeen" | ###
+ select _ from _ where @.@ join _ and _ | select flights.flightno from airports  where  @.@ join flights.*  and  airports.CITY = "Aberdeen" | ###
+ select _ from _ where @.@ join _ and _ | select flights.flightno from flights  where  @.@ join flights.*  and  airports.city = "Aberdeen" | ###
+ select _ from _ where @.@ join _ and _ | select flights.flightno from airports  where  @.@ join flights.*  and  airports.CITY = "Aberdeen" | ###
+ select count ( _ ) from _ where _ | select count ( flights.* )  from airports  where  airports.CITY = "Aberdeen"  or  airports.CITY = "Abilene" | ###
+ select count ( _ ) from _ where _ | select count ( flights.* )  from airports  where  airports.airportname = "Aberdeen"  or  airports.airportname = "Abilene" | ###
+ select _ from _ where @.@ not in _ and _ | select airports.AirportName from airports  where  @.@ not in flights.*  and  flights.DestAirport = "BNA"  | ###
+ select _ from _ where @.@ not in _ and @.@ not in _ | select airports.* from airports  where  @.@ not in flights.*  and  @.@ not in flights.* | ###
+ select count ( _ ) from _ | select count ( employee.* )  from employee  | ###
+ select count ( _ ) from _ | select count ( employee.* )  from employee  | ###
+select _ from _ order by _ asc | select employee.Name from employee  order by employee.Age asc | ###
+ select _ from _ order by _ asc | select employee.Name from employee  order by employee.Age asc | ###
+select count ( _ ) , _ from _ group by _ | select count ( employee.* )  , employee.City from employee  group by employee.City | ###
+ select count ( _ ) , _ from _ group by _ | select count ( employee.* )  , employee.City from employee  group by employee.City | ###
+ select _ from _ where count ( _ ) > _ and _ group by _ | select employee.City from employee  where  count ( employee.* )  > 2  and  employee.Age < 30  group by employee.City , employee.State | ###
+ select _ from _ where count ( _ ) > _ and _ | select employee.City from employee  where  count ( employee.* )  > 1  and  employee.Age < 30 | ###
+ select count ( _ ) , _ from _ group by _ | select count ( shop.* )  , shop.Location from shop  group by shop.Location | ###
+ select count ( _ ) , _ from _ group by _ | select count ( shop.* )  , shop.Location from shop  group by shop.Location | ###
+ select _ from _ order by _ desc limit _ | select shop.Manager_Name , shop.District from shop  order by shop.Number_Products desc limit 1 | ###
+ select _ from _ order by _ desc limit _ | select shop.Manager_Name , shop.District from shop  order by shop.Number_Products desc limit 1 | ###
+ select min ( _ ) , max ( _ ) from _ | select min ( shop.Number_Products )  , max ( shop.Number_Products )  from shop ###
+ select min ( _ ) , max ( _ ) from _ | select min ( shop.Number_Products )  , max ( shop.Number_Products )  from shop  | ###
+ select _ from _ order by _ desc | select shop.Name , shop.Location , shop.District from shop  order by shop.Number_Products desc | ###
+ select _ from _ order by _ desc limit _ | select shop.Name , shop.Location , shop.District from shop  order by shop.Number_Products desc limit 1000  | ###
+ select _ from _ where @.@ > avg ( _ ) | select shop.Name from shop  where  @.@ > avg ( shop.Number_Products )   | ###
+ select _ from _ where @.@ > avg ( _ ) group by _ | select shop.Name from shop  where  @.@ > avg ( shop.Number_Products )   group by shop.Shop_ID | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select employee.Name from evaluation  group by evaluation.Employee_ID  order by count ( evaluation.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select employee.Name from evaluation  group by evaluation.Employee_ID  order by count ( evaluation.* )  desc limit 1 | ###
+ select _ from _ order by _ desc limit _ | select employee.Name from evaluation  order by evaluation.Bonus desc limit 1 | ###
+ select _ from _ order by _ desc limit _ | select employee.Name from employee  order by evaluation.Bonus desc limit 1 | ###
+ select _ from _ where except_ @.@ is _ and _ | select employee.Name from employee  where  except_  @.@ is evaluation.*  and  evaluation.Year_Awarded != "NULL"  and  evaluation.Bonus != "NULL" | ###
+select _ from _ where except_ @.@ is _ | select employee.Name from employee  where  except_  @.@ is evaluation.*  | ###
+ select _ from _ order by count ( _ ) desc limit _ | select shop.Name from shop  order by count ( employee.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select shop.Name from shop  group by shop.Shop_ID  order by count ( employee.* )  desc limit 1 | ###
+ select _ from _ where except_ @.@ is _ | select shop.Name from shop  where  except_  @.@ is employee.*  | ###
+ select _ from _ where @.@ not in _ | select shop.Name from shop  where  @.@ not in employee.*  | ###
+ select count ( _ ) , _ from _ group by _ | select count ( hiring.* )  , shop.Name from shop  group by shop.Shop_ID | ###
+ select count ( _ ) , _ from _ group by _ | select count ( employee.* )  , shop.Name from shop  group by shop.Shop_ID | ###
+select sum ( _ ) from _ | select sum ( evaluation.Bonus )  from evaluation  | ###
+ select sum ( _ ) from _ | select sum ( evaluation.Bonus )  from evaluation  | ###
+ select _ from _ where @.@ join _ and _ | select hiring.* from hiring  where  @.@ join evaluation.*  and  hiring.Is_Full_Time = "Yes" | ###
+ select _ from _ where @.@ join _ and _ | select employee.* from employee  where  @.@ join hiring.*  and  hiring.Is_Full_Time = 1  | ###
+ select _ from _ where @.@ join _ and count ( _ ) < _ and count ( _ ) > _ group by _ | select shop.District from shop  where  @.@ join store.*  and  count ( store.* )  < 3000  and  count ( store.* )  > 10000  group by shop.District | ###
+ select _ from _ where _ and count ( _ ) >= _ and count ( _ ) <= _ group by _ | select shop.District from shop  where  shop.Number_Products < 3000  and  shop.Number_Products > 10000  and  count ( shop.* )  >= 2  and  count ( shop.* )  <= 2  group by shop.District , shop.Shop_ID | ###
+ select count ( distinct _ ) from _ | select count (  distinct shop.Location )  from shop  | ###
+ select count ( distinct _ ) from _ | select count (  distinct shop.Location )  from shop  | ###
+ select count ( _ ) from _ | select count ( documents.* )  from documents  | ###
+ select count ( _ ) from _ | select count ( documents.* )  from documents  | ###
+ select _ from _ | select documents.Document_ID , documents.Document_Name , documents.Document_Description from documents  | ###
+ select _ from _ | select documents.Document_ID , documents.Document_Name , documents.Document_Description from documents  | ###
+ select _ from _ where @.@ join _ and _ like _ | select documents.DOCUMENT_NAME , documents.TEMPLATE_ID from documents  where  @.@ join paragraphs.*  and  documents.DOCUMENT_DESCRIPTION like "%w%" | ###
+ select _ from _ where @.@ join _ and _ like _ | select documents.document_name , documents.template_id from documents  where  @.@ join paragraphs.*  and  documents.document_description like "%w%" | ###
+ select _ from _ where _ | select documents.DOCUMENT_ID , documents.TEMPLATE_ID , documents.DOCUMENT_DESCRIPTION from documents  where  documents.DOCUMENT_NAME = "Robbin CV" | ###
+ select _ from _ where _ | select documents.DOCUMENT_ID , documents.TEMPLATE_ID , documents.DOCUMENT_DESCRIPTION from documents  where  documents.DOCUMENT_NAME = "Robbin CV" | ###
+ select count ( distinct _ ) from _ | select count (  distinct templates.Template_ID )  from templates  join documents on templates.Template_ID = documents.Template_ID | ###
+ select count ( distinct _ ) from _ | select count (  distinct documents.TEMPLATE_ID )  from documents  | ###
+ select count ( _ ) from _ where _ | select count ( documents.* )  from templates  where  templates.template_type_code = "PPT"  | ###
+ select count ( _ ) from _ where _ | select count ( documents.* )  from documents  where  templates.template_type_code = "PPT"  | ###
+ select _ , count ( _ ) from _ group by _ | select templates.Template_ID , count ( documents.* )  from templates  group by templates.Template_ID | ###
+ select _ , count ( _ ) from _ group by _ | select templates.TEMPLATE_ID , count ( documents.* )  from templates  group by templates.TEMPLATE_ID | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select templates.Template_ID , templates.Template_Type_Code from templates  group by templates.Template_ID  order by count ( documents.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select templates.Template_ID , templates.Template_Type_Code from templates  group by templates.Template_ID  order by count ( documents.* )  desc limit 1 | ###
+ select _ from _ where count ( _ ) > _ group by _ | select templates.Template_ID from templates  where  count ( templates.* )  > 1  group by templates.Template_ID | ###
+ select _ from _ where count ( _ ) > _ group by _ | select templates.Template_ID from templates  where  count ( documents.* )  > 1  group by templates.Template_ID | ###
+ select _ from _ where @.@ not in _ | select templates.* from templates  where  @.@ not in documents.*  | ###
+ select _ from _ where @.@ not in _ | select templates.* from templates  where  @.@ not in documents.*  | ###
+ select count ( _ ) from _ | select count ( templates.* )  from templates  where  @.@ join _ | ###
+ select count ( _ ) from _ | select count ( templates.* )  from templates  where  @.@ join _  and _ | ###
+ select _ from _ | select templates.Template_ID , templates.Version_Number , templates.Template_Type_Code from templates  | select ref_template_types.Template_Type_Code , ref_template_types.Template_Type_Description from ref_template_types  | select documents.Document_Name from documents  | select paragraphs.Paragraph_Text from paragraphs  | select templates.Template_ID from templates  | select templates.Version_Number from templates  | select templates.Template_Type_Code from templates  | ###
+ select _ from _ | select templates.Template_ID , templates.Version_Number , templates.Template_Type_Code from templates  | ###
+ select distinct _ from _ | select  distinct templates.Template_Type_Code from templates  | ###
+ select distinct _ from _ | select  distinct templates.Template_Type_Code from templates  | ###
+ select _ from _ where _ | select templates.Template_ID from templates  where  templates.Template_Type_Code = "PP"  or  templates.Template_Type_Code = "PPT"  | ###
+ select _ from _ where _ | select templates.Template_ID from templates  where  templates.Template_Type_Code = "PP"  or  templates.Template_Type_Code = "PPT"  | ###
+ select count ( _ ) from _ where _ | select count ( templates.* )  from templates  where  templates.TEMPLATE_TYPE_CODE = "CV"  | ###
+ select count ( _ ) from _ where _ | select count ( templates.* )  from templates  where  templates.Template_Type_Code = "CV"  | ###
+ select _ from _ where _ and @.@ > _ | select templates.version_number , templates.template_type_code from templates  where  templates.version_number > 5  and  @.@ > templates.date_effective_from | ###
+ select _ from _ where _ and @.@ > _ | select templates.version_number , templates.template_type_code from templates  where  templates.version_number > 5  and  @.@ > templates.version_number | ###
+ select _ , count ( _ ) from _ group by _ | select templates.TEMPLATE_TYPE_CODE , count ( templates.* )  from templates  group by templates.TEMPLATE_TYPE_CODE | ###
+ select _ , count ( _ ) from _ group by _ | select templates.TEMPLATE_TYPE_CODE , count ( templates.* )  from templates  group by templates.TEMPLATE_TYPE_CODE | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select templates.TEMPLATE_TYPE_CODE from templates  group by templates.TEMPLATE_TYPE_CODE  order by count ( templates.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select templates.Template_Type_Code from templates  group by templates.Template_Type_Code  order by count ( templates.* )  desc limit 1 | ###
+ select _ from _ where count ( _ ) < _ group by _ | select templates.Template_Type_Code from templates  where  count ( templates.* )  < 3  group by templates.Template_Type_Code | ###
+ select _ from _ where count ( _ ) < _ group by _ | select templates.Template_Type_Code from templates  where  count ( templates.* )  < 3  group by templates.Template_Type_Code | ###
+ select _ from _ order by _ asc limit _ | select templates.version_number , templates.template_type_code  from templates  order by templates.version_number asc limit 1 | ###
+ select _ from _ order by _ asc limit _ | select templates.version_number , templates.template_type_code from templates  order by templates.version_number asc limit 1 | ###
+ select _ from _ where _ | select templates.Template_Type_Code from documents  where  documents.Document_Name = "Data base"  | ###
+ select _ from _ where _ | select templates.Template_Type_Code from documents  where  documents.Document_Name = "Data base"  | ###
+ select _ from _ where _ | select documents.DOCUMENT_NAME from templates  where  templates.TEMPLATE_TYPE_CODE = "BK"  | ###
+ select _ from _ where @.@ join _ and _ | select documents.DOCUMENT_NAME from documents  where  @.@ join templates.*  and  templates.TEMPLATE_TYPE_CODE = "BK" | ###
+ select _ , count ( _ ) from _ group by _ | select templates.Template_Type_Code , count ( documents.* )  from templates  group by templates.Template_Type_Code | ###
+ select _ , count ( _ ) from _ group by _ | select templates.TEMPLATE_TYPE_CODE , count ( documents.* )  from documents  group by templates.TEMPLATE_TYPE_CODE , templates.VERSION_NUMBER | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select templates.TEMPLATE_TYPE_CODE from templates  group by templates.TEMPLATE_TYPE_CODE  order by count ( documents.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select templates.Template_Type_Code from templates  group by templates.Template_Type_Code  order by count ( templates.* )  desc limit 1 | ###
+ select _ from _ where except_ @.@ is _ | select ref_template_types.Template_Type_Code from ref_template_types  where  except_  @.@ is documents.*  | ###
+ select _ from _ where except_ @.@ is _ | select ref_template_types.Template_Type_Code from ref_template_types  where  except_  @.@ is templates.*  | ###
+ select _ from _ | select ref_template_types.Template_Type_Code , ref_template_types.Template_Type_Description from ref_template_types  |  select templates.Template_Type_Code , ref_template_types.Template_Type_Description from templates  join ref_template_types on templates.Template_Type_Code = ref_template_types.Template_Type_Code  |  select documents.Document_Name from documents  |  select paragraphs.Paragraph_Text from paragraphs  |  select templates.Version_Number from templates  |  select templates.Date_Effective_From from templates  |  select templates.Date_Effective_To from templates  |  select documents.Other_Details from documents  |  select paragraphs.Other_Details from paragraphs  |  select templates.Template_ID from templates  |  select documents.Template_ID from documents  |  select paragraphs.Document_ID from paragraphs  | ###
+ select _ from _ | select ref_template_types.Template_Type_Code , ref_template_types.Template_Type_Description from ref_template_types  | ###
+ select _ from _ where _ | select ref_template_types.template_type_description from ref_template_types  where  ref_template_types.template_type_code = "AD"  | ###
+ select _ from _ where _ | select ref_template_types.template_type_description from ref_template_types  where  ref_template_types.template_type_code = "AD"  | ###
+ select _ from _ where _ | select templates.Template_Type_Code from ref_template_types  where  ref_template_types.Template_Type_Description = "Book"  | ###
+ select _ from _ where _ | select ref_template_types.Template_Type_Code from ref_template_types  where  ref_template_types.Template_Type_Description = "Book"  | ###
+ select distinct _ from _ where @.@ join _ | select  distinct templates.Template_Type_Description from templates  where  @.@ join documents.*  | ###
+ select distinct _ from _ where @.@ join _ and count ( _ ) >= _ group by _ | select  distinct templates.Template_Details from templates  where  @.@ join documents.*  and  count ( templates.* )  >= 2  group by templates.Template_Details | ###
+ select _ from _ where _ | select templates.Template_ID from ref_template_types  where  ref_template_types.Template_Type_Description = "Presentation"  | ###
+ select _ from _ where _ | select templates.Template_ID from templates  where  templates.Template_Details = "Presentation"  | ###
+ select count ( _ ) from _ | select count ( paragraphs.* )  from paragraphs  | ###
+ select count ( _ ) from _ | select count ( paragraphs.* )  from paragraphs  | ###
+ select count ( _ ) from _ where _ | select count ( paragraphs.* )  from documents  where  documents.DOCUMENT_NAME = "Summer Show" | ###
+ select count ( _ ) from _ where _ | select count ( paragraphs.* )  from documents  where  documents.document_name = "Summer Show" | ###
+ select _ from _ where _ like _ | select paragraphs.* from paragraphs  where  paragraphs.paragraph_text like "Korea %"  | ###
+ select _ from _ where _ like _ | select paragraphs.* from paragraphs  where  paragraphs.paragraph_text like "%Korea %" | ###
+ select _ from _ where _ | select paragraphs.Paragraph_ID , paragraphs.Paragraph_Text from documents  where  documents.Document_Name = "Welcome to NY" | ###
+ select _ from _ where _ | select paragraphs.Paragraph_ID , paragraphs.Paragraph_Text from documents  where  documents.Document_Name = "Welcome to NY" | ###
+ select _ from _ where _ | select paragraphs.paragraph_text from documents  where  documents.document_name = "Customer reviews" | ###
+ select _ from _ where _ | select paragraphs.paragraph_text from documents  where  documents.document_name = "Customer reviews" | ###
+ select _ , count ( _ ) from _ group by _ order by _ asc | select documents.DOCUMENT_ID , count ( paragraphs.* )  from documents  group by documents.DOCUMENT_ID  order by documents.DOCUMENT_ID asc | ###
+ select count ( _ ) , _ from _ group by _ order by _ asc | select count ( paragraphs.* )  , documents.Document_ID from documents  group by documents.Document_ID  order by documents.Document_ID asc | ###
+ select _ , count ( _ ) from _ group by _ | select documents.DOCUMENT_ID , documents.DOCUMENT_NAME , count ( paragraphs.* )  from documents  group by documents.DOCUMENT_ID , documents.DOCUMENT_NAME | ###
+ select _ , count ( _ ) from _ group by _ | select documents.DOCUMENT_ID , documents.DOCUMENT_NAME , count ( paragraphs.* )  from documents  group by documents.DOCUMENT_ID , documents.DOCUMENT_NAME | ###
+ select _ from _ where count ( _ ) >= _ group by _ | select documents.Document_ID from documents  where  count ( paragraphs.* )  >= 2  group by documents.Document_ID | ###
+ select _ from _ where count ( _ ) >= _ group by _ | select documents.Document_ID from documents  where  count ( paragraphs.* )  >= 2  group by documents.Document_ID | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select documents.DOCUMENT_ID , documents.DOCUMENT_NAME from documents  group by documents.DOCUMENT_ID  order by count ( paragraphs.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select documents.Document_ID , documents.Document_Name from documents  group by documents.Document_ID  order by count ( paragraphs.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) asc limit _ | select documents.DOCUMENT_ID from documents  group by documents.DOCUMENT_ID  order by count ( paragraphs.* )  asc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) asc limit _ | select documents.Document_ID from documents  group by documents.Document_ID  order by count ( paragraphs.* )  asc limit 1 | ###
+ select _ from _ where count ( _ ) between _ and _ group by _ | select documents.DOCUMENT_ID from documents  where  count ( paragraphs.* )  between 1 and 2  group by documents.DOCUMENT_ID | ###
+ select _ from _ where count ( _ ) between _ and _ group by _ | select documents.Document_ID from documents  where  count ( paragraphs.* )  between 1 and 2  group by documents.Document_ID | ###
+ select _ from _ where _ and @.@ in _ and _ | select paragraphs.Paragraph_ID from paragraphs  where  paragraphs.Paragraph_Text = "Brazil"  and  @.@ in documents.Document_ID  and  paragraphs.Paragraph_Text = "Ireland"  | ###
+ select _ from _ where _ like _ and _ like _ | select documents.Document_ID from documents  where  paragraphs.Paragraph_Text like "%Brazil%"  and  paragraphs.Paragraph_Text like "%Ireland%" | ###
+ select count ( _ ) from _ | select count ( teacher.* )  from teacher  | ###
+ select count ( _ ) from _ | select count ( teacher.* )  from teacher  | ###
+ select _ from _ order by _ asc | select teacher.Name from teacher  order by teacher.Age asc | ###
+ select _ from _ order by _ asc | select teacher.Name from teacher  order by teacher.Age asc | ###
+ select _ from _ | select teacher.Age , teacher.Hometown from teacher  | ###
+ select _ from _ | select teacher.Age , teacher.Hometown from teacher  | ###
+ select _ from _ where _ | select teacher.Name from teacher  where  teacher.Hometown != "Littlle Lever Urban District"  | ###
+ select _ from _ where _ | select teacher.Name from teacher  where  teacher.Hometown != "Li<NAME> Urban District"  | ###
+ select _ from _ where _ | select teacher.Name from teacher  where  teacher.Age = 32  or  teacher.Age = 33 | ###
+ select _ from _ where _ | select teacher.Name from teacher  where  teacher.Age = 32  or  teacher.Age = 33 | ###
+ select _ from _ order by _ asc limit _ | select teacher.HomeTown from teacher  order by teacher.Age asc limit 1 | ###
+ select _ from _ order by _ asc limit _ | select teacher.Hometown from teacher  order by teacher.Age asc limit 1 | ###
+select _ , count ( _ ) from _ group by _ order by count ( _ ) desc | select teacher.Hometown , count ( teacher.* )  from teacher  group by teacher.Hometown  order by count ( teacher.* )  desc | ###
+select count ( _ ) , _ from _ group by _ | select count ( teacher.* )  , teacher.Hometown from teacher  group by teacher.Hometown | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select teacher.Hometown from teacher  group by teacher.Hometown  order by count ( teacher.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select teacher.Hometown from teacher  group by course_arrange.Teacher_ID  order by count ( course_arrange.* )  desc limit 1 | ###
+ select _ from _ where count ( _ ) >= _ group by _ | select teacher.Hometown from teacher  where  count ( teacher.* )  >= 2  group by teacher.Hometown , course_arrange.Teacher_ID | ###
+ select _ from _ where count ( _ ) >= _ group by _ | select teacher.Hometown from teacher  where  count ( teacher.* )  >= 2  group by teacher.Hometown , course_arrange.Course_ID | ###
+ select _ from _ where @.@ join _ | select teacher.Name , course.Course from course  where  @.@ join course_arrange.*  | ###
+ select _ from _ | select teacher.Name , course.Course from course  join course_arrange  on course_arrange.Course_ID = course.Course_ID  join teacher  on course_arrange.Teacher_ID = teacher.Teacher_ID | ###
+ select _ from _ order by _ asc | select teacher.Name , course.Course from course  order by teacher.Name asc | ###
+ select _ from _ order by _ asc | select teacher.Name , course.Course from course  order by teacher.Name asc | ###
+ select _ from _ where _ | select teacher.Name from course  where  course.Course = "math"  | ###
+ select _ from _ where @.@ join _ and _ | select teacher.Name from course  where  @.@ join course_arrange.*  and  course.Description contains "math" | ###
+ select _ , count ( _ ) from _ group by _ | select teacher.Name , count ( course.* )  from course  group by course.Teacher_ID , teacher.Name | ###
+ select _ , count ( _ ) from _ group by _ | select teacher.Name , count ( course.* )  from course  group by course.Teacher_ID , teacher.Name | ###
+ select _ from _ where count ( _ ) >= _ group by _ | select teacher.Name from course_arrange  where  count ( course_arrange.* )  >= 2  group by course_arrange.Teacher_ID , course_arrange.Course_ID , course.Starting_Date , course.Course_ID , teacher.Name | ###
+ select _ from _ where count ( _ ) >= _ group by _ | select teacher.Name from course_arrange  where  count ( course_arrange.* )  >= 2  group by course_arrange.Teacher_ID , course_arrange.Course_ID , teacher.Name | ###
+ select _ from _ where @.@ not in _ and _ | select teacher.Name from course_arrange  where  @.@ not in course_arrange.*  and  course_arrange.Grade != "C"  | ###
+ select _ from _ where @.@ not in _ | select teacher.Name from course  where  @.@ not in course_arrange.* | ###
+ select count ( _ ) from _ where _ | select count ( visitor.* )  from visitor  where  visitor.Age < 30  | ###
+ select _ from _ where _ order by _ desc | select visitor.Name from visitor  where  visitor.Level_of_Membership > 4  order by visitor.Level_of_Membership desc | ###
+ select avg ( _ ) from _ where _ | select avg ( visitor.Age )  from visitor  where  visitor.Level_of_Membership <= 4  | ###
+ select _ from _ where _ order by _ asc | select visitor.Name , visitor.Level_of_Membership from visitor  where  visitor.Level_of_Membership > 4  order by visitor.Age asc | ###
+ select _ from _ order by _ desc limit _ | select museum.MUSEMU_ID , museum.NAME from museum  order by museum.NUM_OF_STAFF desc limit 1 | ###
+ select avg ( _ ) from _ where _ | select avg ( museum.Num_of_Staff )  from museum  where  museum.Open_Year < 2009  | ###
+ select _ from _ where _ | select museum.Open_Year , museum.Num_of_Staff from museum  where  museum.Name = "Plaza Museum" | ###
+ select _ from _ where @.@ > min ( _ ) and _ | select musemu.Name from musemu  where  @.@ > min ( musemu.Num_of_Staff )   and  musemu.Open_Year > 2010 | ###
+ select _ from _ where count ( _ ) > _ group by _ | select visitor.ID , visitor.Name , visitor.Age from visitor  where  count ( visit.* )  > 1  group by visitor.ID , visitor.Name , visitor.Age | ###
+ select _ from _ where @.@ join _ and _ group by _ order by sum ( _ ) desc limit _ | select visitor.ID , visitor.Name , visitor.Level_of_Membership from visit  where  @.@ join visit.*  and  visit.Total_Spent  group by visit.Visitor_ID  order by sum ( visit.Total_Spent )  desc limit 10 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select museum.MUSEMU_ID , museum.NAME from visit  group by visit.MUSEMU_ID  order by count ( visit.* )  desc limit 1 | ###
+ select _ from _ where @.@ not in _ limit _ | select museum.Name from museum  where  @.@ not in visit.*  limit  1 | ###
+ select _ from _ group by _ order by sum ( _ ) desc limit _ | select visitor.Name , visitor.Age from visitor  group by visit.Visitor_ID  order by sum ( visit.Num_of_Ticket )  desc limit 1 | ###
+ select avg ( _ ) , max ( _ ) from _ | select avg ( visit.Num_of_Ticket )  , max ( visit.Num_of_Ticket )  from visit  group by visit.Musuem_ID , visit.Visitor_ID | ###
+ select sum ( _ ) from _ where _ | select sum ( visit.Total_Spent )  from visitor  where  visitor.Level_of_Membership = 1 | ###
+ select _ from _ where @.@ join _ and _ and @.@ join _ and _ | select visitor.Name from visitor  where  @.@ join visit.*  and  museum.Open_Year < 2009  and  @.@ join visit.*  and  museum.Open_Year > 2011  | ###
+ select count ( _ ) from _ where @.@ not in _ and _ | select count ( visitor.* )  from visitor  where  @.@ not in visit.*  and  museum.Open_Year > 2010  | ###
+ select count ( _ ) from _ where _ | select count ( museum.* )  from museum  where  museum.Open_Year > 2013  or  museum.Open_Year < 2008 | ###
+ select count ( _ ) from _ | select count ( players.* )  from players  | ###
+ select count ( _ ) from _ | select count ( players.* )  from players  | ###
+ select count ( _ ) from _ | select count ( matches.* )  from matches  | ###
+ select count ( _ ) from _ | select count ( matches.* )  from matches  where  matches.year = 2000  | ###
+ select _ from _ where _ | select players.first_name , players.birth_date from players  where  players.country_code = "USA"  | ###
+ select _ from _ where _ | select players.first_name , players.birth_date from players  where  players.country_code = "USA"  | ###
+ select avg ( _ ) from _ | select avg ( matches.loser_age )  from matches  union  select avg ( matches.winner_age )  from matches  | ###
+ select avg ( _ ) , avg ( _ ) from _ group by _ | select avg ( matches.loser_age )  , avg ( matches.winner_age )  from matches  group by matches.year | ###
+ select avg ( _ ) from _ | select avg ( ranking.Ranking )  from ranking  where  @.@ in matches.*  and  rankings.Ranking <= 30  | ###
+ select avg ( _ ) from _ where @.@ in _ | select avg ( ranking.* )  from ranking  where  @.@ in matches.*  | ###
+ select max ( _ ) from _ | select max ( matches.loser_rank )  from matches  | ###
+ select min ( _ ) from _ | select min ( rankings.Ranking )  from rankings  ###
+ select count ( distinct _ ) from _ | select count (  distinct players.Country_Code )  from players  | ###
+ select count ( distinct _ ) from _ | select count (  distinct players.Country_Code )  from players  | ###
+ select count ( distinct _ ) from _ | select count (  distinct players.loser_name )  from players  where  players.loser_rank != "Unranked"  and  players.country_code = "USA"  | ###
+ select count ( distinct _ ) from _ | select count (  distinct players.loser_name )  from players  | ###
+ select _ from _ where count ( _ ) > _ group by _ order by count ( _ ) desc limit _ | select players.tourney_name from players  where  count ( matches.* )  > 10  group by players.tourney_name  order by count ( matches.* )  desc limit 1 | ###
+ select _ from _ where count ( _ ) > _ group by _ | select tournaments.tournament_name from tournaments  where  count ( matches.* )  > 10  group by tournaments.tournament_name , tournaments.start_year | ###
+ select _ from _ where _ and @.@ in _ and _ | select players.first_name from players  where  matches.year = 2013  and  @.@ in matches.*  and  matches.year = 2016 | ###
+ select _ from _ where _ and @.@ in _ and _ | select players.first_name from players  where  matches.year = 2013  and  @.@ in matches.*  and  matches.year = 2016 | ###
+ select count ( _ ) from _ where _ or _ | select count ( matches.* )  from matches  where  matches.year = 2013  or  matches.year = 2016  | ###
+ select count ( _ ) from _ where _ or _ | select count ( matches.* )  from matches  where  matches.year = 2013  or  matches.year = 2016  | ###
+ select _ from _ where _ and @.@ in _ and _ | select players.country_code , players.first_name from players  where  matches.tourney_name = "WTA Championships"  and  @.@ in matches.*  and  matches.tourney_name = "Australian Open"  | ###
+ select _ from _ where _ and @.@ in _ and _ or _ | select players.first_name , players.country_code from players  where  rankings.ranking == "1"  and  @.@ in rankings.*  and  players.country_code == "AUS"  or  players.country_code == "WTA"  | ###
+ select _ from _ order by _ asc limit _ | select players.first_name , players.country_code from players  order by players.birth_date asc limit 1 | ###
+ select _ from _ order by _ asc limit _ | select players.first_name , players.country_code from players  order by players.birth_date asc limit 1 | ###
+select _ from _ order by _ asc | select players.first_name , players.last_name from players  order by players.birth_date asc | ###
+ select _ from _ order by _ asc | select players.first_name , players.last_name from players  order by players.birth_date asc | ###
+ select _ from _ where _ order by _ asc | select players.first_name , players.last_name from players  where  players.hand = "L"  order by players.birth_date asc | ###
+ select _ from _ where _ order by _ asc | select players.first_name , players.last_name from players  where  players.Hand = "L"  order by players.Birth_date asc | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select players.first_name , players.country_code from players  group by players.player_id  order by count ( rankings.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select players.first_name , players.country_code from players  group by players.player_id  order by count ( rankings.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select matches.year from matches  group by matches.year  order by count ( matches.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select matches.year from matches  group by matches.year  order by count ( matches.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select players.first_name , players.last_name , players.rank_points from players  group by players.player_id  order by count ( matches.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select players.first_name , players.last_name , players.player_id , players.ranking_points from players  group by players.player_id  order by count ( matches.* )  desc limit 1 | ###
+ select _ from _ where @.@ join _ and _ order by _ desc limit _ | select players.first_name from players  where  @.@ join rankings.*  and  players.country_code = "Australia"  order by rankings.Ranking_Points desc limit 1 | ###
+ select _ from _ where _ order by _ desc limit _ | select players.first_name from players  where  tournaments.tournament_name = "Australian Open"  order by rankings.ranking_points desc limit 1 | ###
+ select _ from _ order by _ desc limit _ | select players.first_name , players.last_name , players.player_id from players  order by matches.minutes desc limit 1  | ###
+ select _ from _ order by _ desc limit _ | select players.first_name , players.last_name , players.player_id from players  order by matches.minutes desc limit 1 | ###
+ select avg ( _ ) , _ from _ group by _ | select avg ( ranking )  , players.first_name from players  group by players.player_id | ###
+ select _ , avg ( _ ) from _ group by _ | select players.first_name , avg ( ranking.ranking )  from players  group by players.first_name | ###
+ select sum ( _ ) , _ from _ group by _ | select sum ( ranking.Ranking_Points )  , players.First_Name from players  group by players.Player_ID | ###
+ select _ from _ where @.@ join _ group by _ order by sum ( _ ) asc | select players.first_name , sum ( rankings.ranking_points )  from players  where  @.@ join rankings.*  group by players.player_id  order by sum ( rankings.Ranking_Points )  asc | ###
+ select count ( _ ) , _ from _ group by _ | select count ( players.* )  , players.Country_Code from players  group by players.Country_Code | ###
+select count ( _ ) , _ from _ group by _ order by count ( _ ) desc | select count ( players.* )  , players.Country_Code from players  group by players.Country_Code  order by count ( players.* )  desc | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select players.Country_Code from players  group by players.Country_Code  order by count ( players.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select players.Country_Code from players  group by players.Country_Code  order by count ( players.* )  desc limit 1 | ###
+ select _ from _ where count ( _ ) > _ group by _ | select players.Country_Code from players  where  count ( players.* )  > 50  group by players.Country_Code | ###
+ select _ from _ where count ( _ ) > _ group by _ | select players.Country_Code from players  where  count ( players.* )  > 50  group by players.Country_Code | ###
+ select sum ( _ ) , _ from _ group by _ | select sum ( rankings.tours )  , rankings.ranking_date from rankings  group by rankings.ranking_date | ###
+ select count ( _ ) , _ from _ group by _ | select count ( rankings.* )  , rankings.Ranking_Date from rankings  group by rankings.Ranking_Date | ###
+ select count ( _ ) , _ from _ group by _ order by _ asc | select count ( matches.* )  , matches.Year from matches  group by matches.Year  order by matches.Year asc | ###
+ select count ( _ ) , _ from _ group by _ | select count ( matches.* )  , matches.Year from matches  group by matches.Year | ###
+ select _ from _ where _ order by _ asc limit _ | select players.first_name , players.last_name , players.rank from players  where  players.year = min ( _ )   and  players.rank <= 3  order by players.birth_date asc limit 3 | ###
+ select _ from _ where _ order by _ asc limit _ | select players.first_name , players.last_name , players.rank from players  where  players.year = max ( matches.year )   and  players.rank <= 3  order by players.birth_date asc limit 3 | ###
+ select count ( distinct _ ) from _ where @.@ join _ and _ | select count (  distinct matches.Winner_ID )  from matches  where  @.@ join tournaments.*  and  players.HAND = "L"  and  tournaments.TOURNEY_NAME = "WTA Championship"  | ###
+ select count ( _ ) from _ where _ | select count ( matches.* )  from matches  where  matches. competition = "WTA"  and  matches.position = "L" | ###
+ select _ from _ where @.@ in max ( _ ) | select players.first_name , players.country_code , players.birth_date from players  where  @.@ in max ( rankings.Ranking_Points )   | ###
+ select _ from _ where _ group by _ order by sum ( _ ) desc limit _ | select players.first_name , players.country_code , players.birth_date from players  where  rankings.ranking_type = "Points"  group by players.player_id  order by sum ( rankings.Ranking_Points )  desc limit 1 | ###
+ select count ( _ ) , _ from _ group by _ | select count ( players.* )  , players.Hand from players  group by players.Hand | ###
+ select count ( _ ) , _ from _ group by _ | select count ( players.* )  , players.Hand from players  group by players.Hand | ###
+ select count ( _ ) from _ where _ | select count ( death.* )  from death  where  death.note = "Captured" | ###
+ select _ from _ order by _ desc | select ship.Name , ship.Tonnage from ship  order by ship.Name desc | ###
+ select _ from _ | select battle.name , battle.date , battle.Result from battle  | ###
+ select max ( _ ) , min ( _ ) , _ from _ group by _ | select max ( death.note )  , min ( death.note )  , death.id from death  group by death.id | ###
+ select avg ( _ ) , _ from _ group by _ | select avg ( death.Injured )  , death.Date from death  group by death.Date | ###
+ select _ from _ where _ | select death.Note , death.Injured , death.Killed from death  where  ship.Tonnage = "t" | ###
+ select _ from _ where _ | select battle.name , battle.Result from battle  where  battle.Bulgarian_Commander != "Boril" | ###
+ select distinct _ from _ where @.@ join _ and _ except_ @.@ join _ and _ | select  distinct battle.id , battle.name from battle  where  @.@ join death.*  and  ship.ship_type = "Brig"  except_  @.@ join death.*  and  ship.ship_type = "Brig"  | ###
+ select _ from _ where count ( _ ) > _ group by _ | select battle.id , battle.name from battle  where  count ( death.* )  > 10  group by battle.id , battle.name | ###
+ select _ from _ group by _ order by sum ( _ ) desc limit _ | select death.Ship_ID , ship.Name from death  group by death.Caused_By_Ship_ID  order by sum ( death.Injured )  desc limit 1 | ###
+ select distinct _ from _ where _ between _ and _ | select  distinct battle.name from battle  where  battle.bulgarian_commander between "Kaloyan" and battle.latin_commander  | select  distinct battle.name from battle  where  battle.bulgarian_commander between "Kaloyan" and battle.latin_commander  | ###
+ select count ( distinct _ ) from _ | select count (  distinct battle.Result )  from battle  | ###
+ select count ( _ ) from _ where @.@ not in _ and _ | select count ( battle.* )  from battle  where  @.@ not in death.*  and  ship.tonnage = "225"  | ###
+ select _ from _ where @.@ join _ and _ and _ | select battle.name , battle.date from battle  where  @.@ join death.*  and  ship.name = "Lettice"  and  ship.name = "HMS Atalanta" | ###
+ select _ from _ where _ | select battle.Name , battle.Result , battle.Bulgarian_Commander from battle  where  battle.Name = "English Channel"  and  ship.Lost_in_Battle != "Y" | ###
+ select _ from _ where _ like _ | select death.Note from death  where  death.Note like "%East%" | ###
+ select _ from _ where _ | select addresses.ADDRESS_ID , addresses.LINE_1 , addresses.LINE_2 from addresses  where  addresses.LINE_1 != ""  and  addresses.LINE_2 != "" | ###
+ select _ from _ | select addresses.line_1 , addresses.line_2 from addresses  | ###
+ select count ( _ ) from _ | select count ( courses.* )  from courses  | ###
+ select count ( _ ) from _ | select count ( courses.* )  from courses  | ###
+ select _ from _ where _ | select courses.Course_Description from courses  where  courses.Course_Name = "math"  | ###
+ select _ from _ where _ | select courses.Course_Description from courses  where  courses.Course_Name = "Mathematics" | ###
+ select _ from _ where _ | select addresses.zip_postcode from addresses  where  addresses.city = "Port Chelsea" | ###
+ select _ from _ where _ | select addresses.zip_postcode from addresses  where  addresses.line_1 = "Port Chelsea" | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select department_name , department_id from departments  group by degree_programs.department_id  order by count ( degree_programs.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select department_name , department_id from degree_programs  group by department_id  order by count ( degree_programs.* )  desc limit 1 | ###
+ select count ( _ ) from _ where @.@ join _ | select count ( department_id )  from degree_programs  where  @.@ join degree_programs.*  | ###
+ select count ( distinct _ ) from _ | select count (  distinct departments.DEPARTMENT_NAME )  from DEGREE_PROGRAMS  | ###
+ select count ( distinct _ ) from _ | select count (  distinct degree_programs.DEGREE_SUMMARY_NAME )  from degree_programs  | ###
+ select count ( distinct _ ) from _ | select count (  distinct degree_programs.DEGREE_SUMMARY_NAME )  from degree_programs  | ###
+ select count ( _ ) from _ where _ | select count ( degree_programs.* )  from departments  where  departments.DEPARTMENT_NAME = "Engineering"  | ###
+ select count ( _ ) from _ where _ | select count ( department_degrees.* )  from department_degrees  where  department_name = "Engineering"  | ###
+ select _ from _ | select sections.SECTION_NAME , sections.SECTION_DESCRIPTION from sections  | select courses.COURSE_NAME , courses.COURSE_DESCRIPTION from courses  | select degree_programs.DEGREE_SUMMARY_NAME , degree_programs.DEGREE_SUMMARY_DESCRIPTION from degree_programs  | select departments.DEPARTMENT_NAME , departments.DEPARTMENT_DESCRIPTION from departments  | select semester.SEMESTER_NAME , semester.SEMESTER_DESCRIPTION from semester  | select addresses.LINE_1 from addresses  | select students.FIRST_NAME from students  | select student_enrolment.STUDENT_ID from student_enrolment  | select student_enrolment_courses.COURSE_ID from student_enrolment_courses  | select transcript_contents.TRANSCRIPT_ID from transcript_contents  | select transcript_contents.STUDENT_COURSE_ID from transcript_contents  | ###
+ select _ from _ | select sections.SECTION_NAME , sections.SECTION_DESCRIPTION from sections  | ###
+ select _ from _ where count ( _ ) <= _ group by _ | select courses.course_name , courses.course_id from sections  where  count ( sections.* )  <= 2  group by sections.course_id , courses.course_name , courses.course_id | ###
+ select _ from _ where count ( _ ) < _ group by _ | select courses.course_name , courses.course_id from sections  where  count ( sections.* )  < 2  group by sections.course_id , courses.course_name , courses.course_id | ###
+ select _ from _ order by _ desc | select sections.section_name from sections  order by sections.section_name desc | ###
+ select _ from _ order by _ desc | select sections.SECTION_NAME from sections  order by sections.SECTION_NAME desc | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select semester_name , semester_id from student_enrolment  group by student_enrolment.semester_id  order by count ( student_enrolment.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select semester_name , semester_id from semesters  group by semester_id  order by count ( students.* )  desc limit 1 | ###
+ select _ from _ where @.@ join _ and _ like _ | select department_description from departments  where  @.@ join students.*  and  department_name like "%Computer%"  | ###
+ select _ from _ where @.@ join _ and _ like _ | select department_description from departments  where  @.@ join students.*  and  department_name like "%computer%"  | ###
+ select _ from _ where @.@ join _ and _ and count ( _ ) = _ group by _ | select students.first_name , students.middle_name , students.last_name , students.student_id from student_enrolment  where  @.@ join degree_programs.*  and  semesters.semester_name = "Fall 2018"  and  count ( student_enrolment.* )  = 2  group by student_enrolment.student_id , student_enrolment.semester_id , student_enrolment.degree_program_id | ###
+ select _ from _ where @.@ join _ and _ and @.@ in _ group by _ | select students.first_name , students.middle_name , students.last_name , students.student_id from student_enrolment  where  @.@ join student_enrolment.*  and  degree_programs.degree_summary_name = "2"  and  @.@ in student_enrolment.*  group by student_enrolment.student_id , student_enrolment.semester_id , student_enrolment.degree_program_id | ###
+ select _ from _ where @.@ join _ and _ | select students.first_name , students.middle_name , students.last_name from student_enrolment  where  @.@ join degree_programs.*  and  degrees.degree_type = "BA"  | ###
+ select _ from _ where @.@ join _ and _ | select students.first_name , students.middle_name , students.last_name from student_enrolment  where  @.@ join student_enrolment.*  and  degree_programs.degree_summary_name = "Bachelor of Arts" | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select courses.Course_Name from courses  group by courses.Course_Name  order by count ( student_enrolment.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select degree_programs.DEGREE_SUMMARY_NAME from student_enrolment  group by degree_programs.DEGREE_SUMMARY_NAME  order by count ( student_enrolment.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select programs.* from programs  group by programs.PROGRAM_ID  order by count ( student_enrolment.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select degree_programs.Program_ID , degree_programs.Degree_Summary from degree_programs  group by degree_programs.Degree_Summary  order by count ( student_enrolment.* )  desc limit 1 | ###
+ select _ , count ( _ ) from _ group by _ order by count ( _ ) desc limit _ | select students.student_id , students.first_name , students.middle_name , students.last_name , count ( student_enrolment.* )  from student_enrolment  group by student_enrolment.student_id  order by count ( student_enrolment.* )  desc limit 1 | ###
+ select _ , count ( _ ) from _ group by _ order by count ( _ ) desc limit _ | select students.FIRST_NAME , students.MIDDLE_NAME , students.LAST_NAME , students.STUDENT_ID , count ( student_enrolment.* )  from student_enrolment  group by student_enrolment.STUDENT_ID  order by count ( student_enrolment.* )  desc limit 1 | ###
+ select _ from _ where except_ @.@ is _ group by _ | select semester_name from semesters  where  except_  @.@ is students.*  group by semester_name | ###
+ select _ from _ where @.@ not in _ group by _ order by _ asc limit _ | select semester_name from semester  where  @.@ not in student_enrolment.*  group by semester_name  order by semester_name asc limit 1 | ###
+ select _ from _ where @.@ join _ | select courses.course_name from courses  where  @.@ join student_enrolment.*  | ###
+ select _ from _ where @.@ join _ | select courses.course_name from courses  where  @.@ join student_enrolment.*  | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select courses.Course_Name from courses  group by courses.Course_Name  order by count ( student_enrolment.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select courses.course_name from courses  group by courses.course_name  order by count ( student_enrolment.* )  desc limit 1 | ###
+ select _ from _ where @.@ join _ and _ except_ @.@ join _ | select students.last_name from addresses  where  addresses.state_province_county = "North Carolina"  and  students.date_first_registered != ""  except_  @.@ join student_enrolment.*  | ###
+ select _ from _ where @.@ join _ and _ except_ @.@ join _ | select students.last_name from addresses  where  addresses.state_province_county = "North Carolina"  and  students.date_first_registered != ""  except_  @.@ join degree_programs.*  | ###
+ select _ from _ where count ( _ ) >= _ group by _ | select transcript_date , transcript_id from transcript_contents  where  count ( transcript_contents.* )  >= 2  group by transcript_contents.transcript_id , transcript_contents.student_course_id | ###
+ select _ from _ where count ( _ ) >= _ group by _ order by _ asc limit _ | select transcript_date , transcript_id from transcript_contents  where  count ( transcript_contents.* )  >= 2  group by transcript_contents.transcript_id  order by transcript_date asc limit 1 | ###
+ select _ from _ where _ | select addresses.cell_mobile_number from addresses  where  students.first_name = "Timmothy"  and  students.last_name = "Ward"  | ###
+ select _ from _ where _ | select students.cell_mobile_number from students  where  students.first_name = "Timmothy"  and  students.last_name = "Ward"  | ###
+ select _ from _ order by _ asc limit _ | select students.first_name , students.middle_name , students.last_name from students  order by students.date_first_registered asc limit 1 | ###
+ select _ from _ limit _ | select students.first_name , students.middle_name , students.last_name from students  limit 1 | ###
+ select _ from _ order by _ asc limit _ | select students.first_name , students.middle_name , students.last_name from students  order by students.date_first_registered asc limit 1 | ###
+ select _ from _ order by _ asc limit _ | select students.FIRST_NAME , students.MIDDLE_NAME , students.LAST_NAME from students  order by addresses.DATE_FIRST_REGISTERED asc limit 1 | ###
+ select _ from _ where _ except_ @.@ is _ and _ | select students.first_name from addresses  where  addresses.address_id != students.permanent_address_id  except_  @.@ is addresses.*  and  addresses.address_id = students.permanent_address_id | ###
+ select _ from _ where @.@ != _ and _ | select students.first_name from addresses  where  @.@ != students.permanent_address_id  and  students.permanent_address_id = addresses.address_id | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select addresses.ADDRESS_ID , addresses.* from addresses  group by addresses.ADDRESS_ID  order by count ( students.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select addresses.ADDRESS_ID , addresses.LINE_1 , addresses.LINE_2 from addresses  group by addresses.ADDRESS_ID  order by count ( students.* )  desc limit 1 | ###
+ select avg ( _ ) from _ | select avg ( transcript_date )  from transcript_contents  | ###
+ select avg ( _ ) from _ | select avg ( transcript_contents.transcript_date )  from transcript_contents  | ###
+ select _ from _ order by _ asc limit _ | select transcript_date , other_details from transcripts  order by transcript_date asc limit 1 | ###
+ select _ from _ order by _ asc limit _ | select transcript_date , other_details from transcripts  order by transcript_date asc limit 1 | ###
+ select count ( _ ) from _ | select count ( transcripts.* )  from transcripts  | ###
+ select count ( _ ) from _ | select count ( transcripts.* )  from transcript_contents  | ###
+ select _ from _ order by _ desc limit _ | select transcript_date from transcripts  order by transcript_date desc limit 1 | ###
+ select _ from _ order by _ desc limit _ | select transcripts.TRANSCRIPT_DATE from transcripts  order by transcripts.TRANSCRIPT_DATE desc limit 1 | ###
+ select _ , count ( _ ) from _ group by _ order by count ( _ ) desc limit _ | select student_enrolment.student_enrolment_id , count ( student_enrolment.* )  from student_enrolment  group by student_enrolment.student_enrolment_id  order by count ( student_enrolment.* )  desc limit 1 | ###
+ select _ , max ( _ ) from _ group by _ | select courses.Course_ID , max ( transcript_contents.Transcript_ID )  from courses  group by courses.Course_ID | ###
+ select _ from _ order by count ( _ ) asc limit _ | select transcript_date , transcript_id from transcript_contents  order by count ( transcript_contents.* )  asc limit 1 | ###
+ select _ from _ order by count ( _ ) asc limit _ | select transcript_date , transcript_id from transcript_contents  order by count ( transcript_contents.* )  asc limit 1 | ###
+ select _ from _ where @.@ join _ and _ and @.@ join _ and _ | select semester_name from students  where  @.@ join student_enrolment.*  and  department_name = "Master"  and  @.@ join student_enrolment.*  and  department_name = "Bachelor"  | ###
+ select _ from _ where @.@ join _ and _ and @.@ join _ and _ | select semester_id from student_enrolment  where  @.@ join degree_programs.*  and  department_name = "Computer Science"  and  @.@ join student_enrolment.*  and  student_enrolment.STUDENT_ENROLMENT_TYPE = "M"  and  @.@ join student_enrolment.*  and  student_enrolment.STUDENT_ENROLMENT_TYPE = "B"  | ###
+ select count ( distinct _ ) from _ | select count (  distinct students.ADDRESS_ID )  from students  | ###
+ select distinct _ from _ where @.@ join _ and _ | select  distinct addresses.ADDRESS_ID from addresses  where  @.@ join students.*  and  addresses.ADDRESS_ID = students.CURRENT_ADDRESS_ID   | ###
+ select _ from _ order by _ desc | select students.* from students  order by students.FIRST_NAME desc , students.LAST_NAME desc | ###
+ select _ from _ order by _ desc | select students.* from students  order by students.FIRST_NAME desc | ###
+ select _ from _ where @.@ join _ and _ | select sections.* from sections  where  @.@ join addresses.*  and  addresses.city = "York"  | ###
+ select _ from _ where _ | select sections.section_description from sections  where  sections.section_name = "h" | ###
+ select _ from _ where _ and @.@ in _ or _ | select students.first_name from addresses  where  addresses.country = "Haiti"  and  @.@ in students.permanent_address_id  or  students.cell_mobile_number = "09700166582" | ###
+ select _ from _ where @.@ join _ and _ or _ | select students.first_name from addresses  where  @.@ join addresses.*  and  addresses.state_province_county = "Haiti"  or  students.cell_mobile_number = "09700166582"  | ###
+ select _ from _ order by _ asc | select cartoon.Title from cartoon  order by cartoon.Title asc | ###
+ select _ from _ order by _ asc | select cartoon.Title from cartoon  order by cartoon.Title asc | ###
+ select _ from _ where _ | select cartoon.* from cartoon  where  cartoon.DIRECTED_BY = "Ben Jones"  | ###
+ select _ from _ where _ | select cartoon.Title from cartoon  where  cartoon.Directed_by = "Ben Jones" | ###
+ select count ( _ ) from _ where _ | select count ( cartoon.* )  from cartoon  where  cartoon.written_by = "Joseph Kuhr" | ###
+ select count ( _ ) from _ where _ | select count ( cartoon.* )  from cartoon  where  cartoon.written_by = "Joseph Kuhr" | ###
+select _ from _ order by _ asc | select cartoon.Title , cartoon.Directed_By from cartoon  order by cartoon.Original_Air_Date asc | ###
+ select _ from _ order by _ asc | select cartoon.Title , cartoon.Directed_By from cartoon  order by cartoon.Original_Air_Date asc | ###
+ select _ from _ where _ or _ | select cartoon.Title from cartoon  where  cartoon.Directed_by = "Ben Jones"  or  cartoon.Directed_by = "Brandon Vietti" | ###
+ select _ from _ where _ or @.@ join _ and _ | select cartoon.Title from cartoon  where  cartoon.Directed_by = "Ben Jones"  or  @.@ join cartoon.*  and  cartoon.Directed_by = "Brandon Vietti" | ###
+ select _ , count ( _ ) from _ group by _ order by count ( _ ) desc limit _ | select tv_channel.Country , count ( tv_channel.* )  from tv_channel  group by tv_channel.Country  order by count ( tv_channel.* )  desc limit 1 | ###
+ select _ from _ group by _ order by count ( _ ) desc limit _ | select tv_channel.Country from tv_channel  group by tv_channel.Country  order by count ( tv_channel.* )  desc limit 1 | ###
+ select count ( distinct _ ) , _ from _ group by _ | select count (  distinct tv_channel.Series_name )  , tv_channel.Content from tv_channel  group by tv_channel.Content | ###
+ select count ( distinct _ ) from _ | select count (  distinct tv_channel.Series_Name )  from tv_channel  | select count (  distinct tv_channel.Content )  from tv_channel  | ###
+ select _ from _ where _ | select tv_channel.Content from tv_channel  where  tv_channel.Series_name = "Sky Radio" | ###
+ select _ from _ where _ | select tv_channel.content from tv_channel  where  tv_channel.Series_name = "Sky Radio" | ###
+ select _ from _ where _ | select tv_channel.Package_Option from tv_channel  where  tv_channel.Series_Name = "Sky Radio"  | ###
+ select _ from _ where @.@ join _ and _ | select tv_channel.Package_Option from tv_channel  where  @.@ join tv_channel.*  and  tv_channel.Series_Name = "Sky Radio" | ###
+ select count ( _ ) from _ where _ | select count ( tv_channel.* )  from tv_channel  where  tv_channel.language = "English"  | ###
+ select count ( _ ) from _ where _ | select count ( tv_channel.* )  from tv_channel  where  tv_channel.language = "english" | ###
+ select _ from _ group by _ order by count ( _ ) asc limit _ | select tv_channel.language , count ( tv_channel.* )  from tv_channel  group by tv_channel.language  order by count ( tv_channel.* )  asc limit 1 | ###
+select _ , count ( _ ) from _ group by _ order by count ( _ ) asc limit _ | select tv_channel.language , count ( tv_channel.* )  from tv_channel  group by tv_channel.language  order by count ( tv_channel.* )  asc limit 1 | ###
+select _ , count ( _ ) from _ group by _ | select tv_channel.language , count ( tv_channel.* )  from tv_channel  group by tv_channel.language | ###
+ select _ , count ( _ ) from _ group by _ | select tv_channel.language , count ( distinct tv_channel.* )  from tv_channel  group by tv_channel.language | ###
+ select _ from _ where _ | select tv_channel.Series_Name from cartoon  where  cartoon.Title = "The Rise of the Blue Beetle!"  | ###
+ select _ from _ where _ | select tv_channel.Series_Name from cartoon  where  cartoon.Title = "The Rise of the Blue Beetle"  | ###
+ select _ from _ where @.@ join _ and _ | select cartoon.Title from cartoon  where  @.@ join tv_series.*  and  tv_channel.Series_name = "Sky Radio" | ###
+ select _ from _ where @.@ join _ and _ and _ | select cartoon.Title from cartoon  where  @.@ join cartoon.*  and  tv_channel.Series_name = "Sky Radio"  and  tv_channel.Country = "UK" | ###
+ select _ from _ order by _ asc | select tv_series.Episode from tv_series  order by tv_series.Rating asc | ###
+ select _ from _ order by _ asc | select tv_series.* from tv_series  order by tv_series.Rating asc | ###
+ select _ from _ order by _ desc limit _ | select tv_series.Episode , tv_series.Rating from tv_series  order by tv_series.Rating desc limit 3  | ###
+ select _ from _ order by _ desc limit _ | select tv_series.Episode , tv_series.Rating from tv_series  order by tv_series.Rating desc limit 3  | ###
+ select min ( _ ) , max ( _ ) from _ | select min ( tv_series.Share )  , max ( tv_series.Share )  from tv_series  | ###
+ select max ( _ ) , min ( _ ) from _ | select max ( tv_series.Share )  , min ( tv_series.Share )  from tv_series  | ###
+ select _ from _ where _ | select tv_series.Air_Date from tv_series  where  tv_series.Episode = "A Love of a Lifetime"  | ###
+ select _ from _ where _ | select tv_series.air_date from tv_series  where  tv_series.episode = "A Love of a Lifetime"  | ###
+ select _ from _ where _ | select  tv_series.Weekly_Rank from  tv_series  where  tv_series.Episode = "A Love of a Lifetime"  | ###
+ select _ from _ where _ | select  tv_series.weekly_rank from  tv_series  where  tv_series.episode = "A Love of a Lifetime" | ###
+ select _ from _ where _ | select tv_channel.Series_name from tv_channel  where  tv_series.Episode = "A Love of a Lifetime"  | ###
+ select _ from _ where _ | select tv_channel.Series_name from tv_channel  where  tv_series.Episode = "A Love of a Lifetime"  | ###
