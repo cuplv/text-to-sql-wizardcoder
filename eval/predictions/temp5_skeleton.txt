@@ -515,3 +515,21 @@ SELECT zip_postcode FROM addresses WHERE city = 'Port Chelsea'
 SELECT zip_postcode FROM addresses WHERE line_1 = 'Port Chelsea'   AND city = 'London'   AND country = 'UK'
 SELECT departments.department_name,        degree_programs.degree_program_id FROM departments JOIN degree_programs ON departments.department_id = degree_programs.department_id GROUP BY degree_programs.degree_program_id ORDER BY COUNT (*) DESC LIMIT 1
 SELECT departments.department_name,        degree_programs.degree_program_id FROM degree_programs JOIN departments ON degree_programs.department_id = departments.department_id GROUP BY degree_programs.degree_program_id ORDER BY COUNT (*) DESC LIMIT 1
+SELECT COUNT (*) FROM degrees JOIN degree_programs ON degrees.degree_id = degree_programs.degree_program_id JOIN departments ON degree_programs.department_id = departments.department_id WHERE degrees.degree_code!= 'Ph'   OR degrees.degree_code!= 'MA'   OR degrees.degree_code!= 'MS'   OR degrees.degree_code!= 'MEng'   OR degrees.degree_code!= 'MPh'   OR degrees.degree_code!= 'MTA'   OR degrees.degree_code!= 'MU'   OR degrees.degree_code!= 'PH'   OR degrees.degree_code!= 'Psy'   OR degrees.degree_code!= 'RE'   OR degrees.degree_code!= 'Vet'
+SELECT COUNT (DISTINCT department_id) FROM degree_programs JOIN departments ON degree_programs.department_id = departments.department_id
+SELECT COUNT (DISTINCT degree_summary_name) FROM degree_programs
+SELECT COUNT (DISTINCT degree_summary_name) FROM degree_programs
+SELECT COUNT (*) FROM departments JOIN degree_programs ON departments.department_id = degree_programs.department_id WHERE departments.department_name = 'Engineering'   AND degree_programs.degree_summary_name!= 'Computer Science'
+SELECT COUNT (*) FROM departments JOIN degree_programs ON departments.department_id = degree_programs.department_id WHERE departments.department_name = 'Engineering'   AND degree_programs.degree_summary_name!= 'Philosophy'
+SELECT section_name,        section_description FROM sections
+SELECT section_name,        section_description FROM sections
+SELECT courses.course_name,        courses.course_id FROM courses JOIN sections ON courses.course_id = sections.course_id GROUP BY courses.course_id HAVING COUNT (*) <= 2
+SELECT courses.course_name,        courses.course_id FROM courses JOIN sections ON courses.course_id = sections.course_id GROUP BY courses.course_id HAVING COUNT (*) < 2
+SELECT section_name FROM sections ORDER BY section_name DESC
+SELECT section_name FROM sections ORDER BY section_name DESC
+SELECT semesters.semester_name,        semesters.semester_id FROM semesters JOIN student_enrolment ON semesters.semester_id = student_enrolment.semester_id GROUP BY semesters.semester_id ORDER BY COUNT (*) DESC LIMIT 1
+SELECT semesters.semester_name,        semesters.semester_id FROM semesters JOIN student_enrolment ON semesters.semester_id = student_enrolment.semester_id GROUP BY semesters.semester_id ORDER BY COUNT (*) DESC LIMIT 1
+SELECT department_description FROM departments WHERE department_name like '%computer%'
+SELECT department_description FROM departments WHERE department_name like '%computer%'
+SELECT students.first_name,        students.middle_name,        students.last_name,        student_enrolment.student_enrolment_id FROM students JOIN student_enrolment ON students.student_id = student_enrolment.student_id WHERE student_enrolment.degree_program_id = '2' GROUP BY student_enrolment.student_id HAVING COUNT (*) = 2 ORDER BY students.first_name ASC,          students.middle_name ASC,          students.last_name ASC
+SELECT students.first_name,        students.middle_name,        students.last_name,        student_enrolment.student_id FROM student_enrolment JOIN students ON student_enrolment.student_id = students.student_id WHERE student_enrolment.degree_program_id = '2'   AND student_enrolment.semester_id = '1'
