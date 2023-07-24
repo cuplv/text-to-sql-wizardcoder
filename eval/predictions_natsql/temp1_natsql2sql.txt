@@ -531,3 +531,95 @@ NONE
 select semesters.semester_name , semesters.semester_id from Student_Enrolment join Students on Student_Enrolment.student_id = Students.student_id join Semesters on Student_Enrolment.semester_id = Semesters.semester_id  group by Semesters.semester_id  order by count(*) desc limit 1 
 select departments.department_description from Student_Enrolment join Students on Student_Enrolment.student_id = Students.student_id join Degree_Programs on Student_Enrolment.degree_program_id = Degree_Programs.degree_program_id join Departments on Degree_Programs.department_id = Departments.department_id where  departments.department_name like "%Computer%"  
 select departments.department_description from Student_Enrolment join Students on Student_Enrolment.student_id = Students.student_id join Degree_Programs on Student_Enrolment.degree_program_id = Degree_Programs.degree_program_id join Departments on Degree_Programs.department_id = Departments.department_id where  departments.department_name like "%computer%"  
+select students.first_name , students.middle_name , students.last_name , students.student_id from Student_Enrolment join Students on Student_Enrolment.student_id = Students.student_id join Semesters on Student_Enrolment.semester_id = Semesters.semester_id join Degree_Programs on Student_Enrolment.degree_program_id = Degree_Programs.degree_program_id where  semesters.semester_name = "Fall 2018"  group by student_enrolment.student_id having  count(*) = 2 
+select students.first_name , students.middle_name , students.last_name , students.student_id from Student_Enrolment join Students on Student_Enrolment.student_id = Students.student_id join Degree_Programs on Student_Enrolment.degree_program_id = Degree_Programs.degree_program_id where  degree_programs.degree_summary_name = "2" and student_enrolment.student_enrolment_id in (select Student_Enrolment.student_enrolment_id from Student_Enrolment  )  
+NONE
+select students.first_name , students.middle_name , students.last_name from Student_Enrolment join Students on Student_Enrolment.student_id = Students.student_id join Degree_Programs on Student_Enrolment.degree_program_id = Degree_Programs.degree_program_id where  degree_programs.degree_summary_name = "Bachelor of Arts"  
+select courses.course_name from Student_Enrolment_Courses join Student_Enrolment on Student_Enrolment_Courses.student_enrolment_id = Student_Enrolment.student_enrolment_id join Courses on Student_Enrolment_Courses.course_id = Courses.course_id  group by courses.course_id  order by count(*) desc limit 1 
+select degree_programs.degree_summary_name from Student_Enrolment join Degree_Programs on Student_Enrolment.degree_program_id = Degree_Programs.degree_program_id  group by Student_Enrolment.degree_program_id  order by count(*) desc limit 1 
+NONE
+NONE
+select students.student_id , students.first_name , students.middle_name , students.last_name , count(*) from Student_Enrolment join Students on Student_Enrolment.student_id = Students.student_id  group by student_enrolment.student_id  order by count(*) desc limit 1 
+select students.first_name , students.middle_name , students.last_name , students.student_id , count(*) from Student_Enrolment join Students on Student_Enrolment.student_id = Students.student_id  group by student_enrolment.student_id  order by count(*) desc limit 1 
+select semesters.semester_name from Semesters   except select semesters.semester_name from Student_Enrolment join Students on Student_Enrolment.student_id = Students.student_id join Semesters on Student_Enrolment.semester_id = Semesters.semester_id  
+NONE
+select courses.course_name from Student_Enrolment_Courses join Student_Enrolment on Student_Enrolment_Courses.student_enrolment_id = Student_Enrolment.student_enrolment_id join Courses on Student_Enrolment_Courses.course_id = Courses.course_id  
+select courses.course_name from Student_Enrolment_Courses join Student_Enrolment on Student_Enrolment_Courses.student_enrolment_id = Student_Enrolment.student_enrolment_id join Courses on Student_Enrolment_Courses.course_id = Courses.course_id  
+select courses.course_name from Student_Enrolment_Courses join Student_Enrolment on Student_Enrolment_Courses.student_enrolment_id = Student_Enrolment.student_enrolment_id join Courses on Student_Enrolment_Courses.course_id = Courses.course_id  group by courses.course_id  order by count(*) desc limit 1 
+select courses.course_name from Student_Enrolment_Courses join Student_Enrolment on Student_Enrolment_Courses.student_enrolment_id = Student_Enrolment.student_enrolment_id join Courses on Student_Enrolment_Courses.course_id = Courses.course_id  group by courses.course_id  order by count(*) desc limit 1 
+select students.last_name from Students join Addresses on Students.permanent_address_id = Addresses.address_id where  addresses.state_province_county = "North Carolina" and students.date_first_registered != ""   except select students.last_name from Student_Enrolment join Students on Student_Enrolment.student_id = Students.student_id  
+select students.last_name from Students join Addresses on Students.permanent_address_id = Addresses.address_id where  addresses.state_province_county = "North Carolina" and students.date_first_registered != ""   except select students.last_name from Student_Enrolment join Students on Student_Enrolment.student_id = Students.student_id join Degree_Programs on Student_Enrolment.degree_program_id = Degree_Programs.degree_program_id  
+NONE
+NONE
+NONE
+select students.cell_mobile_number from Students where  students.first_name = "Timmothy" and students.last_name = "Ward"  
+select students.first_name , students.middle_name , students.last_name from Students   order by students.date_first_registered asc limit 1 
+select students.first_name , students.middle_name , students.last_name from Students   limit 1 
+select students.first_name , students.middle_name , students.last_name from Students   order by students.date_first_registered asc limit 1 
+NONE
+select students.first_name from Students join Addresses on Students.permanent_address_id = Addresses.address_id where  addresses.address_id != (select students.permanent_address_id from Students  )   except select students.first_name from Students where  students.permanent_address_id is (select Addresses.address_id from Addresses join students on Addresses.address_id = Students.permanent_address_id  )   
+select students.first_name from Students where  students.permanent_address_id != (select students.permanent_address_id from Students join addresses on Students.permanent_address_id = Addresses.address_id  )   
+select addresses.address_id , * from Students join Addresses on Students.permanent_address_id = Addresses.address_id  group by students.permanent_address_id  order by count(*) desc limit 1 
+select addresses.address_id , addresses.line_1 , addresses.line_2 from Students join Addresses on Students.permanent_address_id = Addresses.address_id  group by students.permanent_address_id  order by count(*) desc limit 1 
+NONE
+NONE
+select transcripts.transcript_date , transcripts.other_details from Transcripts   order by transcripts.transcript_date asc limit 1 
+select transcripts.transcript_date , transcripts.other_details from Transcripts   order by transcripts.transcript_date asc limit 1 
+select count(*) from Transcripts  
+select count(*) from Transcripts  
+select transcripts.transcript_date from Transcripts   order by transcripts.transcript_date desc limit 1 
+select transcripts.transcript_date from Transcripts   order by transcripts.transcript_date desc limit 1 
+select student_enrolment.student_enrolment_id , count(*) from Student_Enrolment  group by student_enrolment.student_enrolment_id  order by count(*) desc limit 1 
+select courses.course_id , max(transcript_contents.transcript_id) from Transcript_Contents join Student_Enrolment_Courses on Transcript_Contents.student_course_id = Student_Enrolment_Courses.student_course_id join Courses on Student_Enrolment_Courses.course_id = Courses.course_id  group by courses.course_id 
+NONE
+NONE
+NONE
+NONE
+NONE
+select distinct addresses.address_id from Students join Addresses on Addresses.address_id = Students.current_address_id  
+select * from Students   order by students.first_name,students.last_name desc
+select * from Students   order by students.first_name desc
+select * from Addresses join Sections on Addresses.address_id = Sections.section_id where  addresses.city = "York"  
+select sections.section_description from Sections where  sections.section_name = "h"  
+select students.first_name from Students join Addresses on Students.permanent_address_id = Addresses.address_id where  addresses.country = "Haiti" and students.permanent_address_id in (select students.permanent_address_id from Students  )   union select students.first_name from Students where  students.cell_mobile_number = "09700166582"  
+select students.first_name from Students join Addresses on Students.permanent_address_id = Addresses.address_id where  addresses.state_province_county = "Haiti"   union select students.first_name from Students where  students.cell_mobile_number = "09700166582"  
+select cartoon.title from Cartoon   order by cartoon.title asc
+select cartoon.title from Cartoon   order by cartoon.title asc
+select * from Cartoon where  cartoon.directed_by = "Ben Jones"  
+select cartoon.title from Cartoon where  cartoon.directed_by = "Ben Jones"  
+select count(*) from Cartoon where  cartoon.written_by = "Joseph Kuhr"  
+select count(*) from Cartoon where  cartoon.written_by = "Joseph Kuhr"  
+select cartoon.title , cartoon.directed_by from Cartoon   order by cartoon.original_air_date asc
+select cartoon.title , cartoon.directed_by from Cartoon   order by cartoon.original_air_date asc
+select cartoon.title from Cartoon where  cartoon.directed_by = "Ben Jones" or cartoon.directed_by = "Brandon Vietti"  
+select cartoon.title from Cartoon where  cartoon.directed_by = "Ben Jones"   union select cartoon.title from Cartoon where  cartoon.directed_by = "Brandon Vietti"  
+select tv_channel.country , count(*) from TV_Channel  group by tv_channel.country  order by count(*) desc limit 1 
+select tv_channel.country from TV_Channel  group by tv_channel.country  order by count(*) desc limit 1 
+select count( distinct tv_channel.series_name) , tv_channel.content from TV_Channel  group by tv_channel.content 
+select count( distinct tv_channel.series_name) from TV_Channel  
+select tv_channel.content from TV_Channel where  tv_channel.series_name = "Sky Radio"  
+select tv_channel.content from TV_Channel where  tv_channel.series_name = "Sky Radio"  
+select tv_channel.package_option from TV_Channel where  tv_channel.series_name = "Sky Radio"  
+select tv_channel.package_option from TV_Channel where  tv_channel.series_name = "Sky Radio"  
+select count(*) from TV_Channel where  tv_channel.language = "English"  
+select count(*) from TV_Channel where  tv_channel.language = "english"  
+select tv_channel.language , count(*) from TV_Channel  group by tv_channel.language  order by count(*) asc limit 1 
+select tv_channel.language , count(*) from TV_Channel  group by tv_channel.language  order by count(*) asc limit 1 
+select tv_channel.language , count(*) from TV_Channel  group by tv_channel.language 
+select tv_channel.language , count( distinct *) from TV_Channel  group by tv_channel.language 
+select tv_channel.series_name from Cartoon join TV_Channel on Cartoon.Channel = TV_Channel.id where  cartoon.title = "The Rise of the Blue Beetle!"  
+select tv_channel.series_name from Cartoon join TV_Channel on Cartoon.Channel = TV_Channel.id where  cartoon.title = "The Rise of the Blue Beetle"  
+select cartoon.title from TV_series join TV_Channel on TV_series.Channel = TV_Channel.id join Cartoon on TV_Channel.id = Cartoon.Channel where  tv_channel.series_name = "Sky Radio"  
+select cartoon.title from Cartoon join TV_Channel on Cartoon.Channel = TV_Channel.id where  tv_channel.series_name = "Sky Radio" and tv_channel.country = "UK"  
+select tv_series.episode from TV_series   order by tv_series.rating asc
+select * from TV_series   order by tv_series.rating asc
+select tv_series.episode , tv_series.rating from TV_series   order by tv_series.rating desc limit 3 
+select tv_series.episode , tv_series.rating from TV_series   order by tv_series.rating desc limit 3 
+select min(tv_series.share) , max(tv_series.share) from TV_series  
+select max(tv_series.share) , min(tv_series.share) from TV_series  
+select tv_series.air_date from TV_series where  tv_series.episode = "A Love of a Lifetime"  
+select tv_series.air_date from TV_series where  tv_series.episode = "A Love of a Lifetime"  
+select tv_series.weekly_rank from TV_series where  tv_series.episode = "A Love of a Lifetime"  
+select tv_series.weekly_rank from TV_series where  tv_series.episode = "A Love of a Lifetime"  
+select tv_channel.series_name from TV_series join TV_Channel on TV_series.Channel = TV_Channel.id where  tv_series.episode = "A Love of a Lifetime"  
+select tv_channel.series_name from TV_series join TV_Channel on TV_series.Channel = TV_Channel.id where  tv_series.episode = "A Love of a Lifetime"  

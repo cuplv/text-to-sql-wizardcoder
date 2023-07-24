@@ -2130,5 +2130,373 @@
     {
         "NatSQL": "select department_description from departments  where  @.@ join students.*  and  department_name like \"%computer%\"",
         "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select students.first_name , students.middle_name , students.last_name , students.student_id from student_enrolment  where  @.@ join degree_programs.*  and  semesters.semester_name = \"Fall 2018\"  and  count ( student_enrolment.* )  = 2  group by student_enrolment.student_id , student_enrolment.semester_id , student_enrolment.degree_program_id",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select students.first_name , students.middle_name , students.last_name , students.student_id from student_enrolment  where  @.@ join student_enrolment.*  and  degree_programs.degree_summary_name = \"2\"  and  @.@ in student_enrolment.*  group by student_enrolment.student_id , student_enrolment.semester_id , student_enrolment.degree_program_id",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select students.first_name , students.middle_name , students.last_name from student_enrolment  where  @.@ join degree_programs.*  and  degrees.degree_type = \"BA\"",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select students.first_name , students.middle_name , students.last_name from student_enrolment  where  @.@ join student_enrolment.*  and  degree_programs.degree_summary_name = \"Bachelor of Arts\"",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select courses.Course_Name from courses  group by courses.Course_Name  order by count ( student_enrolment.* )  desc limit 1",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select degree_programs.DEGREE_SUMMARY_NAME from student_enrolment  group by degree_programs.DEGREE_SUMMARY_NAME  order by count ( student_enrolment.* )  desc limit 1",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select programs.* from programs  group by programs.PROGRAM_ID  order by count ( student_enrolment.* )  desc limit 1",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select degree_programs.Program_ID , degree_programs.Degree_Summary from degree_programs  group by degree_programs.Degree_Summary  order by count ( student_enrolment.* )  desc limit 1",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select students.student_id , students.first_name , students.middle_name , students.last_name , count ( student_enrolment.* )  from student_enrolment  group by student_enrolment.student_id  order by count ( student_enrolment.* )  desc limit 1",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select students.FIRST_NAME , students.MIDDLE_NAME , students.LAST_NAME , students.STUDENT_ID , count ( student_enrolment.* )  from student_enrolment  group by student_enrolment.STUDENT_ID  order by count ( student_enrolment.* )  desc limit 1",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select semester_name from semesters  where  except_  @.@ is students.*  group by semester_name",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select semester_name from semester  where  @.@ not in student_enrolment.*  group by semester_name  order by semester_name asc limit 1",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select courses.course_name from courses  where  @.@ join student_enrolment.*",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select courses.course_name from courses  where  @.@ join student_enrolment.*",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select courses.Course_Name from courses  group by courses.Course_Name  order by count ( student_enrolment.* )  desc limit 1",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select courses.course_name from courses  group by courses.course_name  order by count ( student_enrolment.* )  desc limit 1",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select students.last_name from addresses  where  addresses.state_province_county = \"North Carolina\"  and  students.date_first_registered != \"\"  except_  @.@ join student_enrolment.*",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select students.last_name from addresses  where  addresses.state_province_county = \"North Carolina\"  and  students.date_first_registered != \"\"  except_  @.@ join degree_programs.*",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select transcript_date , transcript_id from transcript_contents  where  count ( transcript_contents.* )  >= 2  group by transcript_contents.transcript_id , transcript_contents.student_course_id",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select transcript_date , transcript_id from transcript_contents  where  count ( transcript_contents.* )  >= 2  group by transcript_contents.transcript_id  order by transcript_date asc limit 1",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select addresses.cell_mobile_number from addresses  where  students.first_name = \"Timmothy\"  and  students.last_name = \"Ward\"",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select students.cell_mobile_number from students  where  students.first_name = \"Timmothy\"  and  students.last_name = \"Ward\"",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select students.first_name , students.middle_name , students.last_name from students  order by students.date_first_registered asc limit 1",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select students.first_name , students.middle_name , students.last_name from students  limit 1",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select students.first_name , students.middle_name , students.last_name from students  order by students.date_first_registered asc limit 1",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select students.FIRST_NAME , students.MIDDLE_NAME , students.LAST_NAME from students  order by addresses.DATE_FIRST_REGISTERED asc limit 1",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select students.first_name from addresses  where  addresses.address_id != students.permanent_address_id  except_  @.@ is addresses.*  and  addresses.address_id = students.permanent_address_id",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select students.first_name from addresses  where  @.@ != students.permanent_address_id  and  students.permanent_address_id = addresses.address_id",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select addresses.ADDRESS_ID , addresses.* from addresses  group by addresses.ADDRESS_ID  order by count ( students.* )  desc limit 1",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select addresses.ADDRESS_ID , addresses.LINE_1 , addresses.LINE_2 from addresses  group by addresses.ADDRESS_ID  order by count ( students.* )  desc limit 1",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select avg ( transcript_date )  from transcript_contents",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select avg ( transcript_contents.transcript_date )  from transcript_contents",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select transcript_date , other_details from transcripts  order by transcript_date asc limit 1",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select transcript_date , other_details from transcripts  order by transcript_date asc limit 1",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select count ( transcripts.* )  from transcripts",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select count ( transcripts.* )  from transcript_contents",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select transcript_date from transcripts  order by transcript_date desc limit 1",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select transcripts.TRANSCRIPT_DATE from transcripts  order by transcripts.TRANSCRIPT_DATE desc limit 1",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select student_enrolment.student_enrolment_id , count ( student_enrolment.* )  from student_enrolment  group by student_enrolment.student_enrolment_id  order by count ( student_enrolment.* )  desc limit 1",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select courses.Course_ID , max ( transcript_contents.Transcript_ID )  from courses  group by courses.Course_ID",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select transcript_date , transcript_id from transcript_contents  order by count ( transcript_contents.* )  asc limit 1",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select transcript_date , transcript_id from transcript_contents  order by count ( transcript_contents.* )  asc limit 1",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select semester_name from students  where  @.@ join student_enrolment.*  and  department_name = \"Master\"  and  @.@ join student_enrolment.*  and  department_name = \"Bachelor\"",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select semester_id from student_enrolment  where  @.@ join degree_programs.*  and  department_name = \"Computer Science\"  and  @.@ join student_enrolment.*  and  student_enrolment.STUDENT_ENROLMENT_TYPE = \"M\"  and  @.@ join student_enrolment.*  and  student_enrolment.STUDENT_ENROLMENT_TYPE = \"B\"",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select count (  distinct students.ADDRESS_ID )  from students",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select  distinct addresses.ADDRESS_ID from addresses  where  @.@ join students.*  and  addresses.ADDRESS_ID = students.CURRENT_ADDRESS_ID",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select students.* from students  order by students.FIRST_NAME desc , students.LAST_NAME desc",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select students.* from students  order by students.FIRST_NAME desc",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select sections.* from sections  where  @.@ join addresses.*  and  addresses.city = \"York\"",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select sections.section_description from sections  where  sections.section_name = \"h\"",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select students.first_name from addresses  where  addresses.country = \"Haiti\"  and  @.@ in students.permanent_address_id  or  students.cell_mobile_number = \"09700166582\"",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select students.first_name from addresses  where  @.@ join addresses.*  and  addresses.state_province_county = \"Haiti\"  or  students.cell_mobile_number = \"09700166582\"",
+        "db_id": "student_transcripts_tracking"
+    },
+    {
+        "NatSQL": "select cartoon.Title from cartoon  order by cartoon.Title asc",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select cartoon.Title from cartoon  order by cartoon.Title asc",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select cartoon.* from cartoon  where  cartoon.DIRECTED_BY = \"Ben Jones\"",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select cartoon.Title from cartoon  where  cartoon.Directed_by = \"Ben Jones\"",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select count ( cartoon.* )  from cartoon  where  cartoon.written_by = \"Joseph Kuhr\"",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select count ( cartoon.* )  from cartoon  where  cartoon.written_by = \"Joseph Kuhr\"",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select cartoon.Title , cartoon.Directed_By from cartoon  order by cartoon.Original_Air_Date asc",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select cartoon.Title , cartoon.Directed_By from cartoon  order by cartoon.Original_Air_Date asc",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select cartoon.Title from cartoon  where  cartoon.Directed_by = \"Ben Jones\"  or  cartoon.Directed_by = \"Brandon Vietti\"",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select cartoon.Title from cartoon  where  cartoon.Directed_by = \"Ben Jones\"  or  @.@ join cartoon.*  and  cartoon.Directed_by = \"Brandon Vietti\"",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select tv_channel.Country , count ( tv_channel.* )  from tv_channel  group by tv_channel.Country  order by count ( tv_channel.* )  desc limit 1",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select tv_channel.Country from tv_channel  group by tv_channel.Country  order by count ( tv_channel.* )  desc limit 1",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select count (  distinct tv_channel.Series_name )  , tv_channel.Content from tv_channel  group by tv_channel.Content",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select count (  distinct tv_channel.Series_Name )  from tv_channel",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select tv_channel.Content from tv_channel  where  tv_channel.Series_name = \"Sky Radio\"",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select tv_channel.content from tv_channel  where  tv_channel.Series_name = \"Sky Radio\"",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select tv_channel.Package_Option from tv_channel  where  tv_channel.Series_Name = \"Sky Radio\"",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select tv_channel.Package_Option from tv_channel  where  @.@ join tv_channel.*  and  tv_channel.Series_Name = \"Sky Radio\"",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select count ( tv_channel.* )  from tv_channel  where  tv_channel.language = \"English\"",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select count ( tv_channel.* )  from tv_channel  where  tv_channel.language = \"english\"",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select tv_channel.language , count ( tv_channel.* )  from tv_channel  group by tv_channel.language  order by count ( tv_channel.* )  asc limit 1",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select tv_channel.language , count ( tv_channel.* )  from tv_channel  group by tv_channel.language  order by count ( tv_channel.* )  asc limit 1",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select tv_channel.language , count ( tv_channel.* )  from tv_channel  group by tv_channel.language",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select tv_channel.language , count ( distinct tv_channel.* )  from tv_channel  group by tv_channel.language",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select tv_channel.Series_Name from cartoon  where  cartoon.Title = \"The Rise of the Blue Beetle!\"",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select tv_channel.Series_Name from cartoon  where  cartoon.Title = \"The Rise of the Blue Beetle\"",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select cartoon.Title from cartoon  where  @.@ join tv_series.*  and  tv_channel.Series_name = \"Sky Radio\"",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select cartoon.Title from cartoon  where  @.@ join cartoon.*  and  tv_channel.Series_name = \"Sky Radio\"  and  tv_channel.Country = \"UK\"",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select tv_series.Episode from tv_series  order by tv_series.Rating asc",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select tv_series.* from tv_series  order by tv_series.Rating asc",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select tv_series.Episode , tv_series.Rating from tv_series  order by tv_series.Rating desc limit 3",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select tv_series.Episode , tv_series.Rating from tv_series  order by tv_series.Rating desc limit 3",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select min ( tv_series.Share )  , max ( tv_series.Share )  from tv_series",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select max ( tv_series.Share )  , min ( tv_series.Share )  from tv_series",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select tv_series.Air_Date from tv_series  where  tv_series.Episode = \"A Love of a Lifetime\"",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select tv_series.air_date from tv_series  where  tv_series.episode = \"A Love of a Lifetime\"",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select  tv_series.Weekly_Rank from  tv_series  where  tv_series.Episode = \"A Love of a Lifetime\"",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select  tv_series.weekly_rank from  tv_series  where  tv_series.episode = \"A Love of a Lifetime\"",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select tv_channel.Series_name from tv_channel  where  tv_series.Episode = \"A Love of a Lifetime\"",
+        "db_id": "tvshow"
+    },
+    {
+        "NatSQL": "select tv_channel.Series_name from tv_channel  where  tv_series.Episode = \"A Love of a Lifetime\"",
+        "db_id": "tvshow"
     }
 ]

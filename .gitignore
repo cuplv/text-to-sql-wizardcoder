@@ -3,3 +3,4 @@
 .sqlite
 eval/data/database
 .DS_Store
+models/*

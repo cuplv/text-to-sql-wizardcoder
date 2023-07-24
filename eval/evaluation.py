@@ -1,9 +1,3 @@
-# Temperature = 0.5 ----> python evaluation.py --gold gold.txt --pred predict_new.txt --db ./database --table tables.json --etype all
-# Temperature = 0.77 ----> python evaluation.py --gold gold.txt --pred predict_temp7.txt --db ./database --table tables.json --etype all
-# Temperature = 0.4 ----> python evaluation.py --gold gold.txt --pred predict_temp4.txt --db ./database --table tables.json --etype all
-# Temperature = 0.0 ----> python evaluation.py --gold gold.txt --pred predict_temp0.txt --db ./database --table tables.json --etype all
-
-
 import os
 import json
 import sqlite3
@@ -508,6 +502,7 @@ def print_scores(scores, etype, include_turn_acc=True):
 
 
 def evaluate(gold, predict, db_dir, etype, kmaps, plug_value, keep_distinct, progress_bar_for_each_datapoint):
+    incorrect_log_file = open('incorrect.txt', 'w')
 
     with open(gold) as f:
         glist = []
@@ -621,6 +616,9 @@ def evaluate(gold, predict, db_dir, etype, kmaps, plug_value, keep_distinct, pro
                     turn_scores['exec'].append(1)
                 else:
                     turn_scores['exec'].append(0)
+                    incorrect_log_file.write(f"exec_score: {exec_score}\n")
+                    incorrect_log_file.write("{} pred: {}\n".format(hardness, p_str))  # write to the log file
+                    incorrect_log_file.write("{} gold: {}\n\n".format(hardness, g_str))  # write to the log file
 
             if etype in ["all", "match"]:
                 # rebuild sql for value evaluation
@@ -708,6 +706,8 @@ def evaluate(gold, predict, db_dir, etype, kmaps, plug_value, keep_distinct, pro
                         2.0 * scores[level]['partial'][type_]['acc'] * scores[level]['partial'][type_]['rec'] / (
                         scores[level]['partial'][type_]['rec'] + scores[level]['partial'][type_]['acc'])
 
+    incorrect_log_file.close()
+    #print(scores)
     print_scores(scores, etype, include_turn_acc=include_turn_acc)
 
 
@@ -921,9 +921,9 @@ def build_foreign_key_map_from_json(table):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--input', dest='input', type=str, help="the path to the input file", required=True)
-    parser.add_argument('--gold', dest='gold', type=str, help="the path to the gold queries", default="./gold_natsql2sql.txt")
+    parser.add_argument('--gold', dest='gold', type=str, help="the path to the gold queries", default="")
     parser.add_argument('--db', dest='db', type=str, help="the directory that contains all the databases and test suites", default="./data/database")
-    parser.add_argument('--table', dest='table', type=str, help="the tables.json schema file", default="./data/tables_for_natsql.json")
+    parser.add_argument('--table', dest='table', type=str, help="the tables.json schema file", default="")
     parser.add_argument('--etype', dest='etype', type=str, default='exec',
                         help="evaluation type, exec for test suite accuracy, match for the original exact set match accuracy",
                         choices=('all', 'exec', 'match'))
@@ -933,11 +933,25 @@ if __name__ == "__main__":
                         help='whether to keep distinct keyword during evaluation. default is false.')
     parser.add_argument('--progress_bar_for_each_datapoint', default=False, action='store_true',
                         help='whether to print progress bar of running test inputs for each datapoint')
+    parser.add_argument('--natsql', default=False, action='store_true',
+                        help='whether to convert natsql to sql and evaluate the converted sql')         
     args = parser.parse_args()
 
-    # Prepare output file path by appending "2sql" before ".txt"
-    output_file_path = args.input.rsplit('.', 1)[0] + '2sql.' + args.input.rsplit('.', 1)[1]
+    #Check if input file name containes "natsql"
+    if "natsql" in args.input:
+        args.natsql = True
+
+    # Prepare output file path by appending "2sql" before ".txt" if --natsql is true
+    if args.natsql:
+        output_file_path = args.input.rsplit('.', 1)[0] + '2sql.' + args.input.rsplit('.', 1)[1]
+        args.gold = "./data/gold_natsql2sql.txt"
+        args.table = "./data/tables_for_natsql2sql.json"
+    else:
+        output_file_path = args.input
+        args.gold = "./data/gold.txt"
+        args.table = "./data/tables.json"
     args.pred = output_file_path
+    
 
     # only evaluating exact match needs this argument
     kmaps = None
@@ -945,11 +959,13 @@ if __name__ == "__main__":
         assert args.table is not None, 'table argument must be non-None if exact set match is evaluated'
         kmaps = build_foreign_key_map_from_json(args.table)
 
-    ## First, run `python convert_natsql_to_sql.py` in a subprocess to convert the predicted queries to SQL
-    
-    cmd = f'python convert_natsql_to_sql.py --input_file {args.input} --output_file {output_file_path}'
-    subprocess.run(cmd, shell=True, check=True)
-    
+    if args.natsql:
+        # First, run `python convert_natsql_to_sql.py` in a subprocess to convert the predicted queries to SQL
+        cmd = f'python convert_natsql_to_sql.py --input_file {args.input} --output_file {output_file_path}'
+        subprocess.run(cmd, shell=True, check=True)
 
-    ## Second, evaluate the predicted SQL queries
+    # Print args
+    print("args: ", args)
+
+    # Second, evaluate the predicted SQL queries
     evaluate(args.gold, args.pred, args.db, args.etype, kmaps, args.plug_value, args.keep_distinct, args.progress_bar_for_each_datapoint)

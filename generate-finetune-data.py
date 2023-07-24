@@ -32,7 +32,7 @@ def process_dataset(input_dataset_path, output_dataset_path, mode, sql_type, use
                 "text": text,
             })
         else: # validation mode
-            prompt = f"Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.\n\n### Instruction:\n\nConvert text to {sql_type}: " + input_sequence + "\n\n### Response:\n\n"
+            prompt = input_sequence
             ground_truth = output_sequence
             output_dataset.append({
                 "db_id": db_id,
