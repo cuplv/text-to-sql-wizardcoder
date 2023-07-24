@@ -494,3 +494,19 @@ SELECT name,        tonnage FROM ship ORDER BY name DESC
 SELECT name, date, RESULT FROM battle
 SELECT MAX (death.killed), MIN (death.killed), death.id FROM death JOIN ship ON death.caused_by_ship_id = ship.id GROUP BY death.id
 SELECT AVG (injured), id FROM death GROUP BY id
+SELECT * FROM death JOIN ship ON death.caused_by_ship_id = ship.id WHERE ship.tonnage = 't'
+SELECT name,        RESULT FROM battle WHERE bulgarian_commander!= 'Boril'
+SELECT DISTINCT battle.id,                 battle.name FROM death JOIN ship ON death.caused_by_ship_id = ship.id JOIN battle ON ship.lost_in_battle = battle.id WHERE ship.ship_type = 'Brig'   AND battle.result = 'loss'
+SELECT battle.id,        battle.name FROM death JOIN ship ON death.caused_by_ship_id = ship.id JOIN battle ON ship.lost_in_battle = battle.id GROUP BY battle.id HAVING SUM (death.killed) + SUM (death.injured) > 10
+SELECT death.caused_by_ship_id,        ship.name FROM death JOIN ship ON death.caused_by_ship_id = ship.id GROUP BY death.caused_by_ship_id ORDER BY SUM (death.injured) DESC LIMIT 1
+SELECT DISTINCT battle.name FROM battle JOIN ship ON battle.id = ship.lost_in_battle WHERE bulgarian_commander = 'Kaloyan'   AND latin_commander = 'Baldwin I'
+SELECT COUNT (DISTINCT RESULT) FROM battle
+SELECT COUNT (*) FROM battle WHERE id NOT IN     (SELECT lost_in_battle      FROM ship      WHERE tonnage = 225 )
+SELECT battle.name,        battle.date FROM ship JOIN battle ON ship.lost_in_battle = battle.id WHERE ship.name = 'Lettice' EXCEPT SELECT battle.name,        battle.date FROM ship JOIN battle ON ship.lost_in_battle = battle.id WHERE ship.name = 'HMS Atalanta'
+SELECT name,        RESULT,        bulgarian_commander FROM battle WHERE id NOT IN     (SELECT lost_in_battle      FROM ship      WHERE LOCATION = 'English Channel' )
+SELECT note FROM death WHERE note like '%East%'
+SELECT line_1,        line_2 FROM addresses
+SELECT line_1,        line_2 FROM addresses
+SELECT COUNT (*) FROM courses
+SELECT COUNT (*) FROM courses
+SELECT course_description FROM courses WHERE course_name = 'Math'

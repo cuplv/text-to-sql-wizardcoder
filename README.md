@@ -41,7 +41,7 @@ Generate training data for a `sql` type model without skeleton:
 python generate_finetuning_data.py --mode train --sql_type sql
 ```
 
-## Step 2: Convert Hugging Face Model to GGML Format
+## Convert Hugging Face Model to GGML Format
 
 The `convert-hf-to-ggml.py` script allows you to convert a model from Hugging Face to GGML format.
 
@@ -53,7 +53,7 @@ python convert-hf-to-ggml.py [HF_MODEL_NAME]
 
 Replace `[HF_MODEL_NAME]` with the name of the Hugging Face model you want to convert.
 
-## Step 3: Quantize the Model
+## Quantize WizardCoder
 
 You can use the `starcoder-quantize` script to quantize the model. 
 
@@ -65,9 +65,13 @@ Here is an example:
 
 Replace `[HF_MODEL_NAME]` with the name of the GGML model you want to quantize.
 
-## Step 4: Generate Predictions
+## Generate Predictions with HuggingFace Space API
 
-Use the `generate_predict_eval.ipynb` notebook to generate predictions from your model using the Hugging Face space API.
+Use the `gen_predictions_hf_spaces.ipynb` notebook to generate predictions from your model using the Hugging Face space API.
+
+## Generate Predictions with a REST API
+
+Use the `generate_predict_eval.ipynb` notebook to generate predictions from your model using a REST API.
 
 ## Step 5: Evaluate the Predictions
 
