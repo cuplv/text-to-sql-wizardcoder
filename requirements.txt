@@ -1,0 +1,7 @@
+transformers
+datasets
+tqdm
+torch
+numpy
+scipy
+gradio_client

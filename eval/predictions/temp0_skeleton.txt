@@ -418,3 +418,80 @@ SELECT AVG (num_of_staff) FROM museum WHERE open_year < 2009
 SELECT open_year,        num_of_staff FROM museum WHERE name = 'Plaza Museum'
 SELECT name FROM museum WHERE num_of_staff >     (SELECT MIN (num_of_staff)      FROM museum      WHERE open_year > 2010 )
 SELECT visitor.id,        visitor.name,        visitor.age FROM visitor JOIN visit ON visitor.id = visit.visitor_id GROUP BY visitor.id HAVING COUNT (*) > 1
+SELECT visitor.id,        visitor.name,        visitor.level_of_membership FROM visitor JOIN visit ON visitor.id = visit.visitor_id ORDER BY visit.total_spent DESC LIMIT 1
+SELECT museum.museum_id,        museum.name FROM museum JOIN visit ON museum.museum_id = visit.museum_id GROUP BY visit.museum_id ORDER BY COUNT (*) DESC LIMIT 1
+SELECT name FROM museum WHERE museum_id NOT IN     (SELECT museum_id      FROM visit)
+SELECT visitor.name,        visitor.age FROM visitor JOIN visit ON visitor.id = visit.visitor_id GROUP BY visit.visitor_id ORDER BY COUNT (*) DESC LIMIT 1
+SELECT AVG (num_of_ticket), MAX (num_of_ticket) FROM visit
+SELECT SUM (visit.total_spent) FROM visitor JOIN visit ON visitor.id = visit.visitor_id WHERE visitor.level_of_membership = '1'
+SELECT visitor.name FROM visitor JOIN visit ON visitor.id = visit.visitor_id JOIN museum ON visit.museum_id = museum.museum_id WHERE museum.open_year < 2009 INTERSECT   SELECT visitor.name   FROM visitor   JOIN visit ON visitor.id = visit.visitor_id   JOIN museum ON visit.museum_id = museum.museum_id WHERE museum.open_year > 2011
+SELECT COUNT (*) FROM visitor WHERE id NOT IN     (SELECT visitor_id      FROM visit      WHERE museum_id IN          (SELECT museum_id           FROM museum           WHERE open_year > 2010 ) )
+SELECT COUNT (*) FROM museum WHERE open_year > 2013   OR open_year < 2008
+SELECT COUNT (*) FROM players
+SELECT COUNT (*) FROM players
+SELECT COUNT (*) FROM matches
+###
+SELECT first_name,        birth_date FROM players WHERE country_code = 'USA'
+SELECT first_name,        birth_date FROM players WHERE country_code = 'USA'
+SELECT AVG (loser_age) FROM matches UNION SELECT AVG (winner_age) FROM matches
+SELECT AVG (loser_age) FROM matches UNION SELECT AVG (winner_age) FROM matches
+SELECT AVG (winner_rank) FROM rankings JOIN matches ON rankings.tours = matches.tourney_id WHERE rankings.ranking = 'Winner'   AND matches.year = 2010   OR matches.year = 2009
+SELECT AVG (winner_rank) FROM rankings JOIN matches ON rankings.tours = matches.tourney_id WHERE matches.winner_name!= 'NA'   AND rankings.ranking_date >= '2015-08-31'   AND rankings.ranking_date <= '2016-09-04'
+SELECT MAX (loser_rank) FROM matches WHERE loser_rank < 70
+SELECT loser_rank FROM matches GROUP BY loser_rank ORDER BY COUNT (*) DESC LIMIT 1
+SELECT COUNT (DISTINCT country_code) FROM players
+SELECT COUNT (DISTINCT country_code) FROM players
+SELECT COUNT (DISTINCT loser_name) FROM matches WHERE loser_rank > 70
+SELECT COUNT (DISTINCT loser_name) FROM matches JOIN players ON matches.loser_id = players.player_id
+SELECT tourney_name FROM matches GROUP BY tourney_name HAVING COUNT (*) > 10
+SELECT tourney_name FROM matches GROUP BY tourney_name HAVING COUNT (*) > 10
+SELECT players.first_name,        players.last_name FROM players JOIN rankings ON players.player_id = rankings.player_id WHERE rankings.tours = '2013' INTERSECT   SELECT players.first_name,          players.last_name   FROM players   JOIN rankings ON players.player_id = rankings.player_id WHERE rankings.tours = '2016'
+SELECT players.first_name,        players.last_name FROM players JOIN rankings ON players.player_id = rankings.player_id WHERE rankings.tours = '2013' INTERSECT   SELECT players.first_name,          players.last_name   FROM players   JOIN rankings ON players.player_id = rankings.player_id WHERE rankings.tours = '2016'
+SELECT COUNT (*) FROM matches WHERE YEAR = 2013   OR YEAR = 2016
+SELECT COUNT (*) FROM matches WHERE YEAR = '2013'   OR YEAR = '2016'
+SELECT players.country_code,        players.first_name FROM players JOIN rankings ON players.player_id = rankings.player_id JOIN matches ON rankings.tourney_id = matches.tourney_id WHERE rankings.ranking = '1'   AND matches.tourney_name = 'WTA Championship' INTERSECT   SELECT players.country_code,          players.first_name   FROM players   JOIN rankings ON players.player_id = rankings.player_id   JOIN matches ON rankings.tourney_id = matches.tourney_id WHERE rankings.ranking = '1'   AND matches.tourney_name = 'Australian Open'
+SELECT players.first_name,        players.country_code FROM players JOIN rankings ON players.player_id = rankings.player_id WHERE rankings.tours = 'WTA Championship' INTERSECT   SELECT players.first_name,          players.country_code   FROM players   JOIN rankings ON players.player_id = rankings.player_id WHERE rankings.tours = 'Australian Open'
+SELECT first_name,        country_code FROM players ORDER BY birth_date DESC LIMIT 1
+SELECT first_name,        country_code FROM players ORDER BY birth_date DESC LIMIT 1
+SELECT first_name,        last_name FROM players ORDER BY birth_date ASC
+SELECT first_name,        last_name FROM players ORDER BY birth_date ASC
+SELECT first_name,        last_name FROM players WHERE hand = 'L' ORDER BY birth_date ASC
+SELECT first_name,        last_name FROM players WHERE hand = 'L' ORDER BY birth_date ASC
+SELECT players.first_name,        players.country_code FROM players JOIN rankings ON players.player_id = rankings.player_id GROUP BY players.player_id ORDER BY COUNT (*) DESC LIMIT 1
+SELECT players.first_name,        players.country_code FROM players JOIN rankings ON players.player_id = rankings.player_id JOIN matches ON rankings.tours = matches.tourney_id GROUP BY players.player_id ORDER BY COUNT (*) DESC LIMIT 1
+SELECT YEAR FROM matches GROUP BY YEAR ORDER BY COUNT (*) DESC LIMIT 1
+SELECT YEAR FROM matches GROUP BY YEAR ORDER BY COUNT (*) DESC LIMIT 1
+SELECT players.first_name,        players.last_name,        rankings.ranking_points FROM rankings JOIN players ON rankings.player_id = players.player_id GROUP BY rankings.player_id ORDER BY COUNT (*) DESC LIMIT 1
+SELECT players.first_name,        players.last_name,        rankings.ranking_points FROM rankings JOIN players ON rankings.player_id = players.player_id GROUP BY rankings.player_id ORDER BY COUNT (*) DESC LIMIT 1
+SELECT players.first_name,        players.last_name FROM players JOIN rankings ON players.player_id = rankings.player_id JOIN matches ON rankings.tours = matches.tourney_id WHERE matches.tourney_name = 'Australian Open' ORDER BY rankings.ranking_points DESC LIMIT 1
+SELECT players.first_name,        players.last_name FROM players JOIN rankings ON players.player_id = rankings.player_id JOIN matches ON rankings.tourney_id = matches.tourney_id WHERE matches.tourney_name = 'Australian Open' GROUP BY rankings.player_id ORDER BY SUM (rankings.ranking_points) DESC LIMIT 1
+SELECT players.first_name,        players.last_name,        players.country_code,        matches.minutes FROM players JOIN matches ON players.player_id = matches.loser_id OR players.player_id = matches.winner_id ORDER BY matches.minutes DESC LIMIT 1
+SELECT players.first_name,        players.last_name,        players.country_code,        matches.tourney_name FROM players JOIN matches ON players.player_id = matches.winner_id OR players.player_id = matches.loser_id ORDER BY minutes DESC LIMIT 1
+SELECT AVG (ranking), first_name FROM players JOIN rankings ON players.player_id = rankings.player_id GROUP BY players.first_name
+SELECT players.first_name,        AVG (rankings.ranking) FROM rankings JOIN players ON rankings.player_id = players.player_id GROUP BY players.first_name
+SELECT players.first_name,        players.last_name,        SUM (rankings.ranking_points) FROM rankings JOIN players ON rankings.player_id = players.player_id GROUP BY rankings.player_id ORDER BY SUM (rankings.ranking_points) DESC LIMIT 10
+SELECT players.first_name,        SUM (rankings.ranking_points) FROM rankings JOIN players ON rankings.player_id = players.player_id GROUP BY rankings.player_id ORDER BY SUM (rankings.ranking_points) DESC LIMIT 10
+SELECT country_code,        COUNT (*) FROM players GROUP BY country_code
+SELECT country_code,        COUNT (*) FROM players GROUP BY country_code
+SELECT country_code FROM players GROUP BY country_code ORDER BY COUNT (*) DESC LIMIT 1
+SELECT country_code FROM players GROUP BY country_code ORDER BY COUNT (*) DESC LIMIT 1
+SELECT country_code FROM   (SELECT country_code,           COUNT (*)    FROM players    GROUP BY country_code    HAVING COUNT (*) > 50) WHERE country_code!= 'N/A'
+SELECT country_code FROM   (SELECT country_code,           COUNT (*)    FROM players    GROUP BY country_code    HAVING COUNT (*) > 50) WHERE country_code!= 'N/A'
+SELECT ranking_date,        COUNT (*) FROM rankings GROUP BY ranking_date
+SELECT ranking_date,        COUNT (*) FROM rankings GROUP BY ranking_date
+SELECT YEAR,        COUNT (*) FROM matches GROUP BY YEAR
+SELECT YEAR,        COUNT (*) FROM matches GROUP BY YEAR
+###
+###
+SELECT COUNT (DISTINCT matches.winner_id) FROM matches JOIN rankings ON matches.tourney_id = rankings.tours WHERE rankings.ranking = 'W' INTERSECT   SELECT COUNT (DISTINCT matches.winner_id)   FROM matches   JOIN players ON matches.winner_id = players.player_id WHERE players.hand = 'L'
+SELECT COUNT (*) FROM   (SELECT DISTINCT matches.winner_id    FROM matches    JOIN rankings ON matches.tourney_id = rankings.tours    WHERE rankings.ranking = 'W'      AND matches.tourney_level = 'A' ) WHERE players.hand = 'L'
+SELECT players.first_name,        players.country_code,        players.birth_date FROM players JOIN rankings ON players.player_id = rankings.player_id WHERE rankings.ranking_points =     (SELECT MAX (ranking_points)      FROM rankings)
+SELECT players.first_name,        players.country_code,        players.birth_date FROM players JOIN rankings ON players.player_id = rankings.player_id WHERE rankings.ranking_points =     (SELECT MAX (ranking_points)      FROM rankings)
+SELECT winner_hand,        COUNT (*) FROM matches GROUP BY winner_hand
+SELECT winner_hand,        COUNT (*) FROM matches GROUP BY winner_hand
+SELECT COUNT (*) FROM ship JOIN death ON ship.id = death.caused_by_ship_id WHERE ship.disposition_of_ship = 'Captured'
+SELECT name,        tonnage FROM ship ORDER BY name DESC
+SELECT name, date, RESULT FROM battle
+SELECT MAX (death.killed), MIN (death.killed), death.note FROM death JOIN ship ON death.caused_by_ship_id = ship.id GROUP BY death.note
+SELECT AVG (injured) FROM death
+SELECT * FROM death JOIN ship ON death.caused_by_ship_id = ship.id WHERE ship.tonnage = 't'
