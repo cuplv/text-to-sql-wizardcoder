@@ -511,3 +511,7 @@ SELECT COUNT (*) FROM courses
 SELECT COUNT (*) FROM courses
 SELECT course_description FROM courses WHERE course_name = 'Math'
 SELECT course_description FROM courses WHERE course_name = 'Mathematics'
+SELECT zip_postcode FROM addresses WHERE city = 'Port Chelsea'
+SELECT zip_postcode FROM addresses WHERE line_1 = 'Port Chelsea'   AND city = 'London'   AND country = 'UK'
+SELECT departments.department_name,        degree_programs.degree_program_id FROM departments JOIN degree_programs ON departments.department_id = degree_programs.department_id GROUP BY degree_programs.degree_program_id ORDER BY COUNT (*) DESC LIMIT 1
+SELECT departments.department_name,        degree_programs.degree_program_id FROM degree_programs JOIN departments ON degree_programs.department_id = departments.department_id GROUP BY degree_programs.degree_program_id ORDER BY COUNT (*) DESC LIMIT 1

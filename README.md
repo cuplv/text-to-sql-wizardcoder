@@ -15,19 +15,13 @@ This script allows you to select the mode of data generation (`train`, `validati
 python generate_finetuning_data.py --mode [MODE] --sql_type [SQL_TYPE] --skeleton
 ```
 
-Replace `[MODE]` with one of `train`, `validation`, or `both`. This parameter specifies the mode of data generation. By default, the mode is set to `both`.
-
-Replace `[SQL_TYPE]` with either `natsql` or `sql`. This parameter specifies the SQL type used. 
-
-Include `--skeleton` if you wish to use SQL skeleton in the output sequence.
-
-### Options
+#### Options
 
 - `--mode [MODE]`: Specifies the mode of data generation. Replace `[MODE]` with one of `train`, `validation`, or `both`. By default, the mode is set to `both`.
 - `--sql_type [SQL_TYPE]`: Specifies the SQL type used. Replace `[SQL_TYPE]` with either `natsql` or `sql`.
 - `--skeleton`: Use SQL skeleton in the output sequence.
 
-### Examples
+#### Examples
 
 Generate training and validation data for a `natsql` type model with skeleton:
 
