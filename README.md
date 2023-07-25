@@ -6,6 +6,13 @@ Note: You might have to wake the Space up if it is sleeping, should take less th
 ### Spider Skeleton WizardCoder - [test-suite-sql-eval](https://github.com/taoyds/test-suite-sql-eval) results
 With temperature set to 0.0, top_p set to 0.9, and top_k set to 0, the model achieves **61% execution accuracy** on the Spider test suite.
 
+| Difficulty | Count | Execution Accuracy |
+| -----------| ------| ------------------ |
+| Easy       | 248   | 0.742             |
+| Medium     | 446   | 0.666             |
+| Hard       | 174   | 0.517             |
+| Extra      | 166   | 0.361             |
+| All        | 1034  | 0.610             |
 ```
                      easy                 medium               hard                 extra                all                 
 count                248                  446                  174                  166                  1034                
