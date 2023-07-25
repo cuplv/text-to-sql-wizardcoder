@@ -5,35 +5,44 @@ This project aims to use off-the-shelf large language models for text-to-SQL pro
 Note: You might have to wake the Space up if it is sleeping, should take less than 10 minutes.
 ### Spider Skeleton WizardCoder - [test-suite-sql-eval](https://github.com/taoyds/test-suite-sql-eval) results
 With temperature set to 0.0, top_p set to 0.9, and top_k set to 0, the model achieves **61% execution accuracy** on the Spider test suite.
-
-| Difficulty | Count | Execution Accuracy |
-| -----------| ------| ------------------ |
-| Easy       | 248   | 0.742             |
-| Medium     | 446   | 0.666             |
-| Hard       | 174   | 0.517             |
-| Extra      | 166   | 0.361             |
-| All        | 1034  | 0.610             |
+![Accuracy Figure]()
 ```
                      easy                 medium               hard                 extra                all                 
 count                248                  446                  174                  166                  1034                
 =====================   EXECUTION ACCURACY     =====================
-execution            0.742                0.666                0.517                0.361                0.610  
+execution            0.742                0.666                0.517                0.361                0.610               
+```
+```
+                     easy                 medium               hard                 extra                all                 
+count                248                  446                  174                  166                  1034                
+====================== EXACT MATCHING ACCURACY =====================
+exact match          0.690                0.619                0.454                0.367                0.568   
 ```
 ## Prerequisites
 
-- Ensure that you have Python installed on your system.
-- Install the required Python packages listed in the `requirements.txt` file, if not already done.
+`pip install -r requirements.txt`
 
+requirements.txt --->
+```
+transformers
+datasets
+tqdm
+torch
+numpy
+scipy
+gradio_client
+python-dotenv
+```
 ## Generate Training and Validation Data
 
-The `generate_finetuning_data.py` script is a Python script that generates fine-tuning data for the model. 
+The `generate-finetune-data.py` script is a Python script that generates fine-tuning data for the model. 
 
 This script allows you to select the mode of data generation (`train`, `validation`, `both`), the SQL type (`natsql`, `sql`), and whether to use the SQL skeleton in the output sequence. 
 
 ### Usage
 
 ```shell
-python generate_finetuning_data.py --mode [MODE] --sql_type [SQL_TYPE] --skeleton
+python generate-finetune-data.py --mode [MODE] --sql_type [SQL_TYPE] --skeleton
 ```
 
 #### Options
@@ -47,13 +56,13 @@ python generate_finetuning_data.py --mode [MODE] --sql_type [SQL_TYPE] --skeleto
 Generate training and validation data for a `natsql` type model with skeleton:
 
 ```shell
-python generate_finetuning_data.py --mode both --sql_type natsql --skeleton
+python generate-finetune-data.py --mode both --sql_type natsql --skeleton
 ```
 
 Generate training data for a `sql` type model without skeleton:
 
 ```shell
-python generate_finetuning_data.py --mode train --sql_type sql
+python generate-finetune-data.py --mode train --sql_type sql
 ```
 
 ## Convert Hugging Face Model to GGML Format
@@ -86,7 +95,7 @@ Use the `gen_predictions_hf_spaces.ipynb` notebook to generate predictions from 
 
 ## Generate Predictions with a REST API
 
-Use the `generate_predict_eval.ipynb` notebook to generate predictions from a model using a local Ngrok REST API.
+Use the `gen_predictions_koboldcpp.ipynb` notebook to generate predictions from a model using a local Ngrok REST API.
 
 ## Evaluate the Predictions
 
