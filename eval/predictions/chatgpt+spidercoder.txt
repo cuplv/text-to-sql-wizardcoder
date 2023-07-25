@@ -1,0 +1,35 @@
+SELECT COUNT(*) FROM singer
+SELECT COUNT(*) FROM singer
+SELECT name, country, age FROM singer ORDER BY age DESC
+The given SQL query is already matching the given question correctly. No correction is needed
+The SQL query is correct and it aligns with the given question. No correction is needed
+SELECT AVG(age), MIN(age), MAX(age) FROM singer WHERE country = 'France'
+SELECT song_name, song_release_year  FROM singer  ORDER BY age ASC  LIMIT 1
+SELECT song_name, song_release_year  FROM singer  WHERE singer_id = (SELECT singer_id FROM singer WHERE age = (SELECT MIN(age) FROM singer))
+SELECT DISTINCT country FROM singer WHERE age > 20
+The SQL query is already correctly aligned with the given question "What are the different countries with singers above age 20?" and the table relationships are properly defined in the query as well. No correction is necessary
+SELECT country, COUNT(*) AS number_of_singers  FROM singer  GROUP BY country
+SELECT country, COUNT(singer_id) FROM singer GROUP BY country
+SELECT song_name  FROM singer  WHERE singer.age > (SELECT AVG(age) FROM singer)
+SELECT song_name  FROM singer  WHERE singer_id IN (SELECT singer_id                      FROM singer                      WHERE age > (SELECT AVG(age)                                   FROM singer))
+SELECT location, name FROM stadium WHERE capacity BETWEEN 5000 AND 10000;
+SELECT location, name  FROM stadium  WHERE capacity BETWEEN 5000 AND 10000;
+SELECT MAX(capacity), AVG(capacity) AS average FROM stadium
+SELECT AVG(capacity), MAX(capacity) FROM stadium
+SELECT name, capacity FROM stadium ORDER BY average DESC LIMIT 1
+SELECT name, capacity  FROM stadium  ORDER BY average DESC  LIMIT 1
+SELECT COUNT (*) FROM concert WHERE year = 2014 OR year = 2015
+SELECT COUNT(*) FROM concert WHERE year IN ('2014', '2015')
+SELECT stadium.name, COUNT(concert.concert_id)  FROM stadium  JOIN concert ON concert.stadium_id = stadium.stadium_id  GROUP BY stadium.name
+The SQL query provided is already correct and aligned with the question
+The SQL query aligns with the given question and there is no need for any corrections
+The SQL query is correct and matches the given question. No corrections are needed
+SELECT year FROM concert GROUP BY year ORDER BY COUNT(*) DESC LIMIT 1
+The SQL query provided is correct and it aligns with the given question. No correction is needed
+SELECT name FROM stadium WHERE stadium_id NOT IN (SELECT stadium_id FROM concert)
+SELECT name FROM stadium WHERE stadium_id NOT IN (SELECT stadium_id FROM concert)
+SELECT DISTINCT s1.country  FROM singer s1 JOIN singer s2 ON s1.country = s2.country WHERE s1.age > 40 AND s2.age < 30
+SELECT name  FROM stadium  WHERE stadium_id NOT IN (     SELECT stadium_id      FROM concert      WHERE year = 2014 )
+SELECT name FROM stadium WHERE stadium_id NOT IN  (SELECT stadium_id FROM concert WHERE year = 2014)
+SELECT concert.concert_name, concert.theme, COUNT(singer_in_concert.singer_id) AS num_singers FROM concert JOIN singer_in_concert ON concert.concert_id = singer_in_concert.concert_id GROUP BY concert.concert_id, concert.concert_name, concert.theme
+SELECT concert.concert_name, concert.theme, COUNT(singer_in_concert.singer_id) as number_of_singers  FROM concert  JOIN singer_in_concert ON concert.concert_id = singer_in_concert.concert_id  GROUP BY concert.concert_name, concert.theme

@@ -5,3 +5,4 @@ torch
 numpy
 scipy
 gradio_client
+python-dotenv

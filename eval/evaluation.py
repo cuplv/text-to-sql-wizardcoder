@@ -616,7 +616,8 @@ def evaluate(gold, predict, db_dir, etype, kmaps, plug_value, keep_distinct, pro
                     turn_scores['exec'].append(1)
                 else:
                     turn_scores['exec'].append(0)
-                    incorrect_log_file.write(f"exec_score: {exec_score}\n")
+                    incorrect_log_file.write(f"index: {len(turn_scores['exec'])}\n")
+                    incorrect_log_file.write(f"db_id: {db_name}\n")  # write to the log file
                     incorrect_log_file.write("{} pred: {}\n".format(hardness, p_str))  # write to the log file
                     incorrect_log_file.write("{} gold: {}\n\n".format(hardness, g_str))  # write to the log file
 
