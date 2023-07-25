@@ -1,8 +1,20 @@
-# Demo
-[![Open in Spaces](https://huggingface.co/datasets/huggingface/badges/raw/main/open-in-hf-spaces-lg.svg)](https://huggingface.co/spaces/richardr1126/sql-skeleton-wizardcoder-demo)
+[![Open in HF Spaces](https://huggingface.co/datasets/huggingface/badges/raw/main/open-in-hf-spaces-lg.svg)](https://huggingface.co/spaces/richardr1126/sql-skeleton-wizardcoder-demo)
+# Introduction
+This project aims to use off-the-shelf large language models for text-to-SQL program sysnthesis tasks. After experimenting with various models, fine-tuning hyperparameters, and training datasets an optimal solution was identified by fine-tuning the [WizardLM/WizardCoder-15B-V1.0](https://huggingface.co/WizardLM/WizardCoder-15B-V1.0) base model using QLoRA techniques on [this](https://huggingface.co/datasets/richardr1126/spider-context-validation) customized Spider training dataset. The resultant model, [richardr1126/spider-skeleton-wizard-coder-merged](richardr1126/spider-skeleton-wizard-coder-merged), demonstrates **61% execution accuracy** when evaluated. The project utilizes a custom validation dataset that incorporates database context into the question. A live demonstration of the model is available on Hugging Face Space, facilitated by the Gradio library for user-friendly GUI.
 
+Note: You might have to wake the Space up if it is sleeping, should take less than 10 minutes.
+### Spider Skeleton WizardCoder - [test-suite-sql-eval](https://github.com/taoyds/test-suite-sql-eval) results
+- With temperature set to 0.0, top_p set to 0.9, and top_k set to 0, the model achieves **61% execution accuracy** on the Spider test suite.
+
+```
+                     easy                 medium               hard                 extra                all                 
+count                248                  446                  174                  166                  1034                
+=====================   EXECUTION ACCURACY     =====================
+execution            0.742                0.666                0.517                0.361                0.610  
+```
 ## Prerequisites
 
+- Ensure that you have Python installed on your system.
 - Install the required Python packages listed in the `requirements.txt` file, if not already done.
 
 ## Generate Training and Validation Data
@@ -75,14 +87,9 @@ The `evaluation.py` script is used to evaluate the quality of the predictions ge
 
 ```shell
 cd eval
-python evaluation.py --input [NatSQL skeleton + predicted NatSQL file]
+python evaluation.py --plug_value --input predictions/temp0_skeleton_best.txt
 ```
-
-Replace `[NatSQL skeleton + predicted NatSQL file]` with the path to the input file containing the NatSQL skeleton and the predicted NatSQL. 
-
 ### Command-line options for `evaluation.py`
-
-Here is an overview of the command-line arguments you can use with `evaluation.py`:
 
 - `--input`: Specifies the path to the input file that contains the predicted queries. This argument is required.
   
@@ -104,8 +111,4 @@ Here is an overview of the command-line arguments you can use with `evaluation.p
 
 Based on the input file name, if it contains "natsql", the `--natsql` flag will be automatically set to True. Also, if `--natsql` is true, the output file path is prepared by appending "2sql" before ".txt", and gold and table paths are adjusted accordingly.
 
-In the case of evaluating exact match accuracy (`etype` 'all' or 'match'), the foreign key map is built from the provided table JSON file. The script asserts that the table argument must not be None if exact set match is evaluated.
-
 If `--natsql` is true, the predicted queries are first converted to SQL by running the `convert_natsql_to_sql.py` script in a subprocess.
-
-Finally, the script calls the `evaluate` function to evaluate the predicted SQL queries.
