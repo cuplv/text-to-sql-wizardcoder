@@ -41,7 +41,6 @@ Unpack the datasets somewhere outside this project and put `train_spider.json`, 
 Run `check_and_preprocess.sh` to check and preprocess the dataset. It will generate (1) the `train_spider.json` and `dev.json` with NatSQL<sub>G</sub> ; (2) preprocessed `tables.json` and `tables_for_natsql.json` ; under  `./NatSQLv1_6/` directory. 
 
 
-
 ### Step 2: Convert NatSQL to SQL
 
 Run `natsql2sql.sh [train/dev] [natsql/natsqlg]` to convert the NatSQL to SQL.
