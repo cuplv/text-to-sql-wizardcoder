@@ -8,7 +8,9 @@ With temperature set to 0.0, top_p set to 0.9, and top_k set to 0, the model ach
 
 <img src="https://raw.githubusercontent.com/cuplv/text-to-sql-wizardcoder/main/eval/plots/spiderwizard-plus-chatgpt.svg" height="300">
 <img src="https://raw.githubusercontent.com/cuplv/text-to-sql-wizardcoder/main/eval/plots/spiderwizard-vs-chatgpt.svg" height="300">
+<br><br>
 
+Note: ChatGPT was evaluated with the default hyperparameters and with the system message `You are a sophisticated AI assistant capable of converting text into SQL queries. You can only output SQL, don't add any other text.`
 ## Prerequisites
 
 `pip install -r requirements.txt`
