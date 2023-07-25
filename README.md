@@ -5,19 +5,10 @@ This project aims to use off-the-shelf large language models for text-to-SQL pro
 Note: You might have to wake the Space up if it is sleeping, should take less than 10 minutes.
 ### Spider Skeleton WizardCoder - [test-suite-sql-eval](https://github.com/taoyds/test-suite-sql-eval) results
 With temperature set to 0.0, top_p set to 0.9, and top_k set to 0, the model achieves **61% execution accuracy** on the Spider test suite.
-![Accuracy Figure]()
-```
-                     easy                 medium               hard                 extra                all                 
-count                248                  446                  174                  166                  1034                
-=====================   EXECUTION ACCURACY     =====================
-execution            0.742                0.666                0.517                0.361                0.610               
-```
-```
-                     easy                 medium               hard                 extra                all                 
-count                248                  446                  174                  166                  1034                
-====================== EXACT MATCHING ACCURACY =====================
-exact match          0.690                0.619                0.454                0.367                0.568   
-```
+
+<img src="https://raw.githubusercontent.com/cuplv/text-to-sql-wizardcoder/main/eval/plots/spiderwizard-plus-chatgpt.svg" height="300">
+<img src="https://raw.githubusercontent.com/cuplv/text-to-sql-wizardcoder/main/eval/plots/spiderwizard-vs-chatgpt.svg" height="300">
+
 ## Prerequisites
 
 `pip install -r requirements.txt`
