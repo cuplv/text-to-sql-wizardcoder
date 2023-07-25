@@ -3,7 +3,6 @@
 
 ## Prerequisites
 
-- Ensure that you have Python installed on your system.
 - Install the required Python packages listed in the `requirements.txt` file, if not already done.
 
 ## Generate Training and Validation Data
