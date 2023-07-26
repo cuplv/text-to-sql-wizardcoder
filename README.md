@@ -28,7 +28,7 @@ This dataset was used to finetune this model.
 
 ## Evaluating the model on [Spider](https://arxiv.org/abs/1809.08887) validation set
 
-## Installing Dependencies
+### Installing Dependencies
 
 To install the necessary dependencies, you should create a new Conda environment and install the required packages using the `requirements.txt` file.:
 #### With Conda
