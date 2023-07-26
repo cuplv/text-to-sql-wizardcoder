@@ -27,7 +27,6 @@ This dataset was used to finetune this model.
 - Using `koboldcpp` will create a local REST API that you can use to generate predictions. If you want to use a sepeerate computer to generate predictions, you can use [Ngrok](https://ngrok.com/) to create a public URL for your local REST API.
 
 ## Evaluating the model on [Spider](https://arxiv.org/abs/1809.08887) validation set
-Absolutely, here is the pure Markdown code you requested:
 
 ## Installing Dependencies
 
