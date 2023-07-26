@@ -3,20 +3,48 @@
 This project aims to use off-the-shelf large language models for text-to-SQL program sysnthesis tasks. After experimenting with various models, fine-tuning hyperparameters, and training datasets an optimal solution was identified by fine-tuning the [WizardLM/WizardCoder-15B-V1.0](https://huggingface.co/WizardLM/WizardCoder-15B-V1.0) base model using QLoRA techniques on [this](https://huggingface.co/datasets/richardr1126/spider-context-validation) customized Spider training dataset. The resultant model, [richardr1126/spider-skeleton-wizard-coder-merged](richardr1126/spider-skeleton-wizard-coder-merged), demonstrates **61% execution accuracy** when evaluated. The project utilizes a custom validation dataset that incorporates database context into the question. A live demonstration of the model is available on Hugging Face Space, facilitated by the Gradio library for user-friendly GUI.
 
 Note: You might have to wake the Space up if it is sleeping, should take less than 10 minutes.
-### Spider Skeleton WizardCoder - [test-suite-sql-eval](https://github.com/taoyds/test-suite-sql-eval) results
-With temperature set to 0.0, top_p set to 0.9, and top_k set to 0, the model achieves **61% execution accuracy** on the Spider test suite.
+### Spider Skeleton WizardCoder - [test-suite-sql-eval](https://github.com/taoyds/test-suite-sql-eval) Results
+With temperature set to 0.0, top_p set to 0.9, and top_k set to 0, the model achieves **61% execution accuracy** on the Spider dev set.
 
 <img src="https://raw.githubusercontent.com/cuplv/text-to-sql-wizardcoder/main/eval/plots/spiderwizard-plus-chatgpt.svg" height="300">
 <img src="https://raw.githubusercontent.com/cuplv/text-to-sql-wizardcoder/main/eval/plots/spiderwizard-vs-chatgpt.svg" height="300">
-<br><br>
 
-Note: ChatGPT was evaluated with the default hyperparameters and with the system message `You are a sophisticated AI assistant capable of converting text into SQL queries. You can only output SQL, don't add any other text.`
-## Prerequisites
+Note:
+- ChatGPT was evaluated with the default hyperparameters and with the system message `You are a sophisticated AI assistant capable of converting text into SQL queries. You can only output SQL, don't add any other text.`
+- Both models were evaluated with `--plug_value` in `evaluation.py` using the Spider dev set with database context.
+  - `--plug_value`: If set, the gold value will be plugged into the predicted query. This is suitable if your model does not predict values. This is set to `False` by default.
+### Spider Dataset
 
-`pip install -r requirements.txt`
+[Spider](https://arxiv.org/abs/1809.08887) is a large-scale complex and cross-domain semantic parsing and text-to-SQL dataset annotated by 11 Yale students
+The goal of the Spider challenge is to develop natural language interfaces to cross-domain databases.
 
-requirements.txt --->
+This dataset was used to finetune this model.
+
+# Usage
+## Running the GGML model locally (need at least 16GB of RAM)
+- The best way to run this model locally is to use the [4-bit GGML version](https://huggingface.co/richardr1126/spider-skeleton-wizard-coder-ggml) on [koboldcpp](https://github.com/LostRuins/koboldcpp), with CuBlas support.
+- With 8GB of GPU-VRAM on an NVIDIA GPU and 16GB of CPU-RAM, I stabley offloaded 20 layers, half of the model into VRAM, which helps the prompt processing speed tremendously.
+- Using `koboldcpp` will create a local REST API that you can use to generate predictions. If you want to use a sepeerate computer to generate predictions, you can use [Ngrok](https://ngrok.com/) to create a public URL for your local REST API.
+
+## Evaluating the model on [Spider](https://arxiv.org/abs/1809.08887) validation set
+Absolutely, here is the pure Markdown code you requested:
+
+## Installing Dependencies
+
+To install the necessary dependencies, you should create a new Conda environment and install the required packages using the `requirements.txt` file.:
+#### With Conda
+
+```bash
+conda create -n text-to-sql && \
+conda activate text-to-sql && \
+pip install -r requirements.txt
 ```
+#### No Conda
+```pip install -r requirements.txt```
+
+The `requirements.txt` file contains the following packages:
+
+```bash
 transformers
 datasets
 tqdm
@@ -26,6 +54,7 @@ scipy
 gradio_client
 python-dotenv
 ```
+
 ## Generate Training and Validation Data
 
 The `generate-finetune-data.py` script is a Python script that generates fine-tuning data for the model. 
@@ -57,30 +86,6 @@ Generate training data for a `sql` type model without skeleton:
 ```shell
 python generate-finetune-data.py --mode train --sql_type sql
 ```
-
-## Convert Hugging Face Model to GGML Format
-
-The `convert-hf-to-ggml.py` script allows you to convert a model from Hugging Face to GGML format.
-
-Here is how to convert a model:
-
-```shell
-python convert-hf-to-ggml.py [HF_MODEL_NAME]
-```
-
-Replace `[HF_MODEL_NAME]` with the name of the Hugging Face model you want to convert.
-
-## Quantize WizardCoder
-
-You can use the `starcoder-quantize` script to quantize the model. 
-
-Here is an example:
-
-```shell
-./starcoder-quantize ./models/[HF_MODEL_NAME]-ggml.bin [HF_MODEL_NAME]-q4_0.bin 2
-```
-
-Replace `[HF_MODEL_NAME]` with the name of the GGML model you want to quantize.
 
 ## Generate Predictions with HuggingFace Space API
 
@@ -121,3 +126,28 @@ python evaluation.py --plug_value --input predictions/temp0_skeleton_best.txt
 Based on the input file name, if it contains "natsql", the `--natsql` flag will be automatically set to True. Also, if `--natsql` is true, the output file path is prepared by appending "2sql" before ".txt", and gold and table paths are adjusted accordingly.
 
 If `--natsql` is true, the predicted queries are first converted to SQL by running the `convert_natsql_to_sql.py` script in a subprocess.
+
+# WizardCoder (GPTBigCodeForCausalLM/StarCoder) Model Tools
+## Convert Hugging Face Model to GGML Format
+
+The `convert-hf-to-ggml.py` script allows you to convert a model from Hugging Face to GGML format.
+
+Here is how to convert a model:
+
+```shell
+python convert-hf-to-ggml.py [HF_MODEL_NAME]
+```
+
+Replace `[HF_MODEL_NAME]` with the name of the Hugging Face model you want to convert.
+
+## Quantize WizardCoder
+
+You can use the `starcoder-quantize` script to quantize the model. 
+
+Here is an example:
+
+```shell
+./starcoder-quantize ./models/[HF_MODEL_NAME]-ggml.bin [HF_MODEL_NAME]-q4_0.bin 2
+```
+
+Replace `[HF_MODEL_NAME]` with the name of the GGML model you want to quantize.
