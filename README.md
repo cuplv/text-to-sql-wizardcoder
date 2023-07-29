@@ -1,6 +1,5 @@
 [![Open in HF Spaces](https://huggingface.co/datasets/huggingface/badges/raw/main/open-in-hf-spaces-lg-dark.svg)](https://huggingface.co/spaces/richardr1126/sql-skeleton-wizardcoder-demo)
 
-Note: You might have to wake the Space up if it is sleeping, should take less than 2 minutes.
 # Introduction
 This project aims to use off-the-shelf large language models for text-to-SQL program sysnthesis tasks. After experimenting with various models, fine-tuning hyperparameters, and training datasets an optimal solution was identified by fine-tuning the [WizardLM/WizardCoder-15B-V1.0](https://huggingface.co/WizardLM/WizardCoder-15B-V1.0) base model using QLoRA techniques on [this](https://huggingface.co/datasets/richardr1126/spider-context-validation) customized Spider training dataset. The resultant model, [richardr1126/spider-skeleton-wizard-coder-merged](richardr1126/spider-skeleton-wizard-coder-merged), demonstrates **61% execution accuracy** when evaluated. The project utilizes a custom validation dataset that incorporates database context into the question. A live demonstration of the model is available on Hugging Face Space, facilitated by the Gradio library for user-friendly GUI.
 
