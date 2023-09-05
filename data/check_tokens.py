@@ -32,4 +32,4 @@ average_token_count = total_token_count / len(data)
 
 print(f"The longest token count for 'train_instruct' in the dataset is {longest_token_count}.")
 print(f"The average token count for 'train_instruct' in the dataset is {average_token_count}.")
-print(f"The longest text for 'train_instruct' in the dataset is {longest_text}.")
+#print(f"The longest text for 'train_instruct' in the dataset is {longest_text}.")
