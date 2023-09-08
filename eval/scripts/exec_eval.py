@@ -17,7 +17,7 @@ from itertools import chain
 
 
 threadLock = threading.Lock()
-TIMEOUT = 60
+TIMEOUT = 100
 EXEC_TMP_DIR = 'tmp/'
 
 def permute_tuple(element: Tuple, perm: Tuple) -> Tuple:
@@ -211,7 +211,6 @@ def eval_exec_match(db: str, p_str: str, g_str: str, plug_value: bool, keep_dist
         preds = chain([p_str], preds)
 
     for pred in preds:
-
         pred_passes = 1
         # compare the gold and predicted denotations on each database in the directory
         # wrap with progress bar if required
