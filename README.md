@@ -21,6 +21,25 @@ The goal of the Spider challenge is to develop natural language interfaces to cr
 This dataset was used to finetune this model.
 
 # Usage
+
+## Cloning the repo
+Command to download with model weights:
+```bash
+git lfs install && \
+git clone https://github.com/cuplv/text-to-sql-wizardcoder.git
+```
+
+Command to download without model weights:
+```bash
+GIT_LFS_SKIP_SMUDGE=1 git clone https://github.com/cuplv/text-to-sql-wizardcoder.git
+```
+
+#### Download the huggingface demo submodule
+```bash
+cd text-to-sql-wizardcoder/sql-skeleton-wizardcoder-demo && \
+git submodule update --init --recursive
+```
+
 ## Running the GGML model locally (need at least 16GB of RAM)
 - The best way to run this model locally is to use the [4-bit GGML version](https://huggingface.co/richardr1126/spider-skeleton-wizard-coder-ggml) on [koboldcpp](https://github.com/LostRuins/koboldcpp), with CuBlas support.
 - With 8GB of GPU-VRAM on an NVIDIA GPU and 16GB of CPU-RAM, I stabley offloaded 20 layers, half of the model into VRAM, which helps the prompt processing speed tremendously.
