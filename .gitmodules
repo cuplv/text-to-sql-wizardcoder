@@ -1,0 +1,3 @@
+[submodule "sql-skeleton-wizardcoder-demo"]
+	path = sql-skeleton-wizardcoder-demo
+	url = https://huggingface.co/spaces/richardr1126/sql-skeleton-wizardcoder-demo
