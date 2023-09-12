@@ -14,7 +14,6 @@ output_path = 'data/validation_sql_skeleton_gpt4.json'
 
 # Load environment variables from .env file
 load_dotenv()
-
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
 context_dataset = load_dataset("richardr1126/spider-context-validation", split="validation")
