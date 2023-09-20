@@ -1,0 +1,41 @@
+SELECT COUNT (*) FROM singer
+SELECT COUNT (*) FROM singer
+SELECT name,        country,        age FROM singer ORDER BY age DESC
+SELECT name,        country,        age FROM singer ORDER BY age DESC
+SELECT AVG (age), MIN (age), MAX (age) FROM singer WHERE country = 'France'
+SELECT AVG (age), MIN (age), MAX (age) FROM singer WHERE country = 'France'
+SELECT song_name,        song_release_year FROM singer ORDER BY age ASC LIMIT 1
+SELECT song_name,        song_release_year FROM singer WHERE age =     (SELECT MIN (age)      FROM singer)
+SELECT DISTINCT country FROM singer WHERE age > 20
+SELECT DISTINCT country FROM singer WHERE age > 20
+SELECT country,        COUNT (*) FROM singer GROUP BY country
+SELECT country,        COUNT (*) FROM singer GROUP BY country
+SELECT song_name FROM singer WHERE age >     (SELECT AVG (age)      FROM singer)
+SELECT song_name FROM singer WHERE age >     (SELECT AVG (age)      FROM singer)
+SELECT LOCATION,        name FROM stadium WHERE capacity BETWEEN 5000 AND 10000
+SELECT LOCATION,        name FROM stadium WHERE capacity BETWEEN 5000 AND 10000
+SELECT MAX (capacity), AVG (average) FROM stadium
+SELECT AVG (capacity), MAX (capacity) FROM stadium
+###
+###
+SELECT COUNT (*) FROM concert WHERE YEAR = 2014   OR YEAR = 2015
+SELECT COUNT (*) FROM concert WHERE YEAR = 2014   OR YEAR = 2015
+SELECT stadium.name,        COUNT (*) FROM stadium JOIN concert ON stadium.stadium_id = concert.stadium_id GROUP BY stadium.stadium_id
+###
+SELECT stadium.name,        stadium.capacity FROM stadium JOIN concert ON stadium.stadium_id = concert.stadium_id WHERE concert.year >= 2014 GROUP BY concert.stadium_id ORDER BY COUNT (*) DESC LIMIT 1
+SELECT stadium.name,        stadium.capacity FROM stadium JOIN concert ON stadium.stadium_id = concert.stadium_id WHERE concert.year > 2013 GROUP BY concert.stadium_id ORDER BY COUNT (*) DESC LIMIT 1
+SELECT YEAR FROM concert GROUP BY YEAR ORDER BY COUNT (*) DESC LIMIT 1
+SELECT YEAR FROM concert GROUP BY YEAR ORDER BY COUNT (*) DESC LIMIT 1
+SELECT name FROM stadium WHERE stadium_id NOT IN     (SELECT stadium_id      FROM concert)
+SELECT name FROM stadium WHERE stadium_id NOT IN     (SELECT stadium_id      FROM concert)
+SELECT country FROM singer WHERE age > 40 INTERSECT   SELECT country   FROM singer WHERE age < 30
+SELECT name FROM stadium WHERE stadium_id NOT IN     (SELECT stadium_id      FROM concert      WHERE YEAR = 2014 )
+###
+SELECT concert.concert_name,        concert.theme,        COUNT (*) FROM concert JOIN singer_in_concert ON concert.concert_id = singer_in_concert.concert_id GROUP BY concert.concert_name,          concert.theme
+###
+SELECT singer.name,        COUNT (*) FROM singer JOIN singer_in_concert ON singer.singer_id = singer_in_concert.singer_id GROUP BY singer.name
+SELECT singer.name,        COUNT (*) FROM singer JOIN singer_in_concert ON singer.singer_id = singer_in_concert.singer_id GROUP BY singer.name
+SELECT singer.name FROM singer_in_concert JOIN singer ON singer_in_concert.singer_id = singer.singer_id JOIN concert ON singer_in_concert.concert_id = concert.concert_id WHERE concert.year = 2014
+SELECT singer.name FROM singer JOIN singer_in_concert ON singer.singer_id = singer_in_concert.singer_id JOIN concert ON singer_in_concert.concert_id = concert.concert_id WHERE concert.year = 2014
+SELECT name,        country FROM singer WHERE song_name like '%Hey%'
+SELECT singer.name,        singer.country FROM singer JOIN song ON singer.singer_id = song.singer_id WHERE song.title like '%Hey%'

@@ -1,0 +1,70 @@
+index: 8
+db_id: concert_singer
+medium pred: SELECT song_name,        song_release_year FROM singer WHERE age =     (SELECT MIN (age)      FROM singer)
+medium gold: SELECT song_name ,  song_release_year FROM singer ORDER BY age LIMIT 1
+
+index: 17
+db_id: concert_singer
+medium pred: SELECT MAX (capacity), AVG (average) FROM stadium
+medium gold: select max(capacity), average from stadium
+
+index: 19
+db_id: concert_singer
+medium pred: ###
+medium gold: SELECT name ,  capacity FROM stadium ORDER BY average DESC LIMIT 1
+
+index: 20
+db_id: concert_singer
+medium pred: ###
+medium gold: SELECT name ,  capacity FROM stadium ORDER BY average DESC LIMIT 1
+
+index: 24
+db_id: concert_singer
+medium pred: ###
+medium gold: SELECT T2.name ,  count(*) FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id GROUP BY T1.stadium_id
+
+index: 25
+db_id: concert_singer
+extra pred: SELECT stadium.name,        stadium.capacity FROM stadium JOIN concert ON stadium.stadium_id = concert.stadium_id WHERE concert.year >= 2014 GROUP BY concert.stadium_id ORDER BY COUNT (*) DESC LIMIT 1
+extra gold: SELECT T2.name ,  T2.capacity FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.year  >=  2014 GROUP BY T2.stadium_id ORDER BY count(*) DESC LIMIT 1
+
+index: 26
+db_id: concert_singer
+extra pred: SELECT stadium.name,        stadium.capacity FROM stadium JOIN concert ON stadium.stadium_id = concert.stadium_id WHERE concert.year > 2013 GROUP BY concert.stadium_id ORDER BY COUNT (*) DESC LIMIT 1
+extra gold: select t2.name ,  t2.capacity from concert as t1 join stadium as t2 on t1.stadium_id  =  t2.stadium_id where t1.year  >  2013 group by t2.stadium_id order by count(*) desc limit 1
+
+index: 32
+db_id: concert_singer
+hard pred: SELECT name FROM stadium WHERE stadium_id NOT IN     (SELECT stadium_id      FROM concert      WHERE YEAR = 2014 )
+hard gold: SELECT name FROM stadium EXCEPT SELECT T2.name FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.year  =  2014
+
+index: 33
+db_id: concert_singer
+hard pred: ###
+hard gold: SELECT name FROM stadium EXCEPT SELECT T2.name FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.year  =  2014
+
+index: 34
+db_id: concert_singer
+medium pred: SELECT concert.concert_name,        concert.theme,        COUNT (*) FROM concert JOIN singer_in_concert ON concert.concert_id = singer_in_concert.concert_id GROUP BY concert.concert_name,          concert.theme
+medium gold: SELECT T2.concert_name ,  T2.theme ,  count(*) FROM singer_in_concert AS T1 JOIN concert AS T2 ON T1.concert_id  =  T2.concert_id GROUP BY T2.concert_id
+
+index: 35
+db_id: concert_singer
+medium pred: ###
+medium gold: select t2.concert_name ,  t2.theme ,  count(*) from singer_in_concert as t1 join concert as t2 on t1.concert_id  =  t2.concert_id group by t2.concert_id
+
+index: 36
+db_id: concert_singer
+medium pred: SELECT singer.name,        COUNT (*) FROM singer JOIN singer_in_concert ON singer.singer_id = singer_in_concert.singer_id GROUP BY singer.name
+medium gold: SELECT T2.name ,  count(*) FROM singer_in_concert AS T1 JOIN singer AS T2 ON T1.singer_id  =  T2.singer_id GROUP BY T2.singer_id
+
+index: 37
+db_id: concert_singer
+medium pred: SELECT singer.name,        COUNT (*) FROM singer JOIN singer_in_concert ON singer.singer_id = singer_in_concert.singer_id GROUP BY singer.name
+medium gold: SELECT T2.name ,  count(*) FROM singer_in_concert AS T1 JOIN singer AS T2 ON T1.singer_id  =  T2.singer_id GROUP BY T2.singer_id
+
+index: 41
+db_id: concert_singer
+medium pred: SELECT singer.name,        singer.country FROM singer JOIN song ON singer.singer_id = song.singer_id WHERE song.title like '%Hey%'
+medium gold: SELECT name ,  country FROM singer WHERE song_name LIKE '%Hey%'
+
