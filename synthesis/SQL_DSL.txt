@@ -1,0 +1,51 @@
+table := “a table name”
+col := “a column name” | “*”
+colList := [col, col, …]
+val := “a value”
+
+op := “=” | “<” | “>” | “<=” | “>=” | “LIKE” | “IN”
+con := condition(col, op, val) | conditionAnd(con, con) | conditionOr(con, con)
+
+limit := a number literal
+sort := “ASC” | “DESC”
+
+agg := aggregate(col, “MIN”) | aggregate(col, “MAX”) | aggregate(col, “AVG”) | aggregate(col, “COUNT”)
+aggList := [agg, agg, …]
+
+selectOp := select(table, colList) | selectWhere(table, colList, con) | selectOrderBy(table, colList, sort) | selectLimit(table, colList, limit) | selectAggregates(table, aggList, con)
+joinOp := join(table, table, col, col) | joinWhere(table, table, col, col, con)
+
+--------------------------------Example----------------------------------
+```
+SELECT AVG(age), MIN(age), MAX(age)
+FROM singers
+WHERE country = 'France';
+```
+
+aggList := [aggregate(“age”, “AVG”), aggregate(“age”, “MIN”), aggregate(“age”, “MAX”)]
+selectOp := selectAggregates(“singers”, aggList, condition(“country”, “=”, “France”))
+
+--------------------------------Example----------------------------------
+What is the name and capacity of the stadium with the most concerts after 2013 ?
+```
+SELECT name ,  capacity
+FROM concert
+JOIN stadium ON concert.stadium_id = stadium.stadium_id
+WHERE year  >=  2014
+GROUP BY stadium_id
+ORDER BY count(*) DESC LIMIT 1
+```
+
+colList
+selectOp := select(“concert”, “name, capacity”)
+joinOp := join(selectOp, “stadium”, “concert.stadium_id”, “stadium.stadium_id”)
+selectOp := selectWhere(joinOp, condition(“year”, “>=”, “2014”))
+selectOp := selectGroupBy(selectOp, “stadium_id”)
+selectOp := selectOrderBy(selectOp, “count(*)”, “DESC”)
+selectOp := selectLimit(selectOp, 1)
+
+
+
+
+
+

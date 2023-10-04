@@ -23,18 +23,11 @@ This dataset was used to finetune this model.
 # Usage
 
 ## Cloning the repo
-Command to download with model weights:
 ```bash
 git lfs install && \
 git clone https://github.com/cuplv/text-to-sql-wizardcoder.git
 ```
-
-Command to download without model weights:
-```bash
-GIT_LFS_SKIP_SMUDGE=1 git clone https://github.com/cuplv/text-to-sql-wizardcoder.git
-```
-
-#### Download the huggingface demo submodule
+#### Download the HuggingFace Spaces demo submodule
 ```bash
 cd text-to-sql-wizardcoder/sql-skeleton-wizardcoder-demo && \
 git submodule update --init --recursive
@@ -144,46 +137,6 @@ python evaluation.py --plug_value --input predictions/temp0_skeleton_best.txt
 Based on the input file name, if it contains "natsql", the `--natsql` flag will be automatically set to True. Also, if `--natsql` is true, the output file path is prepared by appending "2sql" before ".txt", and gold and table paths are adjusted accordingly.
 
 If `--natsql` is true, the predicted queries are first converted to SQL by running the `convert_natsql_to_sql.py` script in a subprocess.
-
-# WizardCoder (GPTBigCodeForCausalLM/StarCoder) Model Tools
-## Convert Hugging Face Model to GGML Format
-
-The `convert-hf-to-ggml.py` script allows you to convert a model from Hugging Face to GGML format.
-
-Here is how to convert a model:
-
-```bash
-python convert-hf-to-ggml.py [HF_MODEL_NAME]
-```
-
-Replace `[HF_MODEL_NAME]` with the name of the Hugging Face model you want to convert.
-
-## Quantize WizardCoder
-
-### Apple Silicon Precompiled Quantize Tool
-You can use the `starcoder-quantize` script to quantize the model. 
-
-Here is an example:
-
-```bash
-./starcoder-quantize ./models/[HF_MODEL_NAME]-ggml.bin [HF_MODEL_NAME]-q4_0.bin 2
-```
-
-Replace `[HF_MODEL_NAME]` with the name of the GGML model you want to quantize.
-
-### Use [ggml](https://github.com/ggerganov/ggml) to quantize on other systems
-https://github.com/ggerganov/ggml/blob/master/examples/starcoder/README.md
-```bash
-git clone https://github.com/ggerganov/ggml
-cd ggml
-
-# Build ggml + examples
-mkdir build && cd build
-cmake .. && make -j4 starcoder-quantize
-
-# quantize the model
-./bin/starcoder-quantize ../models/[HF_MODEL_NAME]-ggml.bin ../models/[HF_MODEL_NAME]-q4_0.bin 2
-```
 
 # Citations
 

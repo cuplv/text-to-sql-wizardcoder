@@ -504,7 +504,7 @@ def print_scores(scores, etype, include_turn_acc=True):
 def evaluate(gold, predict, db_dir, etype, kmaps, plug_value, keep_distinct, progress_bar_for_each_datapoint):
     incorrect_entries = []
 
-    with open('../data/validation_sql_skeleton_gpt4.json', 'r') as validation:
+    with open('../data/validation_sql_ranked.json', 'r') as validation:
         validation_data = json.load(validation)
 
     with open(gold) as f:
@@ -620,11 +620,11 @@ def evaluate(gold, predict, db_dir, etype, kmaps, plug_value, keep_distinct, pro
                 else:
                     turn_scores['exec'].append(0)
                     incorrect_entry = {
-                        "index": len(turn_scores['exec']),
+                        "index": len(turn_scores['exec'])-1,
                         "db_id": db_name,
-                        "db_info": validation_data[len(turn_scores['exec'])]["db_info"],
+                        "db_info": validation_data[len(turn_scores['exec'])-1]["db_info"],
                         "difficulty": hardness,
-                        "question": validation_data[len(turn_scores['exec'])]["question"],
+                        "question": validation_data[len(turn_scores['exec'])-1]["question"],
                         "pred": p_str,
                         "gold": g_str
                     }
