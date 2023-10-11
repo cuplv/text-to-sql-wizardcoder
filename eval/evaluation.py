@@ -629,6 +629,8 @@ def evaluate(gold, predict, db_dir, etype, kmaps, plug_value, keep_distinct, pro
                         "gold": g_str
                     }
                     incorrect_entries.append(incorrect_entry)
+                    #with open('analysis/incorrect.json', 'w') as incorrect_log_file:
+                        #json.dump(incorrect_entries, incorrect_log_file, indent=2)
 
             if etype in ["all", "match"]:
                 # rebuild sql for value evaluation

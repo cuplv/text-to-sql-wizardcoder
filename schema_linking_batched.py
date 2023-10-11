@@ -6,7 +6,7 @@ from datasets import load_dataset
 from tqdm import tqdm
 
 # import helpers
-from eval.scripts.schema_helpers import reorder_tables, reorder_columns, extract_json_object, extract_list_object, ask_chatgpt
+from eval.scripts.helpers import reorder_tables, reorder_columns, extract_json_object, extract_list_object, ask_chatgpt
 
 
 # output path
