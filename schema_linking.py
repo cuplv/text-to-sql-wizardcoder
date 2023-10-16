@@ -1,3 +1,5 @@
+from concurrent.futures import ThreadPoolExecutor
+import threading
 import time
 import json
 from datasets import load_dataset
@@ -6,11 +8,15 @@ from tqdm import tqdm
 # import helpers
 from eval.scripts.helpers import reorder_tables, reorder_columns, extract_json_object, extract_list_object, ask_chatgpt
 
+
 # output path
 output_path = 'data/validation_sql_ranked.json'
 
 context_dataset = load_dataset("richardr1126/spider-context-validation", split="validation")
-last_line_written = 0
+index = int(input('Enter the index to start at: '))
+
+# Global lock for writing to file
+lock = threading.Lock()
 
 def process_entry(i):
     dataset_entry = context_dataset[i]
@@ -33,13 +39,13 @@ def process_entry(i):
     Question:
     ### {dataset_entry['question']}
     """
-    print(prompt)
+    #(prompt)
     response = ask_chatgpt(prompt)
     #print(response)
     ranked_tables = extract_list_object(response)
-    print(ranked_tables)
+    #print(ranked_tables)
     reordered_schema = reorder_tables(dataset_entry['db_info'], ranked_tables)
-    print(reordered_schema)
+    #print(reordered_schema)
 
     col_reorder_prompt = f"""
     Given the database tables and question, perform the following actions:
@@ -64,11 +70,11 @@ def process_entry(i):
     """
 
     response = ask_chatgpt(col_reorder_prompt)
-    print(response)
+    #print(response)
     ranked_cols = extract_json_object(response)
-    print(ranked_cols)
+    #print(ranked_cols)
     reordered_schema = reorder_columns(reordered_schema, ranked_cols)
-    print(reordered_schema)
+    #print(reordered_schema)
 
     if (not reordered_schema) or (reordered_schema == ""):
         # redo
@@ -84,11 +90,14 @@ def process_entry(i):
     }
 
     # Append the output_entry to the existing list
-    output_dataset[i] = output_entry
+    with lock:
+        output_dataset[i] = output_entry
 
     # Write the updated list back to the JSON file
-    with open(output_path, 'w') as f:
-        json.dump(output_dataset, f, indent=2, ensure_ascii=False)
+    with lock:
+        with open(output_path, 'w') as f:
+            json.dump(output_dataset, f, indent=2, ensure_ascii=False)
+
 
 # Initialize the list by reading from the existing JSON file or create a new list if the file doesn't exist.
 try:
@@ -97,6 +106,5 @@ try:
 except FileNotFoundError:
     output_dataset = [None] * len(context_dataset)  # Pre-allocate list with Nones
 
-# Use a simple loop to process each entry
-for i in tqdm(range(last_line_written, len(context_dataset))):
-    process_entry(i)
+with ThreadPoolExecutor(max_workers=8) as executor:  # You can change max_workers based on your system capabilities
+    list(tqdm(executor.map(process_entry, range(index, len(context_dataset))), total=len(context_dataset)-index))

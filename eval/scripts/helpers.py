@@ -148,109 +148,109 @@ def extract_db_code(text):
     matches = re.findall(pattern, text, re.DOTALL)
     return [match.strip() for match in matches]
 
-def generate_dummy_db(db_info, question):
-    pre_prompt = """
-    Generate a SQLite database with dummy data for this database from the DB Layout. Your task is to generate just a database, no queries. For each input do the following:
-        1. Breakdown the Question into small pieces and explain what the question is asking for.
-        2. Write code to create the specified dummy database using the same exact table and column names used from the DB Layout. Insert dummy data relevant to the Question. Output the datbase code in a single code block. Don't write any queries or SELECT statements in the code.
-    """
-    prompt = pre_prompt + "\n\nDB Layout:" + db_info + "\n\nQuestion: " + question
+# def generate_dummy_db(db_info, question):
+#     pre_prompt = """
+#     Generate a SQLite database with dummy data for this database from the DB Layout. Your task is to generate just a database, no queries. For each input do the following:
+#         1. Breakdown the Question into small pieces and explain what the question is asking for.
+#         2. Write code to create the specified dummy database using the same exact table and column names used from the DB Layout. Insert dummy data relevant to the Question. Output the datbase code in a single code block. Don't write any queries or SELECT statements in the code.
+#     """
+#     prompt = pre_prompt + "\n\nDB Layout:" + db_info + "\n\nQuestion: " + question
 
-    response_text = ask_chatgpt(prompt)
-    db_code = extract_db_code(response_text)
-    return db_code
+#     response_text = ask_chatgpt(prompt)
+#     db_code = extract_db_code(response_text)
+#     return db_code
 
-def test_query_on_dummy_db(db_code, query):
-    try:
-        # Connect to an SQLite database in memory
-        conn = sqlite3.connect(':memory:')
-        cursor = conn.cursor()
+# def test_query_on_dummy_db(db_code, query):
+#     try:
+#         # Connect to an SQLite database in memory
+#         conn = sqlite3.connect(':memory:')
+#         cursor = conn.cursor()
 
-        # Iterate over each extracted SQL block and split them into individual commands
-        for sql_block in db_code:
-            statements = sqlparse.split(sql_block)
+#         # Iterate over each extracted SQL block and split them into individual commands
+#         for sql_block in db_code:
+#             statements = sqlparse.split(sql_block)
             
-            # Execute each SQL command
-            for statement in statements:
-                if statement:
-                    cursor.execute(statement)
+#             # Execute each SQL command
+#             for statement in statements:
+#                 if statement:
+#                     cursor.execute(statement)
 
-        # Run the provided test query against the database
-        cursor.execute(query)
-        print(f"Query: {query}\tResult: {cursor.fetchall()}")
+#         # Run the provided test query against the database
+#         cursor.execute(query)
+#         print(f"Query: {query}\tResult: {cursor.fetchall()}")
 
-        # Close the connection
-        conn.close()
+#         # Close the connection
+#         conn.close()
 
-        # If everything executed without errors, return True
-        return True
+#         # If everything executed without errors, return True
+#         return True
 
-    except Exception as e:
-        print(f"Query: {query}\tError encountered: {e}")
-        return False
+#     except Exception as e:
+#         print(f"Query: {query}\tError encountered: {e}")
+#         return False
 
-def compare_pred_to_gold(pred_query, gold_query, db_code):
-    try:
-        # Connect to an SQLite database in memory
-        conn = sqlite3.connect(':memory:')
-        cursor = conn.cursor()
+# def compare_pred_to_gold(pred_query, gold_query, db_code):
+#     try:
+#         # Connect to an SQLite database in memory
+#         conn = sqlite3.connect(':memory:')
+#         cursor = conn.cursor()
 
-        # Iterate over each extracted SQL block and split them into individual commands
-        for sql_block in db_code:
-            statements = sqlparse.split(sql_block)
+#         # Iterate over each extracted SQL block and split them into individual commands
+#         for sql_block in db_code:
+#             statements = sqlparse.split(sql_block)
             
-            # Execute each SQL command
-            for statement in statements:
-                if statement:
-                    cursor.execute(statement)
+#             # Execute each SQL command
+#             for statement in statements:
+#                 if statement:
+#                     cursor.execute(statement)
 
-        # Run the provided test query against the database
-        cursor.execute(pred_query)
-        pred_result = cursor.fetchall()
+#         # Run the provided test query against the database
+#         cursor.execute(pred_query)
+#         pred_result = cursor.fetchall()
 
-        cursor.execute(gold_query)
-        gold_result = cursor.fetchall()
+#         cursor.execute(gold_query)
+#         gold_result = cursor.fetchall()
 
-        # Close the connection
-        conn.close()
+#         # Close the connection
+#         conn.close()
 
-        print(f"pred: {pred_result}\ngold: {pred_result}\nequal: {pred_result == gold_result}")
+#         print(f"pred: {pred_result}\ngold: {pred_result}\nequal: {pred_result == gold_result}")
 
-        # If everything executed without errors, return True
-        return pred_result == gold_result
+#         # If everything executed without errors, return True
+#         return pred_result == gold_result
 
-    except Exception as e:
-        print(f"Query: {pred_query}\tError encountered: {e}")
-        return False
+#     except Exception as e:
+#         print(f"Query: {pred_query}\tError encountered: {e}")
+#         return False
     
-def get_result_table(db_code, query):
-    try:
-        # Connect to an SQLite database in memory
-        conn = sqlite3.connect(':memory:')
-        cursor = conn.cursor()
+# def get_result_table(db_code, query):
+#     try:
+#         # Connect to an SQLite database in memory
+#         conn = sqlite3.connect(':memory:')
+#         cursor = conn.cursor()
 
-        # Iterate over each extracted SQL block and split them into individual commands
-        for sql_block in db_code:
-            statements = sqlparse.split(sql_block)
+#         # Iterate over each extracted SQL block and split them into individual commands
+#         for sql_block in db_code:
+#             statements = sqlparse.split(sql_block)
             
-            # Execute each SQL command
-            for statement in statements:
-                if statement:
-                    cursor.execute(statement)
+#             # Execute each SQL command
+#             for statement in statements:
+#                 if statement:
+#                     cursor.execute(statement)
 
-        # Run the provided test query against the database
-        cursor.execute(query)
-        result = cursor.fetchall()
+#         # Run the provided test query against the database
+#         cursor.execute(query)
+#         result = cursor.fetchall()
 
-        # Close the connection
-        conn.close()
+#         # Close the connection
+#         conn.close()
 
-        # If everything executed without errors, return True
-        return result
+#         # If everything executed without errors, return True
+#         return result
 
-    except Exception as e:
-        print(f"Query: {query}\tError encountered: {e}")
-        return e
+#     except Exception as e:
+#         print(f"Query: {query}\tError encountered: {e}")
+#         return e
     
 def get_schema(db):
     schema = {}
@@ -289,8 +289,8 @@ def get_result_table_from_db(db, query):
         return columns, result
 
     except Exception as e:
-        print(f"Query: {query}\tError encountered: {e}")
-        return None
+        #print(f"Query: {query}\tError encountered: {e}")
+        return e
     
 def compare_pred_to_gold_on_db(pred_query, gold_query, db):
     try:
@@ -314,7 +314,7 @@ def compare_pred_to_gold_on_db(pred_query, gold_query, db):
         return pred_result == gold_result
 
     except Exception as e:
-        print(f"Query: {pred_query}\tError encountered: {e}")
+        print(f"equal: false\n{e}")
         return False
     
 
