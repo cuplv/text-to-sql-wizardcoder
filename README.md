@@ -1,145 +1,181 @@
 [![Open in HF Spaces](https://huggingface.co/datasets/huggingface/badges/raw/main/open-in-hf-spaces-lg-dark.svg)](https://huggingface.co/spaces/richardr1126/sql-skeleton-wizardcoder-demo)
 
-# Introduction
-This project aims to use off-the-shelf large language models for text-to-SQL program sysnthesis tasks. After experimenting with various models, fine-tuning hyperparameters, and training datasets an optimal solution was identified by fine-tuning the [WizardLM/WizardCoder-15B-V1.0](https://huggingface.co/WizardLM/WizardCoder-15B-V1.0) base model using QLoRA techniques on [this](https://huggingface.co/datasets/richardr1126/spider-context-validation) customized Spider training dataset. The resultant model, [richardr1126/spider-skeleton-wizard-coder-merged](richardr1126/spider-skeleton-wizard-coder-merged), demonstrates **63.7% execution accuracy** when evaluated. The project utilizes a custom validation dataset that incorporates database context into the question. A live demonstration of the model is available on Hugging Face Space, facilitated by the Gradio library for user-friendly GUI.
+#### Finetune Datasets
+- [spider](https://huggingface.co/datasets/spider)
+- [richardr1126/spider-context-instruct](https://huggingface.co/datasets/richardr1126/spider-context-instruct?row=0)
+- [richardr1126/spider-natsql-skeleton-context-instruct](https://huggingface.co/datasets/richardr1126/spider-natsql-skeleton-context-instruct)
+- [richardr1126/spider-skeleton-context-instruct](https://huggingface.co/datasets/richardr1126/spider-skeleton-context-instruct)
 
-### Spider Skeleton WizardCoder - [test-suite-sql-eval](https://github.com/taoyds/test-suite-sql-eval) Results
-With temperature set to 0.0, top_p set to 0.9, and top_k set to 0, the model achieves **63.7% execution accuracy** on the Spider dev set w/ database context.
+#### Validation Datasets
+- [spider](https://huggingface.co/datasets/spider)
+- [richardr1126/spider-context-validation](https://huggingface.co/datasets/richardr1126/spider-context-validation)
+- [richardr1126/spider-natsql-context-validation](https://huggingface.co/datasets/richardr1126/spider-natsql-context-validation)
+- [richardr1126/spider-context-validation-ranked-schema](https://huggingface.co/datasets/richardr1126/spider-context-validation-ranked-schema)
 
-<img src="https://raw.githubusercontent.com/cuplv/text-to-sql-wizardcoder/main/eval/plots/spiderwizard-plus-chatgpt.svg" height="300">
-<img src="https://raw.githubusercontent.com/cuplv/text-to-sql-wizardcoder/main/eval/plots/spiderwizard-vs-chatgpt.svg" height="300">
+#### Local Large Language Models
+- [richardr1126/sql-guanaco-13b-merged](https://huggingface.co/richardr1126/sql-guanaco-13b-merged)
+- [richardr1126/spider-natsql-wizard-coder-merged](https://huggingface.co/richardr1126/spider-natsql-wizard-coder-merged)
+- [richardr1126/spider-skeleton-wizard-coder-merged](https://huggingface.co/richardr1126/spider-skeleton-wizard-coder-merged)
 
-Note:
-- ChatGPT was evaluated with the default hyperparameters and with the system message `You are a sophisticated AI assistant capable of converting text into SQL queries. You can only output SQL, don't add any other text.`
-- Both models were evaluated with `--plug_value` in `evaluation.py` using the Spider dev set with database context.
-  - `--plug_value`: If set, the gold value will be plugged into the predicted query. This is suitable if your model does not predict values. This is set to `False` by default.
-### Spider Dataset
+# Summer 2023 Approaches
+### 1. SQL Guanaco 13B
+- This was my first attempt at fine-tuning an LLM
+- I used the guanaco 13b (based from llama13b) model as the base model, and I fine tuned it on a guanaco style spider dataset that was premade.
+- I never ran a full evaluation for this model because it was performing so poorly.
 
-[Spider](https://arxiv.org/abs/1809.08887) is a large-scale complex and cross-domain semantic parsing and text-to-SQL dataset annotated by 11 Yale students
-The goal of the Spider challenge is to develop natural language interfaces to cross-domain databases.
+### 2. Spider Wizard Coder
+- Switch to **WizardCoder-15B** (based from StarCoder) as the base model for fine-tuning for my text-to-sql model
+- This model was fine-tuned on the [richardr1126/spider-context-instruct](https://huggingface.co/datasets/richardr1126/spider-context-instruct?row=0) dataset, which includes the database context in the fine-tuning data
+- The results for this model were okay, but sub par. Around ~50%
 
-This dataset was used to finetune this model.
+### 3. Spider NatSQL Skeleton WizardCoder
+- [NatSQL](https://arxiv.org/abs/2109.05153) is an intermediate representation for SQL that simplifies the queries and reduces the mismatch between natural language and SQL. NatSQL preserves the core functionalities of SQL, but removes some clauses and keywords that are hard to infer from natural language descriptions. NatSQL also makes schema linking easier by reducing the number of schema items to predict. NatSQL can be easily converted to executable SQL queries and can improve the performance of text-to-SQL models.
+- This model was fine-tuned on the [richardr1126/spider-natsql-skeleton-context-instruct](https://huggingface.co/datasets/richardr1126/spider-natsql-skeleton-context-instruct) dataset, it is the same as spider-context-instruct except it has the NatSQL output in the response instead of the NormSQL. This dataset also used the **skeleton** formatting for better outputs
+- **Skeleton formatting:**
+	- `select count ( _ ) from _ where _ | select count ( * ) from head where age > 56`
+- Theoretically if the model doesn't have to write as much it should do better, NatSQL reduces the length of queries and simplifies joining tables a lot.
+- **56.5%** execution accuracy
+- The results for this model were less than expected. Most likely because WizardCoder-15B already knows some SQL so trying to fine-tune it on a different SQL language might have confused the model.
 
-# Usage
+### 4. Spider Skeleton Wizard Coder
+- Stopped using NatSQL and went back to NormSQL. However I kept the skeleton formatting
+- This model was fine-tuned using the [richardr1126/spider-skeleton-context-instruct](https://huggingface.co/datasets/richardr1126/spider-skeleton-context-instruct) dataset. This is still the best performing dataset I have created for fine-tunes.
+- **Skeleton formatting:**
+	- `select count ( _ ) from _ where _ | select count ( * ) from head where age > 56`
+- Results: **61%** execution accuracy
+- Beats ChatGPT zero-shot with a simple system prompt and no examples
+- This was the best model that I fine-tuned during the summer 2023 for Text-to-SQL tasks.
+- The model does very well for a local large language model at Text-to-SQL
 
-## Cloning the repo
-```bash
-git lfs install && \
-git clone https://github.com/cuplv/text-to-sql-wizardcoder.git
+### 5. ChatGPT
+- To compare my model against something. I ran basic prediction for the spider dataset using ChatGPT.
+- The validation dataset I used was the same one I used for Spider Skeleton Wizard Coder
+- ChatGPT was evaluated with the default hyperparameters and with the system message `You are a sophisticated AI assistant capable of converting text into SQL queries. You can only output SQL, don't add any other text.`
+- Results: **57.6%**.
+- This is what the accuracy would be if you were using the ChatGPT GUI and only asking it to convert natural language to SQL with database context.
+- ChatGPT's capabilities vary so much depending on the input, later on in my approaches I use a more complex ChatGPT setup to achieve the highest accuracy yet.
+
+# Fall 2023 Approaches
+
+### 1. Spider Skeleton Wizard Coder + ChatGPT Ranked Schema
+- In this approach I use the same model Spider Skeleton Wizard Coder for predicting the SQL queries
+- **ChatGPT Ranked Schema**
+	- I asked ChatGPT to rank the validation dataset's database context by placing tables that are more relevant to the question higher in the database context string. I also ask it to remove tables that it doesn't think it will need in the final prediction. This created the [spider-context-validation-ranked-schema](https://huggingface.co/datasets/richardr1126/spider-context-validation-ranked-schema) dataset.
+- The good thing about this approach was that I only needed to run the rankings for the schema through ChatGPT one time. Then I had the file with the rankings forever.
+- I didn't change anything about the model, I just reran the predictions using this newly ranked dataset.
+- Results: **63.7%**. This is now the ==best performing approach using Local Large Language models==
+- This only provided a **2.7%** increase in accuracy.
+
+### 2. Spider Skeleton Wizard Coder + 5 Beams + ChatGPT Ranked Schema
+- In this approach I decided to make my local model Spider Skeleton Wizard Coder use **5 beams** in it's generation arguments instead of greedy decoding.
+- **5 beams**
+	- The model will go down 5 different paths when trying to predict the SQL. I then return 4 of the 5 beams as multiple SQL queries
+- With 4 returned SQLs from the model for each dataset question I chose the correct query by choosing the first 1 out of the 4 that doesn't have an execution error in the SQL.
+- Results: **60%**
+- This approach actually brought the execution accuracy down, which was not expected
+- Probably due to the fact that I was keeping basically correct queries from making it into the final result if they had an execution error, and the fact that I took away greedy decoding
+
+### 3. Spider Skeleton Wizard Coder + 5 Beams + ChatGPT Choose Best SQL + ChatGPT Ranked Schema
+- The only thing that changed with this approach was that I tried to ask ChatGPT to choose the best SQL for the question out of the 4 return SQLs from my local llm.
+- **ChatGPT chooses the best query out of 4**
+- Results: **58.5%**
+- The results went down even further with this approach indicating that asking ChatGPT to reason about SQL is not going to work.
+- It is odd that ChatGPT made the accuracy worse because in the next few approaches I use, asking ChatGPT to do similar things on SQL that ChatGPT itself predicted works just fine, and gives the best results I have ever gotten.
+
+### 4. ChatGPT + Alignment + Clear Context
+- This approach does not use a local large language models at all. Relies on **gpt3.5-turbo-16k** from the OpenAI API.
+- **Alignment**
+	- To align ChatGPT to give better responses I use 5 predefined input sequences that load into ChatGPT before the SQL question I am trying to ask
+	- It is not multi-shot as I am not giving it example queries, I just give it tips and rules to follow and confirmation of those rules by ChatGPT.
+	- See below for the ChatGPT Alignment Prompt format
+- **Clear Context:**
+	- I reformatted the database context to be easier for the model to parse, with each table on a different line and the columns in parentheses
+	- I also asked ChatGPT to rank the tables by putting tables that are more relevant higher in the context, I did the same for the columns of each table as well
 ```
-#### Download the HuggingFace Spaces demo submodule
-```bash
-cd text-to-sql-wizardcoder/sql-skeleton-wizardcoder-demo && \
-git submodule update --init --recursive
+		# singer ( singer_id, name, country, age )
+		# stadium ( capacity, highest, lowest, average )
+		# concert ( theme, year, concert_id, concert_name )
+		# singer_in_concert ( concert_id, singer_id )
+		# concert.stadium_id = stadium.stadium_id
+		# singer_in_concert.singer_id = singer.singer_id
+		# singer_in_concert.concert_id = concert.concert_id
 ```
+- Results: **68.2%**
 
-## Running the GGML model locally (need at least 16GB of RAM)
-- The best way to run this model locally is to use the [4-bit GGML version](https://huggingface.co/richardr1126/spider-skeleton-wizard-coder-ggml) on [koboldcpp](https://github.com/LostRuins/koboldcpp), with CuBlas support.
-- With 8GB of GPU-VRAM on an NVIDIA GPU and 16GB of CPU-RAM, I stabley offloaded 20 layers, half of the model into VRAM, which helps the prompt processing speed tremendously.
-- Using `koboldcpp` will create a local REST API that you can use to generate predictions. If you want to use a sepeerate computer to generate predictions, you can use [Ngrok](https://ngrok.com/) to create a public URL for your local REST API.
+### 5. ChatGPT + Alignment + Clear Context + Error Correction
+- I added was another section to the ChatGPT prediction script that looks for errors in the SQL and tries to correct them using ChatGPT.
+- **Error Correction:**
+	- run the predicted SQL query from ChatGPT on an actual database corresponding to the question, and if there is an execution error in the sqlparse library when executing the query ask chatGPT to fix it
+	- `I am getting an error when executing that on a dummy database. Please try to fix it. The error is:`
+- Results: None. I didn't do prediction for just the error correction
 
-## Evaluating the model on [Spider](https://arxiv.org/abs/1809.08887) validation set
+### 6. ChatGPT + Alignment + Clear Context + Error Correction + Example Driven Correction
+- In this approach I added Example driven correction to the prediction script for ChatGPT, which comes after error correction section.
+- **Example driven correction**:
+	- `That is incorrect. Please try again. The resulting table from the query is not what it should be. The correct result table is below. Don't try to match exactly to the result table I give, I want these to work for any content in a larger database. Please try to fix you original query as best you can with the new information.`
+- Results: **72%** (or **75.5%** on my simple evaluation tool)
+- This is currently the best approach I have taken for Text-to-SQL
 
-### Installing Dependencies
+# ChatGPT Alignment Prompt format:
+**Role: SYSTEM**  
+**Content:**  
+You are now an excellent SQL writer, first I’ll give you some tips and examples, and I need you to remember the tips, and do not make same mistakes.
 
-To install the necessary dependencies, you should create a new Conda environment and install the required packages using the `requirements.txt` file.:
-#### With Conda
+**Role: USER**  
+**Content:**  
+Tips 1:  
+Question: Which A has most number of B?  
+Gold SQL: select A from B group by A order by count ( * ) desc limit 1;
+Notice that the Gold SQL doesn’t select COUNT(*) because the question only wants to know the A and the number should be only used in ORDER BY clause, there are many questions asks in this way, and I need you to remember this in the the following questions.
 
-```bash
-conda create -n text-to-sql && \
-conda activate text-to-sql && \
-pip install -r requirements.txt
+**Role: ASSISTANT**  
+**Content:**  
+Thank you for the tip! I’ll keep in mind that when the question only asks for a certain field, I should not include the COUNT(*) in the SELECT statement, but instead use it in the ORDER BY clause to sort the results based on the count of that field.
+
+**Role: USER**  
+**Content:**  
+Tips 2:  
+Don’t use "IN", "OR", "LEFT JOIN" as it might cause extra results, use "INTERSECT" or "EXCEPT" instead, and remember to use "DISTINCT" or "LIMIT" when necessary.  
+For example,  
+Question: Who are the A who have been nominated for both B award and C award?  
+Gold SQL should be: select A from X where award = ’B’ intersect select A from X where award = ’C’;
+
+**Role: ASSISTANT**  
+**Content:**  
+Thank you for the tip! I’ll remember to use "INTERSECT" or "EXCEPT" instead of "IN", "NOT IN", or "LEFT JOIN" when I want to find records that match or don’t match across two tables. Additionally, I’ll make sure to use "DISTINCT" or "LIMIT" when necessary to avoid repetitive results or limit the number of results returned.
+
+**Role: USER**  (Actual prompt)
+**Content:**  
+```markdown
+### Complete sqlite SQL query only and with no explanation, and do not select extra columns that are not explicitly requested in the query.
+### Sqlite SQL tables, with their properties:
+#
+# singer ( singer_id, name, country, age )
+# stadium ( capacity, highest, lowest, average )
+# concert ( theme, year, concert_id, concert_name )
+# singer_in_concert ( concert_id, singer_id )
+# concert.stadium_id = stadium.stadium_id
+# singer_in_concert.singer_id = singer.singer_id
+# singer_in_concert.concert_id = concert.concert_id
+#
+
+
+### How many singers do we have?
+SELECT
 ```
-#### No Conda
-```pip install -r requirements.txt```
-
-The `requirements.txt` file contains the following packages:
-
-```bash
-transformers
-datasets
-tqdm
-torch
-numpy
-scipy
-gradio_client
-python-dotenv
-```
-
-### Generate Training and Validation Data
-
-The `generate-finetune-data.py` script is a Python script that generates fine-tuning data for the model. 
-
-This script allows you to select the mode of data generation (`train`, `validation`, `both`), the SQL type (`natsql`, `sql`), and whether to use the SQL skeleton in the output sequence. 
-
-#### Usage
-
-```bash
-python generate-finetune-data.py --mode [MODE] --sql_type [SQL_TYPE] --skeleton
-```
-
-#### Options
-
-- `--mode [MODE]`: Specifies the mode of data generation. Replace `[MODE]` with one of `train`, `validation`, or `both`. By default, the mode is set to `both`.
-- `--sql_type [SQL_TYPE]`: Specifies the SQL type used. Replace `[SQL_TYPE]` with either `natsql` or `sql`.
-- `--skeleton`: Use SQL skeleton in the output sequence.
-
-#### Examples
-
-Generate training and validation data for a `natsql` type model with skeleton:
-
-```bash
-python generate-finetune-data.py --mode both --sql_type natsql --skeleton
-```
-
-Generate training data for a `sql` type model without skeleton:
-
-```bash
-python generate-finetune-data.py --mode train --sql_type sql
-```
-
-### Generate Predictions with HuggingFace Space API
-
-Use the `gen_predictions_hf_spaces.ipynb` notebook to generate predictions from **spider-skeleton-wizard-coder** model using the Hugging Face space API.
-
-### Generate Predictions with a REST API
-
-Use the `gen_predictions_koboldcpp.ipynb` notebook to generate predictions from a model using a local Ngrok REST API.
-
-### Evaluate the Predictions
-
-The `evaluation.py` script is used to evaluate the quality of the predictions generated by the model. To evaluate your predictions, use the following command:
-
-```bash
-cd eval
-python evaluation.py --plug_value --input predictions/temp0_skeleton_best.txt
-```
-### Command-line options for `evaluation.py`
-
-- `--input`: Specifies the path to the input file that contains the predicted queries. This argument is required.
-  
-- `--gold`: Specifies the path to the gold queries. This argument is optional and defaults to an empty string.
-  
-- `--db`: Specifies the directory that contains all the databases and test suites. By default, it points to the `./data/database` directory.
-  
-- `--table`: Specifies the `tables.json` schema file. By default, this argument is an empty string.
-  
-- `--etype`: Specifies the evaluation type. It can be `all`, `exec` for test suite accuracy, or `match` for the original exact set match accuracy. The default value is `exec`.
-  
-- `--plug_value`: If set, the gold value will be plugged into the predicted query. This is suitable if your model does not predict values. This is set to `False` by default.
-  
-- `--keep_distinct`: If set, the DISTINCT keyword will be kept during evaluation. This is set to `False` by default.
-  
-- `--progress_bar_for_each_datapoint`: If set, a progress bar for running test inputs for each datapoint will be displayed. This is set to `False` by default.
-  
-- `--natsql`: If set, the script will convert natsql to SQL and evaluate the converted SQL. This is set to `False` by default.
-
-Based on the input file name, if it contains "natsql", the `--natsql` flag will be automatically set to True. Also, if `--natsql` is true, the output file path is prepared by appending "2sql" before ".txt", and gold and table paths are adjusted accordingly.
-
-If `--natsql` is true, the predicted queries are first converted to SQL by running the `convert_natsql_to_sql.py` script in a subprocess.
 
 # Citations
 
+```bibtex
+@misc{dong2023c3,
+      title={C3: Zero-shot Text-to-SQL with ChatGPT}, 
+      author={Xuemei Dong and Chao Zhang and Yuhang Ge and Yuren Mao and Yunjun Gao and lu Chen and Jinshu Lin and Dongfang Lou},
+      year={2023},
+      eprint={2307.07306},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
+```
 ```bibtex
 @misc{luo2023wizardcoder,
       title={WizardCoder: Empowering Code Large Language Models with Evol-Instruct}, 

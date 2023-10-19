@@ -12,11 +12,11 @@ import time
 load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')    
 
-def chatgpt(messages):
+def chatgpt(messages, model='gpt-3.5-turbo-16k'):
     for i in range(5):
         try:
             response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo-16k",
+                model=model,
                 messages=messages,
                 temperature=0.7,
                 timeout=60

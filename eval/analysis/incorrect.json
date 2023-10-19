@@ -153,15 +153,6 @@
     "gold": "SELECT weight FROM pets ORDER BY pet_age LIMIT 1"
   },
   {
-    "index": 54,
-    "db_id": "pets_1",
-    "db_info": "# student ( sex, stuid, lname, fname, age, major, advisor, city_code )\n# has_pet ( stuid, petid )\n# pets ( pettype, petid, pet_age, weight )\n# has_pet.stuid = student.stuid\n# has_pet.petid = pets.petid",
-    "difficulty": "hard",
-    "question": "How many dog pets are raised by female students?",
-    "pred": "SELECT COUNT(*) FROM student INNER JOIN has_pet ON student.stuid = has_pet.stuid INNER JOIN pets ON has_pet.petid = pets.petid WHERE student.sex = 'female' AND pets.pettype = 'dog';",
-    "gold": "SELECT count(*) FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T2.petid  =  T3.petid WHERE T1.sex  =  'F' AND T3.pettype  =  'dog'"
-  },
-  {
     "index": 58,
     "db_id": "pets_1",
     "db_info": "# student ( fname, stuid, lname, age, sex, major, advisor, city_code )\n# has_pet ( stuid, petid )\n# pets ( pettype, petid, pet_age, weight )\n# has_pet.stuid = student.stuid\n# has_pet.petid = pets.petid",
@@ -628,15 +619,6 @@
     "question": "What are the ids and names of all countries that either have more than 3 car makers or produce fiat model ?",
     "pred": "SELECT countries.countryid, countries.countryname  FROM countries  WHERE countries.countryid IN (     SELECT car_makers.country      FROM car_makers      GROUP BY car_makers.country      HAVING COUNT(*) > 3 )  OR countries.countryid IN (     SELECT car_makers.country      FROM car_makers      INNER JOIN model_list ON car_makers.id = model_list.maker      INNER JOIN car_names ON model_list.modelid = car_names.model      INNER JOIN cars_data ON car_names.makeid = cars_data.id      WHERE car_names.make = 'fiat' )",
     "gold": "select t1.countryid ,  t1.countryname from countries as t1 join car_makers as t2 on t1.countryid  =  t2.country group by t1.countryid having count(*)  >  3 union select t1.countryid ,  t1.countryname from countries as t1 join car_makers as t2 on t1.countryid  =  t2.country join model_list as t3 on t2.id  =  t3.maker where t3.model  =  'fiat';"
-  },
-  {
-    "index": 180,
-    "db_id": "flight_2",
-    "db_info": "# airlines ( country, airline )\n# airports ( country, airportname )",
-    "difficulty": "easy",
-    "question": "What country is Jetblue Airways affiliated with?",
-    "pred": "SELECT country FROM airlines WHERE airline = 'Jetblue Airways';",
-    "gold": "SELECT Country FROM AIRLINES WHERE Airline  =  \"JetBlue Airways\""
   },
   {
     "index": 182,
@@ -1188,33 +1170,6 @@
     "gold": "SELECT document_id FROM Paragraphs WHERE paragraph_text  =  'Brazil' INTERSECT SELECT document_id FROM Paragraphs WHERE paragraph_text  =  'Ireland'"
   },
   {
-    "index": 387,
-    "db_id": "course_teach",
-    "db_info": "# teacher ( hometown, teacher_id, name, age )\n# course_arrange ( teacher_id, course_id, grade )\n# course_arrange.teacher_id = teacher.teacher_id",
-    "difficulty": "easy",
-    "question": "List the name of teachers whose hometown is not `` Little Lever Urban District '' .",
-    "pred": "SELECT name FROM teacher WHERE hometown <> 'Little Lever Urban District';",
-    "gold": "select name from teacher where hometown != \"little lever urban district\""
-  },
-  {
-    "index": 388,
-    "db_id": "course_teach",
-    "db_info": "# teacher ( hometown, teacher_id, name, age )\n# course_arrange ( teacher_id, course_id, grade )\n# course_arrange.teacher_id = teacher.teacher_id",
-    "difficulty": "easy",
-    "question": "What are the names of the teachers whose hometown is not `` Little Lever Urban District '' ?",
-    "pred": "SELECT name FROM teacher WHERE hometown != 'Little Lever Urban District';",
-    "gold": "select name from teacher where hometown != \"little lever urban district\""
-  },
-  {
-    "index": 403,
-    "db_id": "course_teach",
-    "db_info": "# course ( course, course_id )\n# teacher ( name, teacher_id, age, hometown )\n# course_arrange ( course_id, teacher_id, grade )\n# course_arrange.teacher_id = teacher.teacher_id\n# course_arrange.course_id = course.course_id",
-    "difficulty": "hard",
-    "question": "Show the name of the teacher for the math course.",
-    "pred": "SELECT teacher.name  FROM teacher  INNER JOIN course_arrange ON teacher.teacher_id = course_arrange.teacher_id  INNER JOIN course ON course_arrange.course_id = course.course_id  WHERE course.course = 'math';",
-    "gold": "SELECT T3.Name FROM course_arrange AS T1 JOIN course AS T2 ON T1.Course_ID  =  T2.Course_ID JOIN teacher AS T3 ON T1.Teacher_ID  =  T3.Teacher_ID WHERE T2.Course  =  \"Math\""
-  },
-  {
     "index": 404,
     "db_id": "course_teach",
     "db_info": "# teacher ( name )\n# course_arrange ( teacher_id, course_id )\n# course_arrange.teacher_id = teacher.teacher_id",
@@ -1321,15 +1276,6 @@
     "question": "What are the full names of all players, sorted by birth date?",
     "pred": "SELECT players.first_name || ' ' || players.last_name AS full_name FROM players ORDER BY players.birth_date;",
     "gold": "SELECT first_name ,  last_name FROM players ORDER BY birth_date"
-  },
-  {
-    "index": 458,
-    "db_id": "wta_1",
-    "db_info": "# players ( hand, first_name, last_name )\n# matches ( winner_id )\n# rankings ( player_id )\n# matches.winner_id = players.player_id\n# matches.loser_id = players.player_id\n# rankings.player_id = players.player_id",
-    "difficulty": "medium",
-    "question": "What are the full names of all left handed players, in order of birth date?",
-    "pred": "SELECT players.first_name, players.last_name  FROM players  WHERE players.hand = 'left'  ORDER BY players.birth_date;",
-    "gold": "SELECT first_name ,  last_name FROM players WHERE hand  =  'L' ORDER BY birth_date"
   },
   {
     "index": 459,
@@ -1440,15 +1386,6 @@
     "gold": "SELECT DISTINCT winner_name ,  winner_rank FROM matches ORDER BY winner_age LIMIT 3"
   },
   {
-    "index": 485,
-    "db_id": "wta_1",
-    "db_info": "# players ( player_id, hand, first_name, last_name, birth_date, country_code )\n# matches ( winner_id, winner_hand, tourney_name, loser_id, winner_name )\n# matches.winner_id = players.player_id\n# matches.loser_id = players.player_id",
-    "difficulty": "medium",
-    "question": "How many different winners both participated in the WTA Championships and were left handed?",
-    "pred": "SELECT COUNT(DISTINCT winner_name) FROM matches  WHERE tourney_name = 'WTA Championships'  AND winner_hand = 'left'  AND winner_id IN (SELECT winner_id FROM matches WHERE tourney_name = 'WTA Championships')",
-    "gold": "SELECT count(DISTINCT winner_name) FROM matches WHERE tourney_name  =  'WTA Championships' AND winner_hand  =  'L'"
-  },
-  {
     "index": 487,
     "db_id": "wta_1",
     "db_info": "# matches ( winner_name, winner_ioc, winner_age, winner_rank_points )\n# players ( first_name, country_code, birth_date )\n# rankings ( ranking_points, player_id )\n# matches.winner_id = players.player_id\n# matches.loser_id = players.player_id\n# rankings.player_id = players.player_id",
@@ -1510,24 +1447,6 @@
     "question": "Show names, results and bulgarian commanders of the battles with no ships lost in the 'English Channel'.",
     "pred": "SELECT battle.name, battle.result, battle.bulgarian_commander FROM battle WHERE battle.name NOT IN (     SELECT ship.lost_in_battle     FROM ship     WHERE ship.location = 'English Channel' );",
     "gold": "SELECT name ,  RESULT ,  bulgarian_commander FROM battle EXCEPT SELECT T1.name ,  T1.result ,  T1.bulgarian_commander FROM battle AS T1 JOIN ship AS T2 ON T1.id  =  T2.lost_in_battle WHERE T2.location  =  'English Channel'"
-  },
-  {
-    "index": 511,
-    "db_id": "student_transcripts_tracking",
-    "db_info": "# addresses ( line_1, line_2, line_3, city, zip_postcode, state_province_county, country, other_address_details )\n# courses ( course_description, course_name )\n# departments ( department_name, department_description, other_details )\n# degree_programs ( degree_summary_name, degree_summary_description, other_details )\n# sections ( section_name, section_description, other_details )\n# semesters ( semester_name, semester_description, other_details )\n# students ( first_name, middle_name, last_name, cell_mobile_number, email_address, ssn, date_first_registered, date_left, other_student_details )\n# student_enrolment ( other_details )\n# student_enrolment_courses (  )\n# transcripts ( transcript_date, other_details )\n# transcript_contents (  )\n# degree_programs.department_id = departments.department_id\n# sections.course_id = courses.course_id\n# students.permanent_address_id = addresses.address_id\n# students.current_address_id = addresses.address_id\n# student_enrolment.student_id = students.student_id\n# student_enrolment.semester_id = semesters.semester_id\n# student_enrolment.degree_program_id = degree_programs.degree_program_id\n# student_enrolment_courses.student_enrolment_id = student_enrolment.student_enrolment_id\n# student_enrolment_courses.course_id = courses.course_id\n# transcript_contents.transcript_id = transcripts.transcript_id\n# transcript_contents.student_course_id = student_enrolment_courses.student_course_id",
-    "difficulty": "easy",
-    "question": "How is the math course described?",
-    "pred": "SELECT course_description FROM courses WHERE course_name = 'Math';",
-    "gold": "SELECT course_description FROM Courses WHERE course_name  =  'math'"
-  },
-  {
-    "index": 512,
-    "db_id": "student_transcripts_tracking",
-    "db_info": "# courses ( course_description, course_name, course_id )\n# degree_programs ( degree_summary_description, degree_summary_name, degree_program_id )",
-    "difficulty": "easy",
-    "question": "What are the descriptions for all the math courses?",
-    "pred": "SELECT courses.course_description FROM    courses WHERE    courses.course_name LIKE '%math%';",
-    "gold": "SELECT course_description FROM Courses WHERE course_name  =  'math'"
   },
   {
     "index": 515,
@@ -1602,15 +1521,6 @@
     "gold": "SELECT T1.first_name ,  T1.middle_name ,  T1.last_name ,  T1.student_id FROM Students AS T1 JOIN Student_Enrolment AS T2 ON T1.student_id  =  T2.student_id GROUP BY T1.student_id HAVING count(*)  =  2"
   },
   {
-    "index": 535,
-    "db_id": "student_transcripts_tracking",
-    "db_info": "# degree_programs ( degree_program_id, department_id, degree_summary_name, degree_summary_description, other_details )\n# student_enrolment ( student_enrolment_id, degree_program_id, semester_id, student_id, other_details )\n# students ( student_id, current_address_id, permanent_address_id, first_name, middle_name, last_name, cell_mobile_number, email_address, ssn, date_first_registered, date_left, other_student_details )\n# student_enrolment.student_id = students.student_id\n# student_enrolment.degree_program_id = degree_programs.degree_program_id",
-    "difficulty": "hard",
-    "question": "Who is enrolled in a Bachelor degree program? List the first name, middle name, last name.",
-    "pred": "SELECT students.first_name, students.middle_name, students.last_name FROM students JOIN student_enrolment ON students.student_id = student_enrolment.student_id JOIN degree_programs ON student_enrolment.degree_program_id = degree_programs.degree_program_id WHERE degree_programs.degree_summary_name LIKE '%Bachelor%';",
-    "gold": "SELECT DISTINCT T1.first_name ,  T1.middle_name ,  T1.last_name FROM Students AS T1 JOIN Student_Enrolment AS T2 ON T1.student_id  =  T2.student_id JOIN Degree_Programs AS T3 ON T2.degree_program_id  =  T3.degree_program_id WHERE T3.degree_summary_name  =  'Bachelor'"
-  },
-  {
     "index": 536,
     "db_id": "student_transcripts_tracking",
     "db_info": "# students ( first_name, middle_name, last_name, student_id, current_address_id, permanent_address_id, cell_mobile_number, email_address, ssn, date_first_registered, date_left, other_student_details )\n# degree_programs ( department_id, degree_program_id, degree_summary_name, degree_summary_description, other_details )",
@@ -1681,15 +1591,6 @@
     "question": "What are the last name of the students who live in North Carolina but have not registered in any degree programs?",
     "pred": "SELECT last_name FROM students WHERE current_address_id IN (SELECT address_id FROM addresses WHERE state_province_county = 'North Carolina') AND student_id NOT IN (SELECT student_id FROM student_enrolment);",
     "gold": "SELECT T1.last_name FROM Students AS T1 JOIN Addresses AS T2 ON T1.current_address_id  =  T2.address_id WHERE T2.state_province_county  =  'NorthCarolina' EXCEPT SELECT DISTINCT T3.last_name FROM Students AS T3 JOIN Student_Enrolment AS T4 ON T3.student_id  =  T4.student_id"
-  },
-  {
-    "index": 554,
-    "db_id": "student_transcripts_tracking",
-    "db_info": "# students ( student_id, first_name, last_name, cell_mobile_number )\n# addresses ( address_id, line_1, line_2, city, zip_postcode, state_province_county, country )\n# students.permanent_address_id = addresses.address_id\n# students.current_address_id = addresses.address_id",
-    "difficulty": "medium",
-    "question": "What is the mobile phone number of the student named Timmothy Ward ?",
-    "pred": "SELECT students.cell_mobile_number  FROM students  WHERE students.first_name = 'Timmothy'  AND students.last_name = 'Ward';",
-    "gold": "select cell_mobile_number from students where first_name  =  'timmothy' and last_name  =  'ward'"
   },
   {
     "index": 557,
@@ -1809,24 +1710,6 @@
     "gold": "SELECT section_description FROM Sections WHERE section_name  =  'h'"
   },
   {
-    "index": 583,
-    "db_id": "student_transcripts_tracking",
-    "db_info": "# students ( first_name, permanent_address_id, cell_mobile_number )\n# addresses ( address_id, country )\n# students.permanent_address_id = addresses.address_id\n# students.current_address_id = addresses.address_id",
-    "difficulty": "hard",
-    "question": "Find the first name of the students who permanently live in the country Haiti or have the cell phone number 09700166582 .",
-    "pred": "SELECT students.first_name  FROM students  INNER JOIN addresses ON students.permanent_address_id = addresses.address_id  WHERE addresses.country = 'Haiti'     OR students.cell_mobile_number = '09700166582';",
-    "gold": "select t1.first_name from students as t1 join addresses as t2 on t1.permanent_address_id  =  t2.address_id where t2.country  =  'haiti' or t1.cell_mobile_number  =  '09700166582'"
-  },
-  {
-    "index": 584,
-    "db_id": "student_transcripts_tracking",
-    "db_info": "# students ( first_name, cell_mobile_number, permanent_address_id )\n# addresses ( country )\n# courses ( course_id, course_name, course_description, other_details )\n# departments ( department_id, department_name, department_description, other_details )\n# degree_programs ( degree_program_id, department_id, degree_summary_name, degree_summary_description, other_details )\n# sections ( section_id, course_id, section_name, section_description, other_details )\n# semesters ( semester_id, semester_name, semester_description, other_details )\n# student_enrolment ( student_enrolment_id, degree_program_id, semester_id, student_id, other_details )\n# student_enrolment_courses ( student_course_id, course_id, student_enrolment_id )\n# transcripts ( transcript_id, transcript_date, other_details )\n# transcript_contents ( student_course_id, transcript_id )\n# degree_programs.department_id = departments.department_id\n# sections.course_id = courses.course_id\n# students.permanent_address_id = addresses.address_id\n# students.current_address_id = addresses.address_id\n# student_enrolment.student_id = students.student_id\n# student_enrolment.semester_id = semesters.semester_id\n# student_enrolment.degree_program_id = degree_programs.degree_program_id\n# student_enrolment_courses.student_enrolment_id = student_enrolment.student_enrolment_id\n# student_enrolment_courses.course_id = courses.course_id\n# transcript_contents.transcript_id = transcripts.transcript_id\n# transcript_contents.student_course_id = student_enrolment_courses.student_course_id",
-    "difficulty": "hard",
-    "question": "What are the first names of the students who live in Haiti permanently or have the cell phone number 09700166582 ?",
-    "pred": "SELECT first_name FROM students JOIN addresses ON students.permanent_address_id = addresses.address_id WHERE addresses.country = 'Haiti' OR students.cell_mobile_number = '09700166582';",
-    "gold": "select t1.first_name from students as t1 join addresses as t2 on t1.permanent_address_id  =  t2.address_id where t2.country  =  'haiti' or t1.cell_mobile_number  =  '09700166582'"
-  },
-  {
     "index": 601,
     "db_id": "tvshow",
     "db_info": "# tv_channel ( series_name, package_option )\n# tv_series ( channel )\n# cartoon ( channel, title )\n# tv_series.channel = tv_channel.id\n# cartoon.channel = tv_channel.id",
@@ -1852,15 +1735,6 @@
     "question": "What are the languages used by the least number of TV Channels and how many channels use it?",
     "pred": "SELECT language, COUNT(*) as channel_count FROM   tv_channel GROUP BY   language HAVING   COUNT(*) = (     SELECT       MIN(channel_count)     FROM       (SELECT         language, COUNT(*) as channel_count       FROM         tv_channel       GROUP BY         language)   );",
     "gold": "SELECT LANGUAGE ,  count(*) FROM TV_Channel GROUP BY LANGUAGE ORDER BY count(*) ASC LIMIT 1;"
-  },
-  {
-    "index": 610,
-    "db_id": "tvshow",
-    "db_info": "# cartoon ( title, channel, directed_by, written_by, original_air_date, production_code )\n# tv_channel ( series_name, id, country, language, content, pixel_aspect_ratio_par, hight_definition_tv, pay_per_view_ppv, package_option )\n# tv_series ( channel, id, episode, air_date, rating, share, 18_49_rating_share, viewers_m, weekly_rank )\n# tv_series.channel = tv_channel.id\n# cartoon.channel = tv_channel.id",
-    "difficulty": "medium",
-    "question": "What is the series name of the TV Channel that shows the cartoon \"The Rise of the Blue Beetle\"?",
-    "pred": "SELECT tv_channel.series_name FROM tv_channel JOIN cartoon ON cartoon.channel = tv_channel.id WHERE cartoon.title = 'The Rise of the Blue Beetle';",
-    "gold": "SELECT T1.series_name FROM TV_Channel AS T1 JOIN Cartoon AS T2 ON T1.id = T2.Channel WHERE T2.Title = \"The Rise of the Blue Beetle!\";"
   },
   {
     "index": 631,
@@ -2088,15 +1962,6 @@
     "gold": "SELECT DISTINCT T1.Region FROM country AS T1 JOIN countrylanguage AS T2 ON T1.Code  =  T2.CountryCode WHERE T2.Language  =  \"English\" OR T2.Language  =  \"Dutch\""
   },
   {
-    "index": 754,
-    "db_id": "world_1",
-    "db_info": "# countrylanguage ( language, isofficial, countrycode, percentage )\n# country ( name, code, localname, governmentform )\n# countrylanguage.countrycode = country.code",
-    "difficulty": "extra",
-    "question": "What are the countries where either English or Dutch is the official language ?",
-    "pred": "SELECT country.name  FROM country  JOIN countrylanguage ON country.code = countrylanguage.countrycode  WHERE (countrylanguage.language = 'English' AND countrylanguage.isofficial = 'T')  OR (countrylanguage.language = 'Dutch' AND countrylanguage.isofficial = 'T');",
-    "gold": "select t1.name from country as t1 join countrylanguage as t2 on t1.code  =  t2.countrycode where t2.language  =  \"english\" and isofficial  =  \"t\" union select t1.name from country as t1 join countrylanguage as t2 on t1.code  =  t2.countrycode where t2.language  =  \"dutch\" and isofficial  =  \"t\""
-  },
-  {
     "index": 755,
     "db_id": "world_1",
     "db_info": "# country ( name, governmentform, code, population, continent, indepyear, capital, region, surfacearea, lifeexpectancy, gnp, gnpold, localname, headofstate, code2 )\n# countrylanguage ( countrycode, language, isofficial, percentage )\n# countrylanguage.countrycode = country.code",
@@ -2149,33 +2014,6 @@
     "question": "How many people live in countries that do not speak English?",
     "pred": "SELECT SUM(country.population) FROM     country WHERE     country.code NOT IN (         SELECT countrycode FROM countrylanguage WHERE language = 'English'     );",
     "gold": "SELECT sum(Population) FROM country WHERE Name NOT IN (SELECT T1.Name FROM country AS T1 JOIN countrylanguage AS T2 ON T1.Code  =  T2.CountryCode WHERE T2.Language  =  \"English\")"
-  },
-  {
-    "index": 768,
-    "db_id": "world_1",
-    "db_info": "# country ( headofstate, code, name )\n# countrylanguage ( countrycode, language, isofficial )\n# city ( countrycode, name )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code",
-    "difficulty": "medium",
-    "question": "What is the official language spoken in the country whose head of state is Beatrix?",
-    "pred": "SELECT countrylanguage.language FROM country JOIN countrylanguage ON country.code = countrylanguage.countrycode WHERE country.headofstate = 'Beatrix' AND countrylanguage.isofficial = 1;",
-    "gold": "SELECT T2.Language FROM country AS T1 JOIN countrylanguage AS T2 ON T1.Code  =  T2.CountryCode WHERE T1.HeadOfState  =  \"Beatrix\" AND T2.IsOfficial  =  \"T\""
-  },
-  {
-    "index": 770,
-    "db_id": "world_1",
-    "db_info": "# countrylanguage ( language, isofficial, countrycode )\n# country ( code, name, indepyear )\n# countrylanguage.countrycode = country.code",
-    "difficulty": "medium",
-    "question": "What is the total number of unique official languages spoken in the countries that are founded before 1930?",
-    "pred": "SELECT COUNT(DISTINCT countrylanguage.language) FROM countrylanguage JOIN country ON countrylanguage.countrycode = country.code WHERE country.indepyear < 1930 AND countrylanguage.isofficial = 1;",
-    "gold": "SELECT count(DISTINCT T2.Language) FROM country AS T1 JOIN countrylanguage AS T2 ON T1.Code  =  T2.CountryCode WHERE  IndepYear  <  1930 AND T2.IsOfficial  =  \"T\""
-  },
-  {
-    "index": 771,
-    "db_id": "world_1",
-    "db_info": "# country ( code, name, indepyear, continent, governmentform )\n# countrylanguage ( countrycode, language, isofficial, percentage )\n# city ( name, countrycode )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code",
-    "difficulty": "medium",
-    "question": "For the countries founded before 1930, what is the total number of distinct official languages?",
-    "pred": "SELECT COUNT(DISTINCT countrylanguage.language) FROM country JOIN countrylanguage ON country.code = countrylanguage.countrycode WHERE country.indepyear < 1930 AND countrylanguage.isofficial = 1;",
-    "gold": "SELECT count(DISTINCT T2.Language) FROM country AS T1 JOIN countrylanguage AS T2 ON T1.Code  =  T2.CountryCode WHERE  IndepYear  <  1930 AND T2.IsOfficial  =  \"T\""
   },
   {
     "index": 772,
@@ -2268,15 +2106,6 @@
     "gold": "SELECT DISTINCT T2.Name FROM country AS T1 JOIN city AS T2 ON T2.CountryCode  =  T1.Code WHERE T1.Continent  =  'Europe' AND T1.Name NOT IN (SELECT T3.Name FROM country AS T3 JOIN countrylanguage AS T4 ON T3.Code  =  T4.CountryCode WHERE T4.IsOfficial  =  'T' AND T4.Language  =  'English')"
   },
   {
-    "index": 786,
-    "db_id": "world_1",
-    "db_info": "# city ( name, countrycode, district, population )\n# country ( name, code, continent, region, surfacearea, indepyear, population, lifeexpectancy, gnp, gnpold, localname, governmentform, headofstate, capital, code2 )\n# countrylanguage ( countrycode, language, isofficial, percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code",
-    "difficulty": "hard",
-    "question": "Which unique cities are in Asian countries where Chinese is the official language ?",
-    "pred": "SELECT city.name FROM city JOIN country ON city.countrycode = country.code JOIN countrylanguage ON country.code = countrylanguage.countrycode WHERE country.continent = 'Asia' AND countrylanguage.language = 'Chinese' AND countrylanguage.isofficial = 'T' GROUP BY city.name;",
-    "gold": "select distinct t3.name from country as t1 join countrylanguage as t2 on t1.code  =  t2.countrycode join city as t3 on t1.code  =  t3.countrycode where t2.isofficial  =  't' and t2.language  =  'chinese' and t1.continent  =  \"asia\""
-  },
-  {
     "index": 789,
     "db_id": "world_1",
     "db_info": "# country ( population, name, indepyear, surfacearea, code )\n# city ( population, countrycode, name, district )\n# city.countrycode = country.code",
@@ -2301,15 +2130,6 @@
     "difficulty": "hard",
     "question": "What is the total population and average area of countries in the continent of North America whose area is bigger than 3000 ?",
     "pred": "SELECT SUM(population) AS \"sum ( population )\", AVG(surfacearea) AS \"avg ( surfacearea )\" FROM country WHERE continent = 'North America' AND surfacearea > 3000;",
-    "gold": "select sum(population) ,  avg(surfacearea) from country where continent  =  \"north america\" and surfacearea  >  3000"
-  },
-  {
-    "index": 811,
-    "db_id": "world_1",
-    "db_info": "# country ( name, continent, surfacearea, population, region )\n# city ( countrycode, population, district, name )\n# city.countrycode = country.code",
-    "difficulty": "hard",
-    "question": "Give the total population and average surface area corresponding to countries in North America that have a surface area greater than 3000 .",
-    "pred": "SELECT SUM(population) AS total_population, AVG(surfacearea) AS average_surface_area FROM country WHERE continent = 'North America' AND surfacearea > 3000;",
     "gold": "select sum(population) ,  avg(surfacearea) from country where continent  =  \"north america\" and surfacearea  >  3000"
   },
   {
@@ -2761,15 +2581,6 @@
     "question": "What are each professional's first name and description of the treatment they have performed?",
     "pred": "SELECT professionals.first_name, treatments.treatment_type_description   FROM professionals   JOIN treatments ON treatments.professional_id = professionals.professional_id;",
     "gold": "SELECT DISTINCT T1.first_name ,  T3.treatment_type_description FROM professionals AS T1 JOIN Treatments AS T2 ON T1.professional_id  =  T2.professional_id JOIN Treatment_types AS T3 ON T2.treatment_type_code  =  T3.treatment_type_code"
-  },
-  {
-    "index": 1007,
-    "db_id": "singer",
-    "db_info": "# singer ( citizenship, name, birth_year, net_worth_millions, singer_id )\n# song ( singer_id, title, song_id, sales, highest_position )\n# song.singer_id = singer.singer_id",
-    "difficulty": "easy",
-    "question": "What are the names of the singers who are not French citizens?",
-    "pred": "SELECT name FROM singer WHERE citizenship <> 'French';",
-    "gold": "SELECT Name FROM singer WHERE Citizenship != \"France\""
   },
   {
     "index": 1021,

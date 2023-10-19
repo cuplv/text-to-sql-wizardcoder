@@ -1,6 +1,6 @@
 from datasets import load_dataset
 from tqdm import tqdm
-from scripts.helpers import chatgpt, compare_pred_to_gold_on_db, get_result_table_from_db, get_schema
+from scripts.helpers import chatgpt, compare_pred_to_gold_on_db, get_result_table_from_db
 import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import argparse
@@ -91,7 +91,6 @@ def fetch_response(i, entry, args):
             messages.append({"role": "user", "content": new_prompt})
 
             response_text = format(chatgpt(messages))
-
             print(response_text)
             messages.append({"role": "assistant", "content": response_text})
 
