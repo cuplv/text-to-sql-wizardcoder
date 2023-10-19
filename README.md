@@ -87,7 +87,7 @@
 - **Alignment**
 	- To align ChatGPT to give better responses I use 5 predefined input sequences that load into ChatGPT before the SQL question I am trying to ask
 	- It is not multi-shot as I am not giving it example queries, I just give it tips and rules to follow and confirmation of those rules by ChatGPT.
-	- See below for the ChatGPT Alignment Prompt format
+	- [See below for the ChatGPT Alignment Prompt format](https://github.com/cuplv/text-to-sql-wizardcoder#chatgpt-alignment-prompt-format)
 - **Clear Context:**
 	- I reformatted the database context to be easier for the model to parse, with each table on a different line and the columns in parentheses
 	- I also asked ChatGPT to rank the tables by putting tables that are more relevant higher in the context, I did the same for the columns of each table as well
