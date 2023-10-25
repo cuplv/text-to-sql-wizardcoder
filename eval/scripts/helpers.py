@@ -290,7 +290,25 @@ def get_result_table_from_db(db, query):
 
     except Exception as e:
         #print(f"Query: {query}\tError encountered: {e}")
-        return e
+        return None, None
+    
+def generate_md_table(cols, results):
+    # Create table header
+    header = '| ' + ' | '.join(cols) + ' |'
+    
+    # Create separator
+    separator = '| ' + ' | '.join(['---' for col in cols]) + ' |'
+    
+    # Create rows
+    rows = []
+    for result in results:
+        row = '| ' + ' | '.join([str(item) for item in result]) + ' |'
+        rows.append(row)
+    
+    # Combine header, separator, and rows
+    table = '\n'.join([header, separator] + rows)
+    return table
+
     
 def compare_pred_to_gold_on_db(pred_query, gold_query, db):
     try:
@@ -308,7 +326,7 @@ def compare_pred_to_gold_on_db(pred_query, gold_query, db):
         # Close the connection
         conn.close()
 
-        print(f"pred: {pred_result}\ngold: {gold_result}\nequal: {pred_result == gold_result}")
+        #print(f"pred: {pred_result}\ngold: {gold_result}\nequal: {pred_result == gold_result}")
 
         # If everything executed without errors, return True
         return pred_result == gold_result

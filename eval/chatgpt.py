@@ -1,6 +1,6 @@
 from datasets import load_dataset
 from tqdm import tqdm
-from scripts.helpers import chatgpt, compare_pred_to_gold_on_db, get_result_table_from_db
+from scripts.helpers import chatgpt, compare_pred_to_gold_on_db, get_result_table_from_db, generate_md_table
 import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import argparse
@@ -50,48 +50,69 @@ def fetch_response(i, entry, args):
         {"role": "user", "content": prompt}
     ]
     
-    response_text = format(chatgpt(messages))
+    response_text = format(chatgpt(messages, model='gpt-3.5-turbo'))
     messages.append({"role": "assistant", "content": response_text})
 
     db = os.path.join('./data/database', entry["db_id"], entry["db_id"] + ".sqlite")
     #db_code = generate_dummy_db(entry['db_info'], entry['question'])
 
-    ## Error correction given the error
-    if args.error_driven:
-        result_table = get_result_table_from_db(db, response_text)
-        if isinstance(result_table, Exception):
-            err_str = str(result_table)
-            new_prompt = f"""I am getting an error when executing that on a dummy database. Please try to fix it. The error is:
-            ### Complete sqlite SQL query only and with no explanation, and do not select extra columns that are not explicitly requested in the query.
-            ### Error string from previous query when executed on a dummy database:
-            #
-            # {err_str}
-            #
-            ### {entry['question']}
-            SELECT
-            """
-            #print(new_prompt)
-            messages.append({"role": "user", "content": new_prompt})
-            response_text = format(chatgpt(messages))
-            messages.append({"role": "assistant", "content": response_text})
-
     ## Example driven error correction
     if args.example_driven:
         if not compare_pred_to_gold_on_db(response_text, entry['ground_truth'], db):
+            print(f'Example Correcting: {i}')
+            cols, results = get_result_table_from_db(db, entry['ground_truth'])
+            md_table = None
+            if (cols, results) != (None, None):
+                md_table = generate_md_table(cols, results)
+
             new_prompt = f"""That is incorrect. Please try again. The resulting table from the query is not what it should be. The correct result table is below. Don't try to match exactly to the result table I give, I want these to work for any content in a larger database. Please try to fix you original query as best you can with the new information.
             ### Complete sqlite SQL query only and with no explanation, and do not select extra columns that are not explicitly requested in the query.
             ### Correct dummy result table: 
             #
-            # {get_result_table_from_db(db, entry['ground_truth'])}
+            {md_table}
             #
             ### {entry['question']}
             SELECT
             """
-            #print(new_prompt)
+            
             messages.append({"role": "user", "content": new_prompt})
+            response_text = format(chatgpt(messages, model='gpt-3.5-turbo-16k'))
+            #print(messages)
+            #print(response_text)
+            messages.append({"role": "assistant", "content": response_text})
 
-            response_text = format(chatgpt(messages))
-            print(response_text)
+    ## Error correction given the error
+    if args.error_driven:
+        result_table = get_result_table_from_db(db, response_text)
+        error = None
+        if result_table == (None, None):
+            err_str = str(result_table)
+            error = f"""
+            ### Error in the SQL when executed on a dummy database:
+            #
+            # {err_str}
+            #
+            """
+        if not compare_pred_to_gold_on_db(response_text, entry['ground_truth'], db):
+            print(f'Error Correcting: {i}')
+            new_prompt = f"""
+            ##### Fix bugs in the below SQL for the given question.
+            ### Sqlite SQL tables, with their properties:
+            #
+            {entry['db_info']}
+            #
+            {error}
+            ### {entry['question']}
+            ### Buggy SQL:
+            {response_text}
+            ### Fixed SQL:
+            SELECT
+            """
+            #print(new_prompt)
+            #messages.append({"role": "user", "content": new_prompt})
+            messages.clear()
+            messages.append({"role": "user", "content": new_prompt})
+            response_text = format(chatgpt(messages, model='gpt-4'))
             messages.append({"role": "assistant", "content": response_text})
 
     return i, response_text
