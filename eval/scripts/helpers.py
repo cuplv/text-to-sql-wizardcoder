@@ -2,7 +2,7 @@ import re
 import json
 import os
 from dotenv import load_dotenv
-import openai
+from openai import OpenAI
 import requests
 import sqlite3
 import sqlparse
@@ -10,18 +10,17 @@ import time
 
 # Load environment variables from .env file
 load_dotenv()
-openai.api_key = os.getenv('OPENAI_API_KEY')    
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def chatgpt(messages, model='gpt-3.5-turbo-16k'):
     for i in range(5):
         try:
-            response = openai.ChatCompletion.create(
+            response = client.chat.completions.create(
                 model=model,
                 messages=messages,
                 temperature=0.7,
-                timeout=60
+                #timeout=60
             )
-            return response['choices'][0]['message']['content']
         
         except requests.exceptions.Timeout:
             print(f'Timeout occurred on attempt {i+1}')
@@ -31,6 +30,9 @@ def chatgpt(messages, model='gpt-3.5-turbo-16k'):
             print(f'Error occurred: {str(e)}')
             print('Retrying...')
             time.sleep(5)
+        
+        return response['choices'][0]['message']['content']
+        
         
     # all retries have failed.
     print("All retries failed for chatgpt.")

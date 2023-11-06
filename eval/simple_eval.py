@@ -6,6 +6,8 @@ from tqdm import tqdm
 import sqlparse
 import glob
 import re
+from scripts.helpers import compare_pred_to_gold_on_db
+from itertools import combinations, product
 
 def normalize_sql(sql):
     # Remove table names and aliases from columns
@@ -59,6 +61,88 @@ def execute_sql_on_db(db_path, sql_query):
 def find_all_dbs_for_entry(db_folder):
     return glob.glob(os.path.join(db_folder, "*.sqlite"))
 
+def perform_mutation_repair(incorrect_query, gold_result, connection):
+    cursor = connection.cursor()
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+    tables = [row[0] for row in cursor.fetchall()]
+
+    # Identify the number of columns in the gold result
+    gold_columns_count = len(gold_result[0]) if gold_result and len(gold_result[0]) > 0 else 0
+
+    # Try to extract the SELECT part of the query
+    select_clause_match = re.search(r"SELECT\s+(.*?)\s+FROM", incorrect_query, re.IGNORECASE)
+    if not select_clause_match:
+        return None
+
+    original_select_columns = select_clause_match.group(1).split(',')
+    original_select_columns = [col.strip() for col in original_select_columns]
+
+    for table_name in tables:
+        cursor.execute(f"PRAGMA table_info({table_name})")
+        columns = [row[1] for row in cursor.fetchall()]
+
+        # Generate possible new SELECT clauses by adding or removing columns
+        for num_columns in range(max(1, gold_columns_count - 1), gold_columns_count + 2):
+            possible_column_combinations = combinations(columns, num_columns)
+            for column_combination in possible_column_combinations:
+                # Construct a new SELECT clause
+                new_select_clause = ", ".join(column_combination)
+
+                # Replace the original SELECT clause with the new one
+                modified_query = re.sub(r"SELECT\s+.*?\s+FROM", f"SELECT {new_select_clause} FROM", incorrect_query, flags=re.IGNORECASE)
+
+                try:
+                    cursor.execute(modified_query)
+                    result = cursor.fetchall()
+                    if result == gold_result:
+                        return modified_query
+                except sqlite3.OperationalError:
+                    pass
+
+    return None
+
+def perform_where_clause_repair(incorrect_query, gold_result, connection):
+    cursor = connection.cursor()
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+    tables = [row[0] for row in cursor.fetchall()]
+
+    gold_result_size = len(gold_result)
+
+    for table_name in tables:
+        cursor.execute(f"PRAGMA table_info({table_name})")
+        columns = [row[1] for row in cursor.fetchall()]
+
+        for column in columns:
+            # Ensure column names are properly quoted
+            quoted_column = f'"{column}"' if not column.isidentifier() else column
+
+            cursor.execute(f"SELECT DISTINCT {quoted_column} FROM {table_name}")
+            distinct_values = [row[0] for row in cursor.fetchall()]
+
+            for value in distinct_values:
+                # Construct conditions for WHERE clause
+                conditions = [f"{quoted_column} = '{value}'", f"{quoted_column} != '{value}'"]
+
+                for condition in conditions:
+                    # Modify the query by adding or modifying the WHERE clause
+                    if "WHERE" in incorrect_query.upper():
+                        modified_query = re.sub(r"WHERE\s+(.*)", r"WHERE \1 AND " + condition, incorrect_query, flags=re.IGNORECASE)
+                    else:
+                        modified_query = incorrect_query + f" WHERE {condition}"
+
+                    # Ensure that modified_query contains only a single SQL statement
+                    statements = sqlparse.split(modified_query)
+                    if len(statements) == 1:
+                        try:
+                            cursor.execute(statements[0])
+                            result = cursor.fetchall()
+                            if len(result) == gold_result_size:
+                                return statements[0]
+                        except sqlite3.OperationalError:
+                            pass
+
+    return None
+
 def evaluate(input, dataset_path, db_root_path, partial_match_threshold=0.8):
     with open(input, 'r') as f:
         input = [line.strip() for line in f.readlines()]
@@ -82,6 +166,7 @@ def evaluate(input, dataset_path, db_root_path, partial_match_threshold=0.8):
 
         gt_results = None
         pred_results = None
+        non_empty_db_path = None
         for db_path in all_dbs:
             # Try executing the SQL on each database until we get non-empty results
             gt_results_temp = execute_sql_on_db(db_path, ground_truth)
@@ -90,21 +175,45 @@ def evaluate(input, dataset_path, db_root_path, partial_match_threshold=0.8):
             if gt_results_temp and pred_results_temp:
                 gt_results = gt_results_temp
                 pred_results = pred_results_temp
+                non_empty_db_path = db_path
                 break
 
         if gt_results and pred_results:
             if set(gt_results) == set(pred_results):
                 correct_count += 1
             else:
-                # Calculate the similarity score
-                common_rows = len(set(gt_results).intersection(set(pred_results)))
+                # Perform mutation repair
+                conn = sqlite3.connect(non_empty_db_path)
+                
+                # First, try mutation repair
+                repaired_query = perform_mutation_repair(predicted_sql, gt_results, conn)
+                
+                # If mutation repair didn't work, try where clause repair on the original query
+                if not repaired_query:
+                    repaired_query = perform_where_clause_repair(predicted_sql, gt_results, conn)
+                
+                # If mutation repair worked, try where clause repair on the repaired query
+                else:
+                    repaired_query_with_where = perform_where_clause_repair(repaired_query, gt_results, conn)
+                    
+                    # Use the further repaired query only if it's not None, otherwise keep the mutation repair
+                    if repaired_query_with_where:
+                        repaired_query = repaired_query_with_where
+
+                conn.close()
+                
+                # Check if the repaired query is correct
+                repaired_results = None
+                if repaired_query:
+                    repaired_results = execute_sql_on_db(non_empty_db_path, repaired_query)
+                    if set(gt_results) == set(repaired_results):
+                        correct_count += 1
+                        print(f"Repaired query for {entry['question']}:\n{repaired_query}\n")
+
+                common_rows = len(set(gt_results).intersection(set(repaired_results if repaired_results else pred_results)))
                 similarity = common_rows / len(gt_results)
 
-                # If similarity is above a certain threshold, consider it a partial match
-                if similarity >= partial_match_threshold:
-                    partial_count += 1
-                else:
-                    # Log the incorrect query
+                if similarity < partial_match_threshold:
                     incorrect_queries.append({
                         'index': idx,
                         'db_id': entry['db_id'],
@@ -114,6 +223,8 @@ def evaluate(input, dataset_path, db_root_path, partial_match_threshold=0.8):
                         'ground_truth': ground_truth,
                         'similarity': similarity
                     })
+                else:
+                    partial_count += 1
 
     accuracy = (correct_count + partial_count * 0.5) / total_count
     print(f"\nAccuracy: {accuracy:.4f} ({correct_count + partial_count}/{total_count})")
@@ -125,7 +236,7 @@ def evaluate(input, dataset_path, db_root_path, partial_match_threshold=0.8):
         
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Evaluate SQL Predictions")
-    parser.add_argument("--input", type=str, default="predictions/chatgpt_example_then_error.txt", help="Path to the predictions file.")
+    parser.add_argument("--input", type=str, default="predictions/chatgpt_example_then_error_best.txt", help="Path to the predictions file.")
     parser.add_argument("--dataset_path", type=str, default="../data/validation_sql_ranked.json", help="Path to the dataset file.")
     parser.add_argument("--db_root_path", type=str, default="./data/database", help="Root path to the databases.")
     parser.add_argument("--partial_match_threshold", type=float, default=0.8, help="Threshold for similarity to consider as a partial match.")
