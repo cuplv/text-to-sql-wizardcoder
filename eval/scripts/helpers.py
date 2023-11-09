@@ -10,17 +10,19 @@ import time
 
 # Load environment variables from .env file
 load_dotenv()
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"), organization=os.getenv("OPENAI_ORG_ID"))
 
-def chatgpt(messages, model='gpt-3.5-turbo-16k'):
+def chatgpt(messages, model='ft:gpt-3.5-turbo-1106:personal::8I4lPX45'):
     for i in range(5):
         try:
             response = client.chat.completions.create(
                 model=model,
                 messages=messages,
                 temperature=0.7,
-                #timeout=60
+                timeout=60
             )
+
+            return response.choices[0].message.content
         
         except requests.exceptions.Timeout:
             print(f'Timeout occurred on attempt {i+1}')
@@ -29,11 +31,9 @@ def chatgpt(messages, model='gpt-3.5-turbo-16k'):
         except Exception as e:
             print(f'Error occurred: {str(e)}')
             print('Retrying...')
+            model='ft:gpt-3.5-turbo-1106:personal::8I4lPX45'
             time.sleep(5)
-        
-        return response['choices'][0]['message']['content']
-        
-        
+                
     # all retries have failed.
     print("All retries failed for chatgpt.")
     return "###"
@@ -293,6 +293,30 @@ def get_result_table_from_db(db, query):
     except Exception as e:
         #print(f"Query: {query}\tError encountered: {e}")
         return None, None
+    
+def get_error_from_query(db, query):
+    try:
+        # Connect to an SQLite database in memory
+        conn = sqlite3.connect(db)
+        cursor = conn.cursor()
+
+        # Run the provided test query against the database
+        cursor.execute(query)
+        
+        # Fetch column names
+        columns = [column[0].lower() for column in cursor.description]
+        
+        result = cursor.fetchall()
+
+        # Close the connection
+        conn.close()
+
+        # Return column names along with results
+        return columns, result
+
+    except Exception as e:
+        #print(f"Query: {query}\tError encountered: {e}")
+        return e
     
 def generate_md_table(cols, results):
     # Create table header

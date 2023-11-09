@@ -1,6 +1,6 @@
 from datasets import load_dataset
 from tqdm import tqdm
-from scripts.helpers import chatgpt, compare_pred_to_gold_on_db, get_result_table_from_db, generate_md_table
+from scripts.helpers import chatgpt, compare_pred_to_gold_on_db, get_result_table_from_db, generate_md_table, get_error_from_query
 import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import argparse
@@ -50,7 +50,7 @@ def fetch_response(i, entry, args):
         {"role": "user", "content": prompt}
     ]
     
-    response_text = format(chatgpt(messages, model='gpt-3.5-turbo-1106'))
+    response_text = format(chatgpt(messages, model='ft:gpt-3.5-turbo-1106:personal::8I4lPX45'))
     messages.append({"role": "assistant", "content": response_text})
 
     db = os.path.join('./data/database', entry["db_id"], entry["db_id"] + ".sqlite")
@@ -76,46 +76,45 @@ def fetch_response(i, entry, args):
             """
             
             messages.append({"role": "user", "content": new_prompt})
-            response_text = format(chatgpt(messages))
+            response_text = format(chatgpt(messages, model='ft:gpt-3.5-turbo-1106:personal::8I4lPX45'))
             #print(messages)
             #print(response_text)
             messages.append({"role": "assistant", "content": response_text})
 
     ## Error correction given the error
-    for _ in range(2):
-        if args.error_driven:
-            if not compare_pred_to_gold_on_db(response_text, entry['ground_truth'], db):
-                result_table = get_result_table_from_db(db, response_text)
-                error = None
-                if result_table == (None, None):
-                    err_str = str(result_table)
-                    error = f"""
-                    ### Error in the SQL when executed on a dummy database:
-                    #
-                    # {err_str}
-                    #
-                    """
-
-                print(f'Error Correcting: {i}')
-                new_prompt = f"""
-                ##### Fix bugs in the below SQL for the given question.
-                ### Sqlite SQL tables, with their properties:
+    if args.error_driven:
+        if not compare_pred_to_gold_on_db(response_text, entry['ground_truth'], db):
+            result_table = get_result_table_from_db(db, response_text)
+            error = None
+            if result_table == (None, None):
+                err_str = get_error_from_query(response_text, db)
+                error = f"""
+                ### Error in the SQL when executed on a dummy database:
                 #
-                {entry['db_info']}
+                # {err_str}
                 #
-                {error}
-                ### {entry['question']}
-                ### Buggy SQL:
-                {response_text}
-                ### Fixed SQL:
-                SELECT
                 """
-                #print(new_prompt)
-                #messages.append({"role": "user", "content": new_prompt})
-                messages.clear()
-                messages.append({"role": "user", "content": new_prompt})
-                response_text = format(chatgpt(messages, model='gpt-4'))
-                messages.append({"role": "assistant", "content": response_text})
+
+            print(f'Error Correcting: {i}')
+            new_prompt = f"""
+            ##### Fix bugs in the below SQL for the given question.
+            ### Sqlite SQL tables, with their properties:
+            #
+            {entry['db_info']}
+            #
+            {error}
+            ### {entry['question']}
+            ### Buggy SQL:
+            {response_text}
+            ### Fixed SQL:
+            SELECT
+            """
+            #print(new_prompt)
+            #messages.append({"role": "user", "content": new_prompt})
+            messages.clear()
+            messages.append({"role": "user", "content": new_prompt})
+            response_text = format(chatgpt(messages, model='gpt-4'))
+            messages.append({"role": "assistant", "content": response_text})
 
     return i, response_text
 
