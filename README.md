@@ -121,7 +121,7 @@
 - I introduced a simple mutation based repair in my simple_eval.py tool. It will try to repair the SELECT and WHERE clauses of the SQL query if they are incorrect using the gold (ground truth) SQL's result table (or just input-output examples). It will try to repair the SELECT clause by adding or removing columns from the SELECT clause, and it will try to repair the WHERE clause by adding or removing conditions from the WHERE clause. Tries all combinations of adding and removing columns and conditions.
 - Results: **74.6%** (or **79.11%** on my simple evaluation tool)
 
-### 7. Finetuned SQLChatGPT + SELECT and WHERE Clause Repair
+### 8. Finetuned SQLChatGPT + SELECT and WHERE Clause Repair
 - In this approach I decided to finetune ChatGPT (gpt-3.5-turbo-1106, this model has 16k context) on the Spider dataset using OpenAI's API.
 - I use the finetuned model for the initial SQL query prediction and the Example Driven correction, but I use gpt-4 for the Error driven correction.
 - Results: **80.7%** (or **83.46%** on my simple evaluation tool)
