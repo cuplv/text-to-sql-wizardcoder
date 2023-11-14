@@ -61,6 +61,12 @@ def execute_sql_on_db(db_path, sql_query):
 def find_all_dbs_for_entry(db_folder):
     return glob.glob(os.path.join(db_folder, "*.sqlite"))
 
+def jaccard_similarity(set1, set2):
+    # Calculate the Jaccard similarity coefficient between two sets
+    intersection = set1.intersection(set2)
+    union = set1.union(set2)
+    return len(intersection) / len(union)
+
 def perform_mutation_repair(incorrect_query, gold_result, connection):
     cursor = connection.cursor()
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
@@ -143,7 +149,7 @@ def perform_where_clause_repair(incorrect_query, gold_result, connection):
 
     return None
 
-def evaluate(input, dataset_path, db_root_path, partial_match_threshold=0.8):
+def evaluate(input, dataset_path, db_root_path, partial_match_threshold, repair):
     with open(input, 'r') as f:
         input = [line.strip() for line in f.readlines()]
     
@@ -182,36 +188,37 @@ def evaluate(input, dataset_path, db_root_path, partial_match_threshold=0.8):
             if set(gt_results) == set(pred_results):
                 correct_count += 1
             else:
-                # Perform mutation repair
-                conn = sqlite3.connect(non_empty_db_path)
-                
-                # First, try mutation repair
-                repaired_query = perform_mutation_repair(predicted_sql, gt_results, conn)
-                
-                # If mutation repair didn't work, try where clause repair on the original query
-                if not repaired_query:
-                    repaired_query = perform_where_clause_repair(predicted_sql, gt_results, conn)
-                
-                # If mutation repair worked, try where clause repair on the repaired query
-                else:
-                    repaired_query_with_where = perform_where_clause_repair(repaired_query, gt_results, conn)
-                    
-                    # Use the further repaired query only if it's not None, otherwise keep the mutation repair
-                    if repaired_query_with_where:
-                        repaired_query = repaired_query_with_where
-
-                conn.close()
-                
-                # Check if the repaired query is correct
                 repaired_results = None
-                if repaired_query:
-                    repaired_results = execute_sql_on_db(non_empty_db_path, repaired_query)
-                    if set(gt_results) == set(repaired_results):
-                        correct_count += 1
-                        print(f"Repaired query for {entry['question']}:\n{repaired_query}\n")
+                if repair:
+                    # Perform mutation repair
+                    conn = sqlite3.connect(non_empty_db_path)
+                    
+                    # First, try mutation repair
+                    repaired_query = perform_mutation_repair(predicted_sql, gt_results, conn)
+                    
+                    # If mutation repair didn't work, try where clause repair on the original query
+                    if not repaired_query:
+                        repaired_query = perform_where_clause_repair(predicted_sql, gt_results, conn)
+                    
+                    # If mutation repair worked, try where clause repair on the repaired query
+                    else:
+                        repaired_query_with_where = perform_where_clause_repair(repaired_query, gt_results, conn)
+                        
+                        # Use the further repaired query only if it's not None, otherwise keep the mutation repair
+                        if repaired_query_with_where:
+                            repaired_query = repaired_query_with_where
 
-                common_rows = len(set(gt_results).intersection(set(repaired_results if repaired_results else pred_results)))
-                similarity = common_rows / len(gt_results)
+                    conn.close()
+                    
+                    # Check if the repaired query is correct
+                    
+                    if repaired_query:
+                        repaired_results = execute_sql_on_db(non_empty_db_path, repaired_query)
+                        if set(gt_results) == set(repaired_results):
+                            correct_count += 1
+                            print(f"Repaired query for {entry['question']}:\n{repaired_query}\n")
+
+                similarity = jaccard_similarity(set(gt_results), set(repaired_results if repaired_results else pred_results))
 
                 if similarity < partial_match_threshold:
                     incorrect_queries.append({
@@ -240,7 +247,8 @@ if __name__ == "__main__":
     parser.add_argument("--dataset_path", type=str, default="../data/validation_sql_ranked.json", help="Path to the dataset file.")
     parser.add_argument("--db_root_path", type=str, default="./data/database", help="Root path to the databases.")
     parser.add_argument("--partial_match_threshold", type=float, default=0.8, help="Threshold for similarity to consider as a partial match.")
+    parser.add_argument("--repair", action="store_true", default=False, help="Whether to perform mutation repair on incorrect queries.")
 
     args = parser.parse_args()
 
-    evaluate(args.input, args.dataset_path, args.db_root_path, args.partial_match_threshold)
+    evaluate(args.input, args.dataset_path, args.db_root_path, args.partial_match_threshold, args.repair)

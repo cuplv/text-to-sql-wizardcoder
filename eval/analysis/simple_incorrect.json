@@ -1,5 +1,14 @@
 [
     {
+        "index": 7,
+        "db_id": "concert_singer",
+        "db_info": "# singer ( age, name, song_release_year )",
+        "question": "What are the names and release years for all the songs of the youngest singer?",
+        "predicted_sql": "SELECT song_name,\n       song_release_year\nFROM singer\nWHERE age =\n    (SELECT MIN (age)\n     FROM singer)",
+        "ground_truth": "SELECT song_name,\n       song_release_year\nFROM singer\nORDER BY age ASC\nLIMIT 1",
+        "similarity": 0.5
+    },
+    {
         "index": 16,
         "db_id": "concert_singer",
         "db_info": "# stadium ( capacity, highest, average, stadium_id, location, name, lowest )\n# concert ( stadium_id, concert_id, concert_name, theme, year )\n# singer_in_concert ( concert_id, singer_id )\n# singer ( song_release_year, singer_id, name, country, song_name, age, is_male )\n# concert.stadium_id = stadium.stadium_id\n# singer_in_concert.singer_id = singer.singer_id\n# singer_in_concert.concert_id = concert.concert_id",
@@ -9,22 +18,13 @@
         "similarity": 0.0
     },
     {
-        "index": 28,
-        "db_id": "concert_singer",
-        "db_info": "# stadium ( stadium_id )\n# concert ( stadium_id, concert_name )\n# singer_in_concert ( concert_id, singer_id )\n# concert.stadium_id = stadium.stadium_id\n# singer_in_concert.concert_id = concert.concert_id",
-        "question": "Show the stadium names without any concert.",
-        "predicted_sql": "SELECT stadium.stadium_id\nFROM stadium\nLEFT JOIN concert ON stadium.stadium_id = concert.stadium_id\nWHERE concert.stadium_id IS NULL",
-        "ground_truth": "SELECT name\nFROM stadium\nWHERE stadium_id NOT IN\n    (SELECT stadium_id\n     FROM concert)",
-        "similarity": 0.4603174603174603
-    },
-    {
         "index": 36,
         "db_id": "concert_singer",
         "db_info": "# singer ( name, singer_id )\n# concert ( concert_id, concert_name )\n# singer_in_concert ( singer_id, concert_id )\n# singer_in_concert.singer_id = singer.singer_id\n# singer_in_concert.concert_id = concert.concert_id",
         "question": "What are the names of the singers and number of concerts for each person?",
         "predicted_sql": "SELECT singer.name,\n       COUNT(concert.concert_id)\nFROM singer\nJOIN singer_in_concert ON singer.singer_id = singer_in_concert.singer_id\nJOIN concert ON singer_in_concert.concert_id = concert.concert_id\nGROUP BY singer.name;",
         "ground_truth": "SELECT singer.name,\n       COUNT (*)\nFROM singer_in_concert\nJOIN singer ON singer_in_concert.singer_id = singer.singer_id\nGROUP BY singer.singer_id",
-        "similarity": 0.47058823529411764
+        "similarity": 0.4
     },
     {
         "index": 54,
@@ -42,7 +42,7 @@
         "question": "What is the full name of each car maker, along with its id and how many models it produces?",
         "predicted_sql": "SELECT car_makers.fullname,\n       model_list.maker,\n       COUNT (*)\nFROM car_makers\nJOIN model_list ON car_makers.id = model_list.maker\nJOIN car_names ON car_names.makeid = model_list.modelid\nGROUP BY model_list.maker",
         "ground_truth": "SELECT car_makers.fullname,\n       car_makers.id,\n       COUNT (*)\nFROM car_makers\nJOIN model_list ON car_makers.id = model_list.maker\nGROUP BY car_makers.id",
-        "similarity": 0.06060606060606061
+        "similarity": 0.041666666666666664
     },
     {
         "index": 99,
@@ -144,6 +144,15 @@
         "similarity": 0.0
     },
     {
+        "index": 154,
+        "db_id": "car_1",
+        "db_info": "# cars_data ( year, weight, id )\n# car_names ( makeid, model )\n# model_list ( modelid, maker )\n# car_makers ( id, maker, country )\n# countries ( countryid, countryname )\n# continents ( contid, continent )\n# countries.continent = continents.contid\n# car_makers.country = countries.countryid\n# model_list.maker = car_makers.id\n# car_names.model = model_list.model\n# cars_data.id = car_names.makeid",
+        "question": "What are the different years in which there were cars produced that weighed less than 4000 and also cars that weighted more than 3000 ?",
+        "predicted_sql": "SELECT DISTINCT YEAR\nFROM cars_data\nWHERE weight < 4000 INTERSECT\n  SELECT DISTINCT YEAR\n  FROM cars_data WHERE weight > 3000",
+        "ground_truth": "SELECT DISTINCT YEAR\nFROM cars_data\nWHERE weight BETWEEN 3000 AND 4000",
+        "similarity": 0.5806451612903226
+    },
+    {
         "index": 158,
         "db_id": "car_1",
         "db_info": "# model_list ( modelid )\n# car_makers ( id, maker )\n# car_names ( makeid, model )\n# cars_data ( id, accelerate, cylinders )\n# model_list.maker = car_makers.id\n# car_names.model = model_list.model\n# cars_data.id = car_names.makeid",
@@ -177,7 +186,7 @@
         "question": "What are the different models wthat are lighter than 3500 but were not built by the Ford Motor Company?",
         "predicted_sql": "SELECT DISTINCT model_list.model\nFROM model_list\nJOIN cars_data ON model_list.modelid = cars_data.id\nWHERE cars_data.weight < 3500\n  AND model_list.maker NOT IN\n    (SELECT id\n     FROM car_makers\n     WHERE fullname = 'Ford Motor Company')",
         "ground_truth": "SELECT DISTINCT model_list.model\nFROM model_list\nJOIN car_names ON model_list.model = car_names.model\nJOIN cars_data ON car_names.makeid = cars_data.id\nJOIN car_makers ON model_list.maker = car_makers.id\nWHERE cars_data.weight < 3500\n  AND car_makers.fullname != 'Ford Motor Company'",
-        "similarity": 0.04081632653061224
+        "similarity": 0.0392156862745098
     },
     {
         "index": 210,
@@ -333,13 +342,22 @@
         "similarity": 0.0
     },
     {
+        "index": 243,
+        "db_id": "flight_2",
+        "db_info": "# airlines ( uid, airline, abbreviation, country )\n# flights ( airline, flightno, sourceairport, destairport )\n# airports ( city, airportcode, airportname, country, countryabbrev )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode",
+        "question": "Find all airlines that have fewer than 200 flights.",
+        "predicted_sql": "SELECT airlines.airline\nFROM airlines\nLEFT JOIN flights ON airlines.uid = flights.airline\nGROUP BY airlines.airline\nHAVING COUNT(flights.flightno) < 200",
+        "ground_truth": "SELECT airlines.airline\nFROM airlines\nJOIN flights ON airlines.uid = flights.airline\nGROUP BY airlines.airline\nHAVING COUNT (*) < 200",
+        "similarity": 0.10526315789473684
+    },
+    {
         "index": 244,
         "db_id": "flight_2",
         "db_info": "# flights ( airline, flightno )\n# airlines ( uid, airline, abbreviation )\n# airports ( airportcode, airportname, country, countryabbrev, city )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode",
         "question": "Which airlines have less than 200 flights?",
         "predicted_sql": "SELECT airlines.airline\nFROM flights\nJOIN airlines ON flights.airline = airlines.abbreviation\nGROUP BY airlines.airline\nHAVING COUNT(flights.flightno) < 200",
         "ground_truth": "SELECT airlines.airline\nFROM airlines\nJOIN flights ON airlines.uid = flights.airline\nGROUP BY airlines.airline\nHAVING COUNT (*) < 200",
-        "similarity": 0.5
+        "similarity": 0.18181818181818182
     },
     {
         "index": 272,
@@ -540,6 +558,24 @@
         "similarity": 0.0
     },
     {
+        "index": 505,
+        "db_id": "battle_death",
+        "db_info": "# battle ( name, result, bulgarian_commander )\n# ship ( lost_in_battle, name, location )\n# ship.lost_in_battle = battle.id",
+        "question": "Show names, results and bulgarian commanders of the battles with no ships lost in the 'English Channel'.",
+        "predicted_sql": "SELECT name,\n       RESULT,\n       bulgarian_commander\nFROM battle\nWHERE name NOT IN\n    (SELECT battle.name\n     FROM battle\n     JOIN ship ON ship.lost_in_battle = battle.name\n     WHERE ship.location = 'English Channel' )",
+        "ground_truth": "SELECT name,\n       RESULT,\n       bulgarian_commander\nFROM battle\nEXCEPT\nSELECT battle.name,\n       battle.result,\n       battle.bulgarian_commander\nFROM battle\nJOIN ship ON battle.id = ship.lost_in_battle\nWHERE ship.location = 'English Channel'",
+        "similarity": 0.7222222222222222
+    },
+    {
+        "index": 526,
+        "db_id": "student_transcripts_tracking",
+        "db_info": "# courses ( course_id, course_name, course_description, other_details )\n# sections ( section_id, course_id, section_name, section_description, other_details )\n# addresses ( address_id, line_1, line_2, line_3, city, zip_postcode, state_province_county, country, other_address_details )\n# departments ( department_id, department_name, department_description, other_details )\n# degree_programs ( degree_program_id, department_id, degree_summary_name, degree_summary_description, other_details )\n# semesters ( semester_id, semester_name, semester_description, other_details )\n# students ( student_id, current_address_id, permanent_address_id, first_name, middle_name, last_name, cell_mobile_number, email_address, ssn, date_first_registered, date_left, other_student_details )\n# student_enrolment ( student_enrolment_id, degree_program_id, semester_id, student_id, other_details )\n# student_enrolment_courses ( student_course_id, course_id, student_enrolment_id )\n# transcripts ( transcript_id, transcript_date, other_details )\n# transcript_contents ( student_course_id, transcript_id )\n# degree_programs.department_id = departments.department_id\n# sections.course_id = courses.course_id\n# students.permanent_address_id = addresses.address_id\n# students.current_address_id = addresses.address_id\n# student_enrolment.student_id = students.student_id\n# student_enrolment.semester_id = semesters.semester_id\n# student_enrolment.degree_program_id = degree_programs.degree_program_id\n# student_enrolment_courses.student_enrolment_id = student_enrolment.student_enrolment_id\n# student_enrolment_courses.course_id = courses.course_id\n# transcript_contents.transcript_id = transcripts.transcript_id\n# transcript_contents.student_course_id = student_enrolment_courses.student_course_id",
+        "question": "What are the names and ids of every course with less than 2 sections?",
+        "predicted_sql": "SELECT courses.course_name,\n       courses.course_id\nFROM courses\nLEFT JOIN sections ON courses.course_id = sections.course_id\nGROUP BY courses.course_id,\n         courses.course_name\nHAVING COUNT(sections.section_id) < 2;",
+        "ground_truth": "SELECT courses.course_name,\n       courses.course_id\nFROM courses\nJOIN sections ON courses.course_id = sections.course_id\nGROUP BY courses.course_id\nHAVING COUNT (*) <= 2",
+        "similarity": 0.12184873949579832
+    },
+    {
         "index": 534,
         "db_id": "student_transcripts_tracking",
         "db_info": "# students ( student_id, first_name, middle_name, last_name, current_address_id, permanent_address_id, cell_mobile_number, email_address, ssn, date_first_registered, date_left, other_student_details )\n# student_enrolment ( student_enrolment_id, degree_program_id, semester_id, student_id, other_details )\n# student_enrolment.student_id = students.student_id",
@@ -591,7 +627,7 @@
         "question": "Which semesters do not have any student enrolled? List the semester name.",
         "predicted_sql": "SELECT semester_name\nFROM semesters\nEXCEPT\nSELECT semesters.semester_name\nFROM semesters\nJOIN student_enrolment ON semesters.semester_id = student_enrolment.semester_id",
         "ground_truth": "SELECT semester_name\nFROM semesters\nWHERE semester_id NOT IN\n    (SELECT semester_id\n     FROM student_enrolment)",
-        "similarity": 0.4375
+        "similarity": 0.5675675675675675
     },
     {
         "index": 557,
@@ -601,15 +637,6 @@
         "predicted_sql": "SELECT first_name,\n       middle_name,\n       last_name\nFROM students\nORDER BY date_first_registered ASC\nLIMIT 1;",
         "ground_truth": "SELECT first_name,\n       middle_name,\n       last_name\nFROM students\nORDER BY date_left ASC\nLIMIT 1",
         "similarity": 0.0
-    },
-    {
-        "index": 560,
-        "db_id": "student_transcripts_tracking",
-        "db_info": "# students ( first_name, permanent_address_id, current_address_id )\n# addresses ( address_id, line_1, line_2, line_3, city, zip_postcode, state_province_county, country )\n# students.permanent_address_id = addresses.address_id\n# students.current_address_id = addresses.address_id",
-        "question": "What is the first name of the student whose permanent address is different from his or her current one?",
-        "predicted_sql": "SELECT first_name\nFROM students\nJOIN addresses ON students.permanent_address_id = addresses.address_id\nJOIN addresses b ON students.current_address_id = b.address_id\nWHERE addresses.line_1 != b.line_1",
-        "ground_truth": "SELECT first_name\nFROM students\nWHERE current_address_id != permanent_address_id",
-        "similarity": 0.5714285714285714
     },
     {
         "index": 562,
@@ -636,7 +663,7 @@
         "question": "What is the series name of the TV Channel that shows the cartoon \"The Rise of the Blue Beetle\"?",
         "predicted_sql": "SELECT series_name\nFROM tv_channel\nWHERE id IN\n    (SELECT channel\n     FROM cartoon\n     WHERE title = 'The Rise of the Blue Beetle' );",
         "ground_truth": "SELECT tv_channel.series_name\nFROM tv_channel\nJOIN cartoon ON tv_channel.id = cartoon.channel\nWHERE cartoon.title = 'The Rise of the Blue Beetle!'",
-        "similarity": 0.041666666666666664
+        "similarity": 0.09090909090909091
     },
     {
         "index": 626,
@@ -645,7 +672,7 @@
         "question": "What is the episode for the TV series named \"Sky Radio\"?",
         "predicted_sql": "SELECT episode\nFROM tv_series\nWHERE channel =\n    (SELECT id\n     FROM tv_channel\n     WHERE series_name = 'Sky Radio' )",
         "ground_truth": "SELECT tv_series.episode\nFROM tv_channel\nJOIN tv_series ON tv_channel.id = tv_series.channel\nWHERE tv_channel.series_name = 'Sky Radio'",
-        "similarity": 0.058823529411764705
+        "similarity": 0.1
     },
     {
         "index": 631,
@@ -753,7 +780,7 @@
         "question": "What are the countries that have greater surface area than any country in Europe?",
         "predicted_sql": "SELECT name\nFROM country\nWHERE surfacearea >\n    (SELECT MAX (surfacearea)\n     FROM country\n     WHERE continent = 'Europe' );",
         "ground_truth": "SELECT name\nFROM country\nWHERE surfacearea >\n    (SELECT MIN (surfacearea)\n     FROM country\n     WHERE continent = 'Europe' )",
-        "similarity": 0.04905660377358491
+        "similarity": 0.10743801652892562
     },
     {
         "index": 773,
@@ -762,7 +789,7 @@
         "question": "Which countries have greater area than that of any country in Europe?",
         "predicted_sql": "SELECT name\nFROM country\nWHERE surfacearea >\n    (SELECT MAX(surfacearea)\n     FROM country\n     WHERE continent = 'Europe' )",
         "ground_truth": "SELECT name\nFROM country\nWHERE surfacearea >\n    (SELECT MIN (surfacearea)\n     FROM country\n     WHERE continent = 'Europe' )",
-        "similarity": 0.04905660377358491
+        "similarity": 0.10743801652892562
     },
     {
         "index": 777,
@@ -771,7 +798,34 @@
         "question": "What are the Asian countries which have a population larger than that of any country in Africa?",
         "predicted_sql": "SELECT name\nFROM country\nWHERE continent = 'Asia'\n  AND population >\n    (SELECT MAX(population)\n     FROM country\n     WHERE continent = 'Africa' );",
         "ground_truth": "SELECT name\nFROM country\nWHERE continent = 'Asia'\n  AND population >\n    (SELECT MIN (population)\n     FROM country\n     WHERE continent = 'Africa' )",
-        "similarity": 0.25
+        "similarity": 0.2631578947368421
+    },
+    {
+        "index": 778,
+        "db_id": "world_1",
+        "db_info": "# country ( code, name, population, continent, region, surfacearea, indepyear, lifeexpectancy, gnp, gnpold, localname, governmentform, headofstate, capital, code2 )\n# countrylanguage ( countrycode, language, isofficial, percentage )\n# countrylanguage.countrycode = country.code",
+        "question": "What are the country codes for countries that do not speak English?",
+        "predicted_sql": "SELECT code\nFROM country\nWHERE code NOT IN\n    (SELECT countrycode\n     FROM countrylanguage\n     WHERE LANGUAGE = 'English')",
+        "ground_truth": "SELECT countrycode\nFROM countrylanguage\nEXCEPT\nSELECT countrycode\nFROM countrylanguage\nWHERE LANGUAGE = 'English'",
+        "similarity": 0.4101694915254237
+    },
+    {
+        "index": 779,
+        "db_id": "world_1",
+        "db_info": "# country ( code, name, governmentform, continent, region, population, capital )\n# countrylanguage ( countrycode, language, isofficial, percentage )\n# countrylanguage.countrycode = country.code",
+        "question": "Return the country codes for countries that do not speak English.",
+        "predicted_sql": "SELECT code\nFROM country\nWHERE code NOT IN\n    (SELECT countrycode\n     FROM countrylanguage\n     WHERE LANGUAGE = 'English');",
+        "ground_truth": "SELECT countrycode\nFROM countrylanguage\nEXCEPT\nSELECT countrycode\nFROM countrylanguage\nWHERE LANGUAGE = 'English'",
+        "similarity": 0.4101694915254237
+    },
+    {
+        "index": 780,
+        "db_id": "world_1",
+        "db_info": "# country ( code )\n# countrylanguage ( countrycode, language )\n# countrylanguage.countrycode = country.code",
+        "question": "What are the country codes of countries where people use languages other than English?",
+        "predicted_sql": "SELECT code\nFROM country\nWHERE code NOT IN\n    (SELECT countrycode\n     FROM countrylanguage\n     WHERE LANGUAGE = 'english');",
+        "ground_truth": "SELECT DISTINCT countrycode\nFROM countrylanguage\nWHERE LANGUAGE != 'English'",
+        "similarity": 0.4066666666666667
     },
     {
         "index": 790,
@@ -873,6 +927,15 @@
         "similarity": 0.0
     },
     {
+        "index": 842,
+        "db_id": "orchestra",
+        "db_info": "# conductor ( name, conductor_id, age, nationality, year_of_work )\n# orchestra ( conductor_id, orchestra_id, orchestra, record_company, year_of_founded, major_record_format )\n# orchestra.conductor_id = conductor.conductor_id",
+        "question": "Show the names of conductors that have conducted more than one orchestras.",
+        "predicted_sql": "SELECT conductor.name\nFROM conductor\nJOIN orchestra ON conductor.conductor_id = orchestra.conductor_id\nGROUP BY conductor.name\nHAVING COUNT (*) > 1;",
+        "ground_truth": "SELECT conductor.name\nFROM conductor\nJOIN orchestra ON conductor.conductor_id = orchestra.conductor_id\nGROUP BY orchestra.conductor_id\nHAVING COUNT (*) > 1",
+        "similarity": 0.5
+    },
+    {
         "index": 844,
         "db_id": "orchestra",
         "db_info": "# conductor ( name, age, nationality, year_of_work )\n# orchestra ( conductor_id, orchestra, record_company, year_of_founded, major_record_format )\n# orchestra.conductor_id = conductor.conductor_id",
@@ -882,13 +945,31 @@
         "similarity": 0.0
     },
     {
+        "index": 896,
+        "db_id": "network_1",
+        "db_info": "# highschooler ( name, id, grade )\n# friend ( student_id, friend_id )\n# friend.friend_id = highschooler.id\n# friend.student_id = highschooler.id",
+        "question": "Show names of all high school students who do not have any friends.",
+        "predicted_sql": "SELECT name\nFROM highschooler\nWHERE id NOT IN\n    (SELECT student_id\n     FROM friend)",
+        "ground_truth": "SELECT name\nFROM highschooler\nEXCEPT\nSELECT highschooler.name\nFROM friend\nJOIN highschooler ON friend.student_id = highschooler.id",
+        "similarity": 0.2222222222222222
+    },
+    {
+        "index": 897,
+        "db_id": "network_1",
+        "db_info": "# highschooler ( name, id, grade )\n# friend ( friend_id, student_id )\n# likes ( liked_id, student_id )\n# friend.friend_id = highschooler.id\n# friend.student_id = highschooler.id\n# likes.student_id = highschooler.id\n# likes.liked_id = highschooler.id",
+        "question": "What are the names of students who have no friends?",
+        "predicted_sql": "SELECT name\nFROM highschooler\nWHERE id NOT IN\n    (SELECT student_id\n     FROM friend)",
+        "ground_truth": "SELECT name\nFROM highschooler\nEXCEPT\nSELECT highschooler.name\nFROM friend\nJOIN highschooler ON friend.student_id = highschooler.id",
+        "similarity": 0.2222222222222222
+    },
+    {
         "index": 905,
         "db_id": "network_1",
         "db_info": "# highschooler ( name, id, grade )\n# likes ( student_id, liked_id )\n# friend ( student_id, friend_id )\n# friend.friend_id = highschooler.id\n# friend.student_id = highschooler.id\n# likes.student_id = highschooler.id\n# likes.liked_id = highschooler.id",
         "question": "What are the names of high schoolers who have likes, and how many likes does each have?",
         "predicted_sql": "SELECT highschooler.name,\n       COUNT(*)\nFROM highschooler\nJOIN likes ON highschooler.id = likes.liked_id\nGROUP BY highschooler.name;",
         "ground_truth": "SELECT highschooler.name,\n       COUNT (*)\nFROM likes\nJOIN highschooler ON likes.student_id = highschooler.id\nGROUP BY likes.student_id",
-        "similarity": 0.3076923076923077
+        "similarity": 0.23529411764705882
     },
     {
         "index": 907,
@@ -906,7 +987,7 @@
         "question": "What are the names of the dogs for which the owner has not spend more than 1000 for treatment ?",
         "predicted_sql": "SELECT DISTINCT dogs.name\nFROM dogs\nJOIN treatments ON dogs.dog_id = treatments.dog_id\nGROUP BY dogs.name\nHAVING SUM(treatments.cost_of_treatment) <= 1000",
         "ground_truth": "SELECT name\nFROM dogs\nWHERE dog_id NOT IN\n    (SELECT dog_id\n     FROM treatments\n     GROUP BY dog_id\n     HAVING SUM (cost_of_treatment) > 1000)",
-        "similarity": 0.10628019323671498
+        "similarity": 0.24444444444444444
     },
     {
         "index": 929,
@@ -1014,7 +1095,7 @@
         "question": "How much does each charge type costs? List both charge type and amount.",
         "predicted_sql": "SELECT charge_type,\n       SUM (charge_amount)\nFROM charges\nGROUP BY charge_type",
         "ground_truth": "SELECT charge_type,\n       charge_amount\nFROM charges",
-        "similarity": 0.2975206611570248
+        "similarity": 0.27692307692307694
     },
     {
         "index": 996,
@@ -1033,14 +1114,5 @@
         "predicted_sql": "SELECT DISTINCT breeds.breed_name,\n                sizes.size_description\nFROM dogs\nJOIN breeds ON dogs.breed_code = breeds.breed_code\nJOIN sizes ON dogs.size_code = sizes.size_code;",
         "ground_truth": "SELECT DISTINCT breed_code,\n                size_code\nFROM dogs",
         "similarity": 0.0
-    },
-    {
-        "index": 1007,
-        "db_id": "singer",
-        "db_info": "# singer ( citizenship, name, birth_year, net_worth_millions, singer_id )\n# song ( singer_id, title, song_id, sales, highest_position )\n# song.singer_id = singer.singer_id",
-        "question": "What are the names of the singers who are not French citizens?",
-        "predicted_sql": "SELECT name\nFROM singer\nWHERE citizenship != 'French'",
-        "ground_truth": "SELECT name\nFROM singer\nWHERE citizenship != 'France'",
-        "similarity": 0.5760869565217391
     }
 ]

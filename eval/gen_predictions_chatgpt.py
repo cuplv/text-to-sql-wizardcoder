@@ -113,7 +113,7 @@ def fetch_response(i, entry, args):
             #messages.append({"role": "user", "content": new_prompt})
             messages.clear()
             messages.append({"role": "user", "content": new_prompt})
-            response_text = format(chatgpt(messages, model='gpt-4'))
+            response_text = format(chatgpt(messages, model='gpt-4-1106-preview'))
             messages.append({"role": "assistant", "content": response_text})
 
     return i, response_text
