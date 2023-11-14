@@ -114,13 +114,12 @@
 - **Example driven correction**:
 	- `That is incorrect. Please try again. The resulting table from the query is not what it should be. The correct result table is below. Don't try to match exactly to the result table I give, I want these to work for any content in a larger database. Please try to fix you original query as best you can with the new information.`
 - Results: **72%** (or **75.5%** on my simple evaluation tool)
-- I am dubbing this approach **SQLChatGPT** because it is the first time I have used ChatGPT to predict SQL queries and then used ChatGPT to correct the SQL queries. It is also the first time I have used ChatGPT to correct SQL queries using input-output examples.
+- I am dubbing this approach **SQLChatGPT** becuase there are so many different parts to it.
 
 ### 7. SQLChatGPT + SELECT and WHERE Clause Repair
 - This approach builds off of the previous approach, SQLChatGPT.
 - I introduced a simple mutation based repair in my simple_eval.py tool. It will try to repair the SELECT and WHERE clauses of the SQL query if they are incorrect using the gold (ground truth) SQL's result table (or just input-output examples). It will try to repair the SELECT clause by adding or removing columns from the SELECT clause, and it will try to repair the WHERE clause by adding or removing conditions from the WHERE clause. Tries all combinations of adding and removing columns and conditions.
 - Results: **74.6%** (or **79.11%** on my simple evaluation tool)
-- This is currently the best approach I have taken for Text-to-SQL
 
 ### 7. Finetuned SQLChatGPT + SELECT and WHERE Clause Repair
 - In this approach I decided to finetune ChatGPT (gpt-3.5-turbo-1106, this model has 16k context) on the Spider dataset using OpenAI's API.
