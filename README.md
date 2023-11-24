@@ -15,7 +15,7 @@
 #### Local Large Language Models
 - [richardr1126/sql-guanaco-13b-merged](https://huggingface.co/richardr1126/sql-guanaco-13b-merged)
 - [richardr1126/spider-natsql-wizard-coder-merged](https://huggingface.co/richardr1126/spider-natsql-wizard-coder-merged)
-- [richardr1126/spider-skeleton-wizard-coder-merged](https://huggingface.co/richardr1126/spider-skeleton-wizard-coder-merged)
+- Best Model: [richardr1126/spider-skeleton-wizard-coder-merged](https://huggingface.co/richardr1126/spider-skeleton-wizard-coder-merged)
 
 # Summer 2023 Approaches
 ### 1. SQL Guanaco 13B
