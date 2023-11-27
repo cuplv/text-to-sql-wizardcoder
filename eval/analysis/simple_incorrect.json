@@ -2,7 +2,7 @@
     {
         "index": 16,
         "db_id": "concert_singer",
-        "db_info": "# stadium ( capacity, highest, average, stadium_id, location, name, lowest )\n# concert ( stadium_id, concert_id, concert_name, theme, year )\n# singer_in_concert ( concert_id, singer_id )\n# singer ( song_release_year, singer_id, name, country, song_name, age, is_male )\n# concert.stadium_id = stadium.stadium_id\n# singer_in_concert.singer_id = singer.singer_id\n# singer_in_concert.concert_id = concert.concert_id",
+        "db_info": "# stadium ( stadium_id , location , name , capacity , highest , lowest , average )\n# singer ( singer_id , name , country , song_name , song_release_year , age , is_male )\n# concert ( concert_id , concert_name , theme , stadium_id , year )\n# singer_in_concert ( concert_id , singer_id )\n# concert.stadium_id = stadium.stadium_id\n# singer_in_concert.singer_id = singer.singer_id\n# singer_in_concert.concert_id = concert.concert_id\n",
         "question": "What is the maximum capacity and the average of all stadiums ?",
         "predicted_sql": "SELECT MAX(capacity) AS maximum_capacity,\n       AVG(capacity) AS average_capacity\nFROM stadium;",
         "ground_truth": "SELECT MAX (capacity) , average\nFROM stadium",
@@ -11,7 +11,7 @@
     {
         "index": 32,
         "db_id": "concert_singer",
-        "db_info": "# stadium ( name, stadium_id, location, capacity, highest, lowest, average )\n# concert ( stadium_id, concert_id, concert_name, theme, year )\n# concert.stadium_id = stadium.stadium_id",
+        "db_info": "# stadium ( stadium_id , location , name , capacity , highest , lowest , average )\n# singer ( singer_id , name , country , song_name , song_release_year , age , is_male )\n# concert ( concert_id , concert_name , theme , stadium_id , year )\n# singer_in_concert ( concert_id , singer_id )\n# concert.stadium_id = stadium.stadium_id\n# singer_in_concert.singer_id = singer.singer_id\n# singer_in_concert.concert_id = concert.concert_id\n",
         "question": "What are the names of all stadiums that did not have a concert in 2014?",
         "predicted_sql": "SELECT s.name\nFROM stadium s\nWHERE NOT EXISTS\n    (SELECT 1\n     FROM concert c\n     WHERE c.stadium_id = s.stadium_id\n       AND c.year = 2014 )\n  AND EXISTS\n    (SELECT 1\n     FROM concert c\n     WHERE c.stadium_id = s.stadium_id );",
         "ground_truth": "SELECT name\nFROM stadium\nEXCEPT\nSELECT stadium.name\nFROM concert\nJOIN stadium ON concert.stadium_id = stadium.stadium_id\nWHERE concert.year = 2014",
@@ -20,7 +20,7 @@
     {
         "index": 54,
         "db_id": "pets_1",
-        "db_info": "# student ( sex, stuid, lname, fname, age, major, advisor, city_code )\n# has_pet ( stuid, petid )\n# pets ( pettype, petid, pet_age, weight )\n# has_pet.stuid = student.stuid\n# has_pet.petid = pets.petid",
+        "db_info": "# student ( stuid , lname , fname , age , sex , major , advisor , city_code )\n# has_pet ( stuid , petid )\n# pets ( petid , pettype , pet_age , weight )\n# has_pet.stuid = student.stuid\n# has_pet.petid = pets.petid\n",
         "question": "How many dog pets are raised by female students?",
         "predicted_sql": "SELECT COUNT(*)\nFROM has_pet\nJOIN pets ON has_pet.petid = pets.petid\nJOIN student ON student.stuid = has_pet.stuid\nWHERE student.sex = 'Female'\n  AND pets.pettype = 'dog';",
         "ground_truth": "SELECT COUNT (*)\nFROM student\nJOIN has_pet ON student.stuid = has_pet.stuid\nJOIN pets ON has_pet.petid = pets.petid\nWHERE student.sex = 'F'\n  AND pets.pettype = 'dog'",
@@ -29,7 +29,7 @@
     {
         "index": 62,
         "db_id": "pets_1",
-        "db_info": "# student ( major, age )\n# has_pet ( stuid, petid )\n# pets ( pettype, pet_age, weight )\n# has_pet.stuid = student.stuid\n# has_pet.petid = pets.petid",
+        "db_info": "# student ( stuid , lname , fname , age , sex , major , advisor , city_code )\n# has_pet ( stuid , petid )\n# pets ( petid , pettype , pet_age , weight )\n# has_pet.stuid = student.stuid\n# has_pet.petid = pets.petid\n",
         "question": "What major is every student who does not own a cat as a pet, and also how old are they?",
         "predicted_sql": "SELECT s.major,\n       s.age\nFROM student s\nWHERE s.stuid NOT IN\n    (SELECT hp.stuid\n     FROM has_pet hp\n     JOIN pets p ON hp.petid = p.petid\n     WHERE p.pettype = 'Cat' );",
         "ground_truth": "SELECT major,\n       age\nFROM student\nWHERE stuid NOT IN\n    (SELECT student.stuid\n     FROM student\n     JOIN has_pet ON student.stuid = has_pet.stuid\n     JOIN pets ON pets.petid = has_pet.petid\n     WHERE pets.pettype = 'cat' )",
@@ -38,7 +38,7 @@
     {
         "index": 64,
         "db_id": "pets_1",
-        "db_info": "# has_pet ( stuid, petid )\n# student ( stuid, lname, fname, age, sex, major, advisor, city_code )\n# pets ( petid, pettype, pet_age, weight )\n# has_pet.stuid = student.stuid\n# has_pet.petid = pets.petid",
+        "db_info": "# student ( stuid , lname , fname , age , sex , major , advisor , city_code )\n# has_pet ( stuid , petid )\n# pets ( petid , pettype , pet_age , weight )\n# has_pet.stuid = student.stuid\n# has_pet.petid = pets.petid\n",
         "question": "What are the ids of the students who do not own cats as pets?",
         "predicted_sql": "SELECT DISTINCT student.stuid\nFROM student\nLEFT JOIN has_pet ON student.stuid = has_pet.stuid\nLEFT JOIN pets ON has_pet.petid = pets.petid\nWHERE pets.pettype != 'cat'\n  OR pets.pettype IS NULL;",
         "ground_truth": "SELECT stuid\nFROM student\nEXCEPT\nSELECT student.stuid\nFROM student\nJOIN has_pet ON student.stuid = has_pet.stuid\nJOIN pets ON pets.petid = has_pet.petid\nWHERE pets.pettype = 'cat'",
@@ -47,7 +47,7 @@
     {
         "index": 94,
         "db_id": "car_1",
-        "db_info": "# car_makers ( fullname, id, maker, country )\n# model_list ( maker, modelid )\n# car_names ( makeid, model, make )\n# model_list.maker = car_makers.id\n# car_names.model = model_list.model",
+        "db_info": "# continents ( contid , continent )\n# countries ( countryid , countryname , continent )\n# car_makers ( id , maker , fullname , country )\n# model_list ( modelid , maker , model )\n# car_names ( makeid , model , make )\n# cars_data ( id , mpg , cylinders , edispl , horsepower , weight , accelerate , year )\n# countries.continent = continents.contid\n# car_makers.country = countries.countryid\n# model_list.maker = car_makers.id\n# car_names.model = model_list.model\n# cars_data.id = car_names.makeid\n",
         "question": "What is the full name of each car maker, along with its id and how many models it produces?",
         "predicted_sql": "SELECT car_makers.id,\n       car_makers.fullname,\n       COUNT(model_list.model) AS model_count\nFROM car_makers\nJOIN model_list ON car_makers.id = model_list.maker\nGROUP BY car_makers.id,\n         car_makers.fullname;",
         "ground_truth": "SELECT car_makers.fullname,\n       car_makers.id,\n       COUNT (*)\nFROM car_makers\nJOIN model_list ON car_makers.id = model_list.maker\nGROUP BY car_makers.id",
@@ -56,7 +56,7 @@
     {
         "index": 98,
         "db_id": "car_1",
-        "db_info": "# cars_data ( weight, id, mpg, cylinders, edispl, horsepower, accelerate, year )\n# model_list ( modelid, maker )\n# car_names ( model, makeid )\n# car_makers ( id, maker, fullname, country )\n# countries ( countryid, countryname, continent )\n# continents ( contid, continent )\n# countries.continent = continents.contid\n# car_makers.country = countries.countryid\n# model_list.maker = car_makers.id\n# car_names.model = model_list.model\n# cars_data.id = car_names.makeid",
+        "db_info": "# continents ( contid , continent )\n# countries ( countryid , countryname , continent )\n# car_makers ( id , maker , fullname , country )\n# model_list ( modelid , maker , model )\n# car_names ( makeid , model , make )\n# cars_data ( id , mpg , cylinders , edispl , horsepower , weight , accelerate , year )\n# countries.continent = continents.contid\n# car_makers.country = countries.countryid\n# model_list.maker = car_makers.id\n# car_names.model = model_list.model\n# cars_data.id = car_names.makeid\n",
         "question": "What is the model for the car with a weight smaller than the average?",
         "predicted_sql": "SELECT DISTINCT model_list.model\nFROM model_list\nJOIN car_names ON model_list.modelid = car_names.model\nJOIN cars_data ON car_names.makeid = cars_data.id\nWHERE cars_data.weight <\n    (SELECT AVG(weight)\n     FROM cars_data);",
         "ground_truth": "SELECT car_names.model\nFROM car_names\nJOIN cars_data ON car_names.makeid = cars_data.id\nWHERE cars_data.weight <\n    (SELECT AVG (weight)\n     FROM cars_data)",
@@ -65,7 +65,7 @@
     {
         "index": 99,
         "db_id": "car_1",
-        "db_info": "# car_makers ( maker, fullname, country, id )\n# cars_data ( year, mpg, cylinders, edispl, horsepower, weight, accelerate, id )\n# model_list ( maker, model, modelid )\n# car_names ( model, makeid, make )\n# countries ( countryname, countryid )\n# continents ( continent, contid )\n# countries.continent = continents.contid\n# car_makers.country = countries.countryid\n# model_list.maker = car_makers.id\n# car_names.model = model_list.model\n# cars_data.id = car_names.makeid",
+        "db_info": "# continents ( contid , continent )\n# countries ( countryid , countryname , continent )\n# car_makers ( id , maker , fullname , country )\n# model_list ( modelid , maker , model )\n# car_names ( makeid , model , make )\n# cars_data ( id , mpg , cylinders , edispl , horsepower , weight , accelerate , year )\n# countries.continent = continents.contid\n# car_makers.country = countries.countryid\n# model_list.maker = car_makers.id\n# car_names.model = model_list.model\n# cars_data.id = car_names.makeid\n",
         "question": "Find the name of the makers that produced some cars in the year of 1970?",
         "predicted_sql": "SELECT DISTINCT car_makers.fullname\nFROM car_makers\nJOIN car_names ON car_makers.id = car_names.makeid\nJOIN cars_data ON car_names.makeid = cars_data.id\nWHERE cars_data.year = '1970';",
         "ground_truth": "SELECT DISTINCT car_makers.maker\nFROM car_makers\nJOIN model_list ON car_makers.id = model_list.maker\nJOIN car_names ON model_list.model = car_names.model\nJOIN cars_data ON car_names.makeid = cars_data.id\nWHERE cars_data.year = '1970'",
@@ -74,7 +74,7 @@
     {
         "index": 109,
         "db_id": "car_1",
-        "db_info": "# car_makers ( id, maker, fullname, country )\n# model_list ( modelid, maker, model )\n# car_names ( makeid, model, make )\n# model_list.maker = car_makers.id\n# car_names.model = model_list.model",
+        "db_info": "# continents ( contid , continent )\n# countries ( countryid , countryname , continent )\n# car_makers ( id , maker , fullname , country )\n# model_list ( modelid , maker , model )\n# car_names ( makeid , model , make )\n# cars_data ( id , mpg , cylinders , edispl , horsepower , weight , accelerate , year )\n# countries.continent = continents.contid\n# car_makers.country = countries.countryid\n# model_list.maker = car_makers.id\n# car_names.model = model_list.model\n# cars_data.id = car_names.makeid\n",
         "question": "How many car models are produced by each maker ? Only list the count and the maker full name .",
         "predicted_sql": "SELECT COUNT(DISTINCT model_list.model) AS model_count,\n       car_makers.fullname\nFROM model_list\nJOIN car_makers ON model_list.maker = car_makers.id\nGROUP BY car_makers.fullname;",
         "ground_truth": "SELECT COUNT (*) , car_makers.fullname\nFROM model_list\nJOIN car_makers ON model_list.maker = car_makers.id\nGROUP BY car_makers.id",
@@ -83,7 +83,7 @@
     {
         "index": 131,
         "db_id": "car_1",
-        "db_info": "# cars_data ( horsepower )\n# model_list ( modelid, maker )\n# car_makers ( id, maker )\n# car_names ( makeid, model, make )\n# model_list.maker = car_makers.id\n# car_names.model = model_list.model\n# cars_data.id = car_names.makeid",
+        "db_info": "# continents ( contid , continent )\n# countries ( countryid , countryname , continent )\n# car_makers ( id , maker , fullname , country )\n# model_list ( modelid , maker , model )\n# car_names ( makeid , model , make )\n# cars_data ( id , mpg , cylinders , edispl , horsepower , weight , accelerate , year )\n# countries.continent = continents.contid\n# car_makers.country = countries.countryid\n# model_list.maker = car_makers.id\n# car_names.model = model_list.model\n# cars_data.id = car_names.makeid\n",
         "question": "What is the maximum horsepower and the make of the car models with 3 cylinders?",
         "predicted_sql": "SELECT MAX(cars_data.horsepower) AS max_horsepower,\n       car_names.make\nFROM cars_data\nINNER JOIN car_names ON cars_data.id = car_names.makeid\nWHERE cars_data.cylinders = 3\nGROUP BY car_names.make;",
         "ground_truth": "SELECT cars_data.horsepower,\n       car_names.make\nFROM car_names\nJOIN cars_data ON car_names.makeid = cars_data.id\nWHERE cars_data.cylinders = 3\nORDER BY cars_data.horsepower DESC\nLIMIT 1",
@@ -92,7 +92,7 @@
     {
         "index": 132,
         "db_id": "car_1",
-        "db_info": "# cars_data ( horsepower, cylinders, id )\n# model_list ( maker, modelid, model )\n# car_makers ( maker, id, fullname, country )\n# model_list.maker = car_makers.id",
+        "db_info": "# continents ( contid , continent )\n# countries ( countryid , countryname , continent )\n# car_makers ( id , maker , fullname , country )\n# model_list ( modelid , maker , model )\n# car_names ( makeid , model , make )\n# cars_data ( id , mpg , cylinders , edispl , horsepower , weight , accelerate , year )\n# countries.continent = continents.contid\n# car_makers.country = countries.countryid\n# model_list.maker = car_makers.id\n# car_names.model = model_list.model\n# cars_data.id = car_names.makeid\n",
         "question": "What is the largest amount of horsepower for the models with 3 cylinders and what make is it?",
         "predicted_sql": "SELECT MAX(cars_data.horsepower) AS max_horsepower,\n       car_makers.maker AS make\nFROM cars_data\nJOIN car_names ON cars_data.id = car_names.makeid\nJOIN model_list ON car_names.model = model_list.model\nJOIN car_makers ON model_list.maker = car_makers.id\nWHERE cars_data.cylinders = 3\nGROUP BY car_makers.maker\nORDER BY max_horsepower DESC\nLIMIT 1;",
         "ground_truth": "SELECT cars_data.horsepower,\n       car_names.make\nFROM car_names\nJOIN cars_data ON car_names.makeid = cars_data.id\nWHERE cars_data.cylinders = 3\nORDER BY cars_data.horsepower DESC\nLIMIT 1",
@@ -101,7 +101,7 @@
     {
         "index": 138,
         "db_id": "car_1",
-        "db_info": "# car_makers ( maker )\n# model_list ( maker )\n# car_names ( model )\n# cars_data ( edispl, id )\n# model_list.maker = car_makers.id\n# car_names.model = model_list.model\n# cars_data.id = car_names.makeid",
+        "db_info": "# continents ( contid , continent )\n# countries ( countryid , countryname , continent )\n# car_makers ( id , maker , fullname , country )\n# model_list ( modelid , maker , model )\n# car_names ( makeid , model , make )\n# cars_data ( id , mpg , cylinders , edispl , horsepower , weight , accelerate , year )\n# countries.continent = continents.contid\n# car_makers.country = countries.countryid\n# model_list.maker = car_makers.id\n# car_names.model = model_list.model\n# cars_data.id = car_names.makeid\n",
         "question": "What is the average edispl for all volvos?",
         "predicted_sql": "SELECT AVG (cars_data.edispl)\nFROM cars_data\nJOIN car_names ON cars_data.id = car_names.makeid\nJOIN model_list ON car_names.model = model_list.model\nWHERE model_list.maker =\n    (SELECT id\n     FROM car_makers\n     WHERE maker = 'volvo' );",
         "ground_truth": "SELECT AVG (cars_data.edispl)\nFROM car_names\nJOIN cars_data ON car_names.makeid = cars_data.id\nWHERE car_names.model = 'volvo'",
@@ -110,7 +110,7 @@
     {
         "index": 154,
         "db_id": "car_1",
-        "db_info": "# cars_data ( year, weight, id )\n# car_names ( makeid, model )\n# model_list ( modelid, maker )\n# car_makers ( id, maker, country )\n# countries ( countryid, countryname )\n# continents ( contid, continent )\n# countries.continent = continents.contid\n# car_makers.country = countries.countryid\n# model_list.maker = car_makers.id\n# car_names.model = model_list.model\n# cars_data.id = car_names.makeid",
+        "db_info": "# continents ( contid , continent )\n# countries ( countryid , countryname , continent )\n# car_makers ( id , maker , fullname , country )\n# model_list ( modelid , maker , model )\n# car_names ( makeid , model , make )\n# cars_data ( id , mpg , cylinders , edispl , horsepower , weight , accelerate , year )\n# countries.continent = continents.contid\n# car_makers.country = countries.countryid\n# model_list.maker = car_makers.id\n# car_names.model = model_list.model\n# cars_data.id = car_names.makeid\n",
         "question": "What are the different years in which there were cars produced that weighed less than 4000 and also cars that weighted more than 3000 ?",
         "predicted_sql": "SELECT DISTINCT YEAR\nFROM cars_data\nWHERE weight < 4000 INTERSECT\n  SELECT DISTINCT YEAR\n  FROM cars_data WHERE weight > 3000;",
         "ground_truth": "SELECT DISTINCT YEAR\nFROM cars_data\nWHERE weight BETWEEN 3000 AND 4000",
@@ -119,7 +119,7 @@
     {
         "index": 161,
         "db_id": "car_1",
-        "db_info": "# countries ( countryname, continent )\n# car_makers ( country )\n# car_makers.country = countries.countryid",
+        "db_info": "# continents ( contid , continent )\n# countries ( countryid , countryname , continent )\n# car_makers ( id , maker , fullname , country )\n# model_list ( modelid , maker , model )\n# car_names ( makeid , model , make )\n# cars_data ( id , mpg , cylinders , edispl , horsepower , weight , accelerate , year )\n# countries.continent = continents.contid\n# car_makers.country = countries.countryid\n# model_list.maker = car_makers.id\n# car_names.model = model_list.model\n# cars_data.id = car_names.makeid\n",
         "question": "How many countries has more than 2 car makers ?",
         "predicted_sql": "SELECT COUNT(*)\nFROM\n  (SELECT countries.countryname\n   FROM countries\n   JOIN car_makers ON countries.countryid = car_makers.country\n   GROUP BY countries.countryname\n   HAVING COUNT(DISTINCT car_makers.id) > 2) AS subquery;",
         "ground_truth": "SELECT COUNT (*)\nFROM countries\nJOIN car_makers ON countries.countryid = car_makers.country\nGROUP BY countries.countryid\nHAVING COUNT (*) > 2",
@@ -128,7 +128,7 @@
     {
         "index": 162,
         "db_id": "car_1",
-        "db_info": "# countries ( countryid, countryname, continent )\n# car_makers ( id, maker, fullname, country )\n# car_makers.country = countries.countryid",
+        "db_info": "# continents ( contid , continent )\n# countries ( countryid , countryname , continent )\n# car_makers ( id , maker , fullname , country )\n# model_list ( modelid , maker , model )\n# car_names ( makeid , model , make )\n# cars_data ( id , mpg , cylinders , edispl , horsepower , weight , accelerate , year )\n# countries.continent = continents.contid\n# car_makers.country = countries.countryid\n# model_list.maker = car_makers.id\n# car_names.model = model_list.model\n# cars_data.id = car_names.makeid\n",
         "question": "What is the number of countries with more than 2 car makers ?",
         "predicted_sql": "SELECT COUNT(*)\nFROM\n  (SELECT countries.countryname\n   FROM car_makers\n   JOIN countries ON car_makers.country = countries.countryid\n   GROUP BY countries.countryname\n   HAVING COUNT(DISTINCT car_makers.id) > 2) AS subquery;",
         "ground_truth": "SELECT COUNT (*)\nFROM countries\nJOIN car_makers ON countries.countryid = car_makers.country\nGROUP BY countries.countryid\nHAVING COUNT (*) > 2",
@@ -137,7 +137,7 @@
     {
         "index": 178,
         "db_id": "car_1",
-        "db_info": "# countries ( countryid, countryname )\n# car_makers ( id, maker, country )\n# model_list ( modelid, maker, model )\n# car_names ( makeid, model, make )\n# cars_data ( id )\n# car_makers.country = countries.countryid\n# model_list.maker = car_makers.id\n# car_names.model = model_list.model\n# cars_data.id = car_names.makeid",
+        "db_info": "# continents ( contid , continent )\n# countries ( countryid , countryname , continent )\n# car_makers ( id , maker , fullname , country )\n# model_list ( modelid , maker , model )\n# car_names ( makeid , model , make )\n# cars_data ( id , mpg , cylinders , edispl , horsepower , weight , accelerate , year )\n# countries.continent = continents.contid\n# car_makers.country = countries.countryid\n# model_list.maker = car_makers.id\n# car_names.model = model_list.model\n# cars_data.id = car_names.makeid\n",
         "question": "What are the ids and names of all countries that either have more than 3 car makers or produce fiat model ?",
         "predicted_sql": "SELECT DISTINCT countries.countryid,\n                countries.countryname\nFROM countries\nLEFT JOIN car_makers ON countries.countryid = car_makers.country\nLEFT JOIN model_list ON car_makers.id = model_list.maker\nWHERE car_makers.fullname = 'Fiat'\n  OR countries.countryid IN\n    (SELECT country\n     FROM car_makers\n     GROUP BY country\n     HAVING COUNT(*) > 3);",
         "ground_truth": "SELECT countries.countryid,\n       countries.countryname\nFROM countries\nJOIN car_makers ON countries.countryid = car_makers.country\nGROUP BY countries.countryid\nHAVING COUNT (*) > 3\nUNION\nSELECT countries.countryid,\n       countries.countryname\nFROM countries\nJOIN car_makers ON countries.countryid = car_makers.country\nJOIN model_list ON car_makers.id = model_list.maker\nWHERE model_list.model = 'fiat'",
@@ -146,7 +146,7 @@
     {
         "index": 196,
         "db_id": "flight_2",
-        "db_info": "# airlines ( country, airline, abbreviation, uid )\n# airports ( country, airportname, airportcode, city, countryabbrev )\n# flights ( airline, flightno, sourceairport, destairport )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode",
+        "db_info": "# airlines ( uid , airline , abbreviation , country )\n# airports ( city , airportcode , airportname , country , countryabbrev )\n# flights ( airline , flightno , sourceairport , destairport )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode\n",
         "question": "Return the number of airlines in the USA.",
         "predicted_sql": "SELECT COUNT(*)\nFROM airlines\nWHERE country = 'United States';",
         "ground_truth": "SELECT COUNT (*)\nFROM airlines\nWHERE country = 'USA'",
@@ -155,7 +155,7 @@
     {
         "index": 203,
         "db_id": "flight_2",
-        "db_info": "# flights ( sourceairport, airline, flightno, destairport )",
+        "db_info": "# airlines ( uid , airline , abbreviation , country )\n# airports ( city , airportcode , airportname , country , countryabbrev )\n# flights ( airline , flightno , sourceairport , destairport )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode\n",
         "question": "How many flights depart from 'APG'?",
         "predicted_sql": "SELECT COUNT (*)\nFROM flights\nJOIN airports ON flights.sourceairport = airports.airportcode\nWHERE airports.airportname = 'Phillips Aaf';",
         "ground_truth": "SELECT COUNT (*)\nFROM flights\nWHERE sourceairport = 'APG'",
@@ -164,7 +164,7 @@
     {
         "index": 204,
         "db_id": "flight_2",
-        "db_info": "# flights ( sourceairport, flightno, airline, destairport )\n# airports ( airportcode, city, airportname, country, countryabbrev )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode",
+        "db_info": "# airlines ( uid , airline , abbreviation , country )\n# airports ( city , airportcode , airportname , country , countryabbrev )\n# flights ( airline , flightno , sourceairport , destairport )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode\n",
         "question": "Count the number of flights departing from 'APG'.",
         "predicted_sql": "SELECT COUNT (*)\nFROM flights\nJOIN airports ON flights.sourceairport = airports.airportcode\nWHERE airports.city = 'APG';",
         "ground_truth": "SELECT COUNT (*)\nFROM flights\nWHERE sourceairport = 'APG'",
@@ -173,7 +173,7 @@
     {
         "index": 213,
         "db_id": "flight_2",
-        "db_info": "# airlines ( airline, abbreviation, country, uid )\n# flights ( airline, flightno, sourceairport, destairport )",
+        "db_info": "# airlines ( uid , airline , abbreviation , country )\n# airports ( city , airportcode , airportname , country , countryabbrev )\n# flights ( airline , flightno , sourceairport , destairport )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode\n",
         "question": "How many flights does airline 'JetBlue Airways' have?",
         "predicted_sql": "SELECT COUNT(*)\nFROM flights\nWHERE airline = 'JetBlue Airways';",
         "ground_truth": "SELECT COUNT (*)\nFROM flights\nJOIN airlines ON flights.airline = airlines.uid\nWHERE airlines.airline = 'JetBlue Airways'",
@@ -182,7 +182,7 @@
     {
         "index": 225,
         "db_id": "flight_2",
-        "db_info": "# airports ( airportcode, city, airportname, country, countryabbrev )",
+        "db_info": "# airlines ( uid , airline , abbreviation , country )\n# airports ( city , airportcode , airportname , country , countryabbrev )\n# flights ( airline , flightno , sourceairport , destairport )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode\n",
         "question": "What is the code of airport that has the highest number of flights?",
         "predicted_sql": "SELECT airport,\n       SUM(flight_count) AS total_flights\nFROM\n  (SELECT sourceairport AS airport,\n          COUNT(*) AS flight_count\n   FROM flights\n   GROUP BY sourceairport\n   UNION ALL SELECT destairport AS airport,\n                    COUNT(*) AS flight_count\n   FROM flights\n   GROUP BY destairport) AS airport_counts\nGROUP BY airport\nORDER BY total_flights DESC\nLIMIT 1;",
         "ground_truth": "SELECT airports.airportcode\nFROM airports\nJOIN flights ON airports.airportcode = flights.destairport\nOR airports.airportcode = flights.sourceairport\nGROUP BY airports.airportcode\nORDER BY COUNT (*) DESC\nLIMIT 1",
@@ -191,7 +191,7 @@
     {
         "index": 226,
         "db_id": "flight_2",
-        "db_info": "# flights ( destairport, sourceairport, airline )\n# airports ( airportcode, airportname, city, country )\n# airlines ( airline, abbreviation, country )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode",
+        "db_info": "# airlines ( uid , airline , abbreviation , country )\n# airports ( city , airportcode , airportname , country , countryabbrev )\n# flights ( airline , flightno , sourceairport , destairport )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode\n",
         "question": "What is the airport code of the airport with the most flights?",
         "predicted_sql": "SELECT a.airportcode\nFROM airports a\nJOIN flights f ON a.airportcode = f.destairport\nGROUP BY a.airportcode\nORDER BY COUNT(*) DESC\nLIMIT 1;",
         "ground_truth": "SELECT airports.airportcode\nFROM airports\nJOIN flights ON airports.airportcode = flights.destairport\nOR airports.airportcode = flights.sourceairport\nGROUP BY airports.airportcode\nORDER BY COUNT (*) DESC\nLIMIT 1",
@@ -200,7 +200,7 @@
     {
         "index": 229,
         "db_id": "flight_2",
-        "db_info": "# flights ( airline, flightno, sourceairport, destairport )\n# airlines ( airline, uid, abbreviation, country )\n# airports ( airportname, airportcode, city, country, countryabbrev )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode",
+        "db_info": "# airlines ( uid , airline , abbreviation , country )\n# airports ( city , airportcode , airportname , country , countryabbrev )\n# flights ( airline , flightno , sourceairport , destairport )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode\n",
         "question": "Which airline has most number of flights?",
         "predicted_sql": "SELECT airline,\n       COUNT(*) AS flight_count\nFROM flights\nGROUP BY airline\nORDER BY flight_count DESC\nLIMIT 1;",
         "ground_truth": "SELECT airlines.airline\nFROM airlines\nJOIN flights ON airlines.uid = flights.airline\nGROUP BY airlines.airline\nORDER BY COUNT (*) DESC\nLIMIT 1",
@@ -209,7 +209,7 @@
     {
         "index": 230,
         "db_id": "flight_2",
-        "db_info": "# flights ( airline, flightno, sourceairport, destairport )\n# airlines ( airline, uid, abbreviation, country )",
+        "db_info": "# airlines ( uid , airline , abbreviation , country )\n# airports ( city , airportcode , airportname , country , countryabbrev )\n# flights ( airline , flightno , sourceairport , destairport )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode\n",
         "question": "What airline serves the most flights?",
         "predicted_sql": "SELECT airlines.airline,\n       COUNT(*) AS total_flights\nFROM flights\nJOIN airlines ON flights.airline = airlines.uid\nGROUP BY flights.airline\nORDER BY total_flights DESC\nLIMIT 1;",
         "ground_truth": "SELECT airlines.airline\nFROM airlines\nJOIN flights ON airlines.uid = flights.airline\nGROUP BY airlines.airline\nORDER BY COUNT (*) DESC\nLIMIT 1",
@@ -218,7 +218,7 @@
     {
         "index": 232,
         "db_id": "flight_2",
-        "db_info": "# airlines ( abbreviation, country, airline, uid )\n# flights ( airline, sourceairport, destairport, flightno )\n# airports ( country, airportcode, airportname, countryabbrev )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode",
+        "db_info": "# airlines ( uid , airline , abbreviation , country )\n# airports ( city , airportcode , airportname , country , countryabbrev )\n# flights ( airline , flightno , sourceairport , destairport )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode\n",
         "question": "What is the abbreviation of the airilne has the fewest flights and what country is it in?",
         "predicted_sql": "SELECT a.abbreviation,\n       a.country\nFROM airlines AS a\nJOIN flights AS f ON a.abbreviation = f.airline\nGROUP BY a.abbreviation,\n         a.country\nORDER BY COUNT(*) ASC\nLIMIT 1;",
         "ground_truth": "SELECT airlines.abbreviation,\n       airlines.country\nFROM airlines\nJOIN flights ON airlines.uid = flights.airline\nGROUP BY airlines.airline\nORDER BY COUNT (*) ASC\nLIMIT 1",
@@ -227,7 +227,7 @@
     {
         "index": 233,
         "db_id": "flight_2",
-        "db_info": "# flights ( sourceairport, airline, flightno )\n# airports ( airportcode, airportname, city )\n# airlines ( airline, uid, abbreviation )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode",
+        "db_info": "# airlines ( uid , airline , abbreviation , country )\n# airports ( city , airportcode , airportname , country , countryabbrev )\n# flights ( airline , flightno , sourceairport , destairport )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode\n",
         "question": "What are airlines that have some flight departing from airport 'AHD'?",
         "predicted_sql": "SELECT DISTINCT airlines.airline\nFROM airlines\nJOIN flights ON airlines.abbreviation = flights.airline\nJOIN airports ON airports.airportcode = flights.sourceairport\nWHERE airports.airportname = 'AHD';",
         "ground_truth": "SELECT airlines.airline\nFROM airlines\nJOIN flights ON airlines.uid = flights.airline\nWHERE flights.sourceairport = 'AHD'",
@@ -236,7 +236,7 @@
     {
         "index": 237,
         "db_id": "flight_2",
-        "db_info": "# airlines ( airline, abbreviation, country, uid )\n# flights ( airline, sourceairport, destairport, flightno )\n# airports ( airportcode, country, countryabbrev, city, airportname )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode",
+        "db_info": "# airlines ( uid , airline , abbreviation , country )\n# airports ( city , airportcode , airportname , country , countryabbrev )\n# flights ( airline , flightno , sourceairport , destairport )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode\n",
         "question": "Find all airlines that have flights from both airports 'APG' and 'CVO'.",
         "predicted_sql": "SELECT airlines.airline\nFROM flights\nJOIN airlines ON flights.airline = airlines.uid\nWHERE flights.destairport = 'APG' INTERSECT\n  SELECT airlines.airline\n  FROM flights\n  JOIN airlines ON flights.airline = airlines.uid WHERE flights.destairport = 'CVO';",
         "ground_truth": "SELECT airlines.airline\nFROM airlines\nJOIN flights ON airlines.uid = flights.airline\nWHERE flights.sourceairport = 'APG' INTERSECT\n  SELECT airlines.airline\n  FROM airlines\n  JOIN flights ON airlines.uid = flights.airline WHERE flights.sourceairport = 'CVO'",
@@ -245,7 +245,7 @@
     {
         "index": 241,
         "db_id": "flight_2",
-        "db_info": "# airlines ( airline, uid, abbreviation, country )\n# flights ( airline, flightno, sourceairport, destairport )\n# airports ( city, airportcode, airportname, country, countryabbrev )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode",
+        "db_info": "# airlines ( uid , airline , abbreviation , country )\n# airports ( city , airportcode , airportname , country , countryabbrev )\n# flights ( airline , flightno , sourceairport , destairport )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode\n",
         "question": "Find all airlines that have at least 10 flights.",
         "predicted_sql": "SELECT f.airline\nFROM flights AS f\nGROUP BY f.airline\nHAVING COUNT(f.flightno) >= 10;",
         "ground_truth": "SELECT airlines.airline\nFROM airlines\nJOIN flights ON airlines.uid = flights.airline\nGROUP BY airlines.airline\nHAVING COUNT (*) > 10",
@@ -254,7 +254,7 @@
     {
         "index": 242,
         "db_id": "flight_2",
-        "db_info": "# airlines ( airline, abbreviation, country )\n# flights ( airline, flightno, sourceairport, destairport )",
+        "db_info": "# airlines ( uid , airline , abbreviation , country )\n# airports ( city , airportcode , airportname , country , countryabbrev )\n# flights ( airline , flightno , sourceairport , destairport )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode\n",
         "question": "Which airlines have at least 10 flights?",
         "predicted_sql": "SELECT a.airline\nFROM flights f\nJOIN airlines a ON f.airline = a.abbreviation\nGROUP BY a.airline\nHAVING COUNT(*) >= 10;",
         "ground_truth": "SELECT airlines.airline\nFROM airlines\nJOIN flights ON airlines.uid = flights.airline\nGROUP BY airlines.airline\nHAVING COUNT (*) > 10",
@@ -263,7 +263,7 @@
     {
         "index": 243,
         "db_id": "flight_2",
-        "db_info": "# airlines ( uid, airline, abbreviation, country )\n# flights ( airline, flightno, sourceairport, destairport )\n# airports ( city, airportcode, airportname, country, countryabbrev )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode",
+        "db_info": "# airlines ( uid , airline , abbreviation , country )\n# airports ( city , airportcode , airportname , country , countryabbrev )\n# flights ( airline , flightno , sourceairport , destairport )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode\n",
         "question": "Find all airlines that have fewer than 200 flights.",
         "predicted_sql": "SELECT a.airline\nFROM airlines a\nLEFT JOIN flights f ON a.uid = f.airline\nGROUP BY a.airline\nHAVING COUNT(f.flightno) < 200;",
         "ground_truth": "SELECT airlines.airline\nFROM airlines\nJOIN flights ON airlines.uid = flights.airline\nGROUP BY airlines.airline\nHAVING COUNT (*) < 200",
@@ -272,7 +272,7 @@
     {
         "index": 244,
         "db_id": "flight_2",
-        "db_info": "# flights ( airline, flightno )\n# airlines ( uid, airline, abbreviation )\n# airports ( airportcode, airportname, country, countryabbrev, city )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode",
+        "db_info": "# airlines ( uid , airline , abbreviation , country )\n# airports ( city , airportcode , airportname , country , countryabbrev )\n# flights ( airline , flightno , sourceairport , destairport )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode\n",
         "question": "Which airlines have less than 200 flights?",
         "predicted_sql": "SELECT airlines.airline\nFROM airlines\nJOIN flights ON airlines.abbreviation = flights.airline\nGROUP BY airlines.airline\nHAVING COUNT(flights.flightno) < 200;",
         "ground_truth": "SELECT airlines.airline\nFROM airlines\nJOIN flights ON airlines.uid = flights.airline\nGROUP BY airlines.airline\nHAVING COUNT (*) < 200",
@@ -281,7 +281,7 @@
     {
         "index": 245,
         "db_id": "flight_2",
-        "db_info": "# airlines ( airline, abbreviation, uid, country )\n# flights ( flightno, airline, sourceairport, destairport )",
+        "db_info": "# airlines ( uid , airline , abbreviation , country )\n# airports ( city , airportcode , airportname , country , countryabbrev )\n# flights ( airline , flightno , sourceairport , destairport )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode\n",
         "question": "What are flight numbers of Airline \"United Airlines\"?",
         "predicted_sql": "SELECT f.flightno\nFROM flights f\nJOIN airlines a ON f.airline = a.abbreviation\nWHERE a.airline = 'United Airlines';",
         "ground_truth": "SELECT flights.flightno\nFROM flights\nJOIN airlines ON airlines.uid = flights.airline\nWHERE airlines.airline = 'United Airlines'",
@@ -290,7 +290,7 @@
     {
         "index": 256,
         "db_id": "flight_2",
-        "db_info": "# flights ( destairport, sourceairport, airline, flightno )\n# airports ( airportcode, city, airportname, country, countryabbrev )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode",
+        "db_info": "# airlines ( uid , airline , abbreviation , country )\n# airports ( city , airportcode , airportname , country , countryabbrev )\n# flights ( airline , flightno , sourceairport , destairport )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode\n",
         "question": "How many flights land in Aberdeen or Abilene?",
         "predicted_sql": "SELECT COUNT (*)\nFROM flights\nWHERE destairport = 'Aberdeen'\n  OR destairport = 'Abilene';",
         "ground_truth": "SELECT COUNT (*)\nFROM flights\nJOIN airports ON flights.destairport = airports.airportcode\nWHERE airports.city = 'Aberdeen'\n  OR airports.city = 'Abilene'",
@@ -299,7 +299,7 @@
     {
         "index": 288,
         "db_id": "employee_hire_evaluation",
-        "db_info": "# shop ( name, shop_id, number_products, location, district, manager_name )\n# employee ( name, employee_id, age, city )\n# hiring ( shop_id, employee_id, start_from, is_full_time )\n# hiring.employee_id = employee.employee_id\n# hiring.shop_id = shop.shop_id",
+        "db_info": "# employee ( employee_id , name , age , city )\n# shop ( shop_id , name , location , district , number_products , manager_name )\n# hiring ( shop_id , employee_id , start_from , is_full_time )\n# evaluation ( employee_id , year_awarded , bonus )\n# hiring.employee_id = employee.employee_id\n# hiring.shop_id = shop.shop_id\n# evaluation.employee_id = employee.employee_id\n",
         "question": "For each shop, return the number of employees working there and the name of the shop.",
         "predicted_sql": "SELECT shop.name,\n       COUNT(hiring.employee_id) AS number_of_employees\nFROM shop\nJOIN hiring ON shop.shop_id = hiring.shop_id\nGROUP BY shop.shop_id,\n         shop.name;",
         "ground_truth": "SELECT COUNT (*) , shop.name\nFROM hiring\nJOIN shop ON hiring.shop_id = shop.shop_id\nGROUP BY shop.name",
@@ -308,7 +308,7 @@
     {
         "index": 335,
         "db_id": "cre_Doc_Template_Mgt",
-        "db_info": "# templates ( version_number, template_type_code, template_id )\n# ref_template_types ( template_type_code )\n# documents ( template_id, document_id )\n# paragraphs ( document_id, paragraph_text )\n# templates.template_type_code = ref_template_types.template_type_code\n# documents.template_id = templates.template_id\n# paragraphs.document_id = documents.document_id",
+        "db_info": "# ref_template_types ( template_type_code , template_type_description )\n# templates ( template_id , version_number , template_type_code , date_effective_from , date_effective_to , template_details )\n# documents ( document_id , template_id , document_name , document_description , other_details )\n# paragraphs ( paragraph_id , document_id , paragraph_text , other_details )\n# templates.template_type_code = ref_template_types.template_type_code\n# documents.template_id = templates.template_id\n# paragraphs.document_id = documents.document_id\n",
         "question": "What the smallest version number and its template type code?",
         "predicted_sql": "SELECT template_type_code,\n       MIN(version_number) AS min_version_number\nFROM templates\nORDER BY min_version_number ASC\nLIMIT 1;",
         "ground_truth": "SELECT MIN (version_number) , template_type_code\nFROM templates",
@@ -317,7 +317,7 @@
     {
         "index": 336,
         "db_id": "cre_Doc_Template_Mgt",
-        "db_info": "# templates ( template_id, version_number, template_type_code, date_effective_from, date_effective_to, template_details )\n# ref_template_types ( template_type_code, template_type_description )\n# documents ( document_id, template_id, document_name, document_description, other_details )\n# paragraphs ( paragraph_id, document_id, paragraph_text, other_details )\n# templates.template_type_code = ref_template_types.template_type_code\n# documents.template_id = templates.template_id\n# paragraphs.document_id = documents.document_id",
+        "db_info": "# ref_template_types ( template_type_code , template_type_description )\n# templates ( template_id , version_number , template_type_code , date_effective_from , date_effective_to , template_details )\n# documents ( document_id , template_id , document_name , document_description , other_details )\n# paragraphs ( paragraph_id , document_id , paragraph_text , other_details )\n# templates.template_type_code = ref_template_types.template_type_code\n# documents.template_id = templates.template_id\n# paragraphs.document_id = documents.document_id\n",
         "question": "Return the lowest version number, along with its corresponding template type code.",
         "predicted_sql": "SELECT template_type_code,\n       version_number\nFROM templates\nWHERE version_number =\n    (SELECT MIN(version_number)\n     FROM templates);",
         "ground_truth": "SELECT MIN (version_number) , template_type_code\nFROM templates",
@@ -326,7 +326,7 @@
     {
         "index": 346,
         "db_id": "cre_Doc_Template_Mgt",
-        "db_info": "# ref_template_types ( template_type_code, template_type_description )\n# templates ( template_id, template_type_code, version_number, date_effective_from, date_effective_to, template_details )\n# documents ( document_id, template_id, document_name, document_description, other_details )\n# paragraphs ( paragraph_id, document_id, paragraph_text, other_details )\n# templates.template_type_code = ref_template_types.template_type_code\n# documents.template_id = templates.template_id\n# paragraphs.document_id = documents.document_id",
+        "db_info": "# ref_template_types ( template_type_code , template_type_description )\n# templates ( template_id , version_number , template_type_code , date_effective_from , date_effective_to , template_details )\n# documents ( document_id , template_id , document_name , document_description , other_details )\n# paragraphs ( paragraph_id , document_id , paragraph_text , other_details )\n# templates.template_type_code = ref_template_types.template_type_code\n# documents.template_id = templates.template_id\n# paragraphs.document_id = documents.document_id\n",
         "question": "What are the codes of template types that are not used for any document?",
         "predicted_sql": "SELECT DISTINCT t.template_type_code\nFROM ref_template_types AS t\nLEFT JOIN templates AS tp ON t.template_type_code = tp.template_type_code\nLEFT JOIN documents AS d ON tp.template_id = d.template_id\nWHERE d.document_id IS NULL;",
         "ground_truth": "SELECT template_type_code\nFROM templates\nEXCEPT\nSELECT template_type_code\nFROM templates\nJOIN documents ON templates.template_id = documents.template_id",
@@ -335,7 +335,7 @@
     {
         "index": 452,
         "db_id": "wta_1",
-        "db_info": "# matches ( winner_name, winner_ioc, tourney_name, tourney_id )\n# players ( player_id, first_name, country_code )\n# matches.winner_id = players.player_id\n# matches.loser_id = players.player_id",
+        "db_info": "# players ( player_id , first_name , last_name , hand , birth_date , country_code )\n# matches ( best_of , draw_size , loser_age , loser_entry , loser_hand , loser_ht , loser_id , loser_ioc , loser_name , loser_rank , loser_rank_points , loser_seed , match_num , minutes , round , score , surface , tourney_date , tourney_id , tourney_level , tourney_name , winner_age , winner_entry , winner_hand , winner_ht , winner_id , winner_ioc , winner_name , winner_rank , winner_rank_points , winner_seed , year )\n# rankings ( ranking_date , ranking , player_id , ranking_points , tours )\n# matches.winner_id = players.player_id\n# matches.loser_id = players.player_id\n# rankings.player_id = players.player_id\n",
         "question": "What are the first names and country codes for players who won both the WTA Championships and the Australian Open?",
         "predicted_sql": "SELECT DISTINCT p.first_name,\n                p.country_code\nFROM players p\nJOIN matches m1 ON p.player_id = m1.winner_id\nAND m1.tourney_name = 'WTA Championships'\nJOIN matches m2 ON p.player_id = m2.winner_id\nAND m2.tourney_name = 'Australian Open';",
         "ground_truth": "SELECT players.country_code,\n       players.first_name\nFROM players\nJOIN matches ON players.player_id = matches.winner_id\nWHERE matches.tourney_name = 'WTA Championships' INTERSECT\n  SELECT players.country_code,\n         players.first_name\n  FROM players\n  JOIN matches ON players.player_id = matches.winner_id WHERE matches.tourney_name = 'Australian Open'",
@@ -344,7 +344,7 @@
     {
         "index": 459,
         "db_id": "wta_1",
-        "db_info": "# rankings ( player_id, ranking_date, ranking, ranking_points, tours )\n# players ( player_id, first_name, country_code, last_name )\n# matches ( winner_id, loser_id, tourney_id, tourney_name, tourney_date )\n# matches.winner_id = players.player_id\n# matches.loser_id = players.player_id\n# rankings.player_id = players.player_id",
+        "db_info": "# players ( player_id , first_name , last_name , hand , birth_date , country_code )\n# matches ( best_of , draw_size , loser_age , loser_entry , loser_hand , loser_ht , loser_id , loser_ioc , loser_name , loser_rank , loser_rank_points , loser_seed , match_num , minutes , round , score , surface , tourney_date , tourney_id , tourney_level , tourney_name , winner_age , winner_entry , winner_hand , winner_ht , winner_id , winner_ioc , winner_name , winner_rank , winner_rank_points , winner_seed , year )\n# rankings ( ranking_date , ranking , player_id , ranking_points , tours )\n# matches.winner_id = players.player_id\n# matches.loser_id = players.player_id\n# rankings.player_id = players.player_id\n",
         "question": "Find the first name and country code of the player who did the most number of tours.",
         "predicted_sql": "SELECT players.first_name,\n       players.country_code\nFROM players\nJOIN rankings ON players.player_id = rankings.player_id\nGROUP BY players.player_id,\n         players.first_name,\n         players.country_code\nORDER BY SUM(rankings.tours) DESC\nLIMIT 1;",
         "ground_truth": "SELECT players.country_code,\n       players.first_name\nFROM players\nJOIN rankings ON players.player_id = rankings.player_id\nORDER BY rankings.tours DESC\nLIMIT 1",
@@ -353,7 +353,7 @@
     {
         "index": 463,
         "db_id": "wta_1",
-        "db_info": "# matches ( winner_name, winner_rank_points, winner_id )\n# players ( player_id )\n# rankings ( ranking_date, ranking, ranking_points, player_id )\n# matches.winner_id = players.player_id\n# matches.loser_id = players.player_id\n# rankings.player_id = players.player_id",
+        "db_info": "# players ( player_id , first_name , last_name , hand , birth_date , country_code )\n# matches ( best_of , draw_size , loser_age , loser_entry , loser_hand , loser_ht , loser_id , loser_ioc , loser_name , loser_rank , loser_rank_points , loser_seed , match_num , minutes , round , score , surface , tourney_date , tourney_id , tourney_level , tourney_name , winner_age , winner_entry , winner_hand , winner_ht , winner_id , winner_ioc , winner_name , winner_rank , winner_rank_points , winner_seed , year )\n# rankings ( ranking_date , ranking , player_id , ranking_points , tours )\n# matches.winner_id = players.player_id\n# matches.loser_id = players.player_id\n# rankings.player_id = players.player_id\n",
         "question": "Find the name and rank points of the winner who won the most times.",
         "predicted_sql": "SELECT winner_name,\n       winner_rank_points\nFROM matches\nGROUP BY winner_id\nORDER BY COUNT (*) DESC\nLIMIT 1 ;",
         "ground_truth": "SELECT winner_name,\n       winner_rank_points\nFROM matches\nGROUP BY winner_name\nORDER BY COUNT (*) DESC\nLIMIT 1",
@@ -362,7 +362,7 @@
     {
         "index": 470,
         "db_id": "wta_1",
-        "db_info": "# players ( first_name )\n# matches ( winner_id, winner_rank, loser_id, loser_rank, winner_name, loser_name )\n# rankings ( player_id, ranking, ranking_points, tours )\n# matches.winner_id = players.player_id\n# matches.loser_id = players.player_id\n# rankings.player_id = players.player_id",
+        "db_info": "# players ( player_id , first_name , last_name , hand , birth_date , country_code )\n# matches ( best_of , draw_size , loser_age , loser_entry , loser_hand , loser_ht , loser_id , loser_ioc , loser_name , loser_rank , loser_rank_points , loser_seed , match_num , minutes , round , score , surface , tourney_date , tourney_id , tourney_level , tourney_name , winner_age , winner_entry , winner_hand , winner_ht , winner_id , winner_ioc , winner_name , winner_rank , winner_rank_points , winner_seed , year )\n# rankings ( ranking_date , ranking , player_id , ranking_points , tours )\n# matches.winner_id = players.player_id\n# matches.loser_id = players.player_id\n# rankings.player_id = players.player_id\n",
         "question": "What are the first names of all players, and their average rankings?",
         "predicted_sql": "SELECT p.first_name,\n       AVG(r.ranking) AS average_ranking\nFROM players p\nJOIN rankings r ON p.player_id = r.player_id\nGROUP BY p.first_name;",
         "ground_truth": "SELECT AVG (ranking) , players.first_name\nFROM players\nJOIN rankings ON players.player_id = rankings.player_id\nGROUP BY players.first_name",
@@ -371,7 +371,7 @@
     {
         "index": 471,
         "db_id": "wta_1",
-        "db_info": "# players ( player_id, first_name, last_name, hand, birth_date, country_code )\n# rankings ( ranking_date, ranking, player_id, ranking_points, tours )\n# rankings.player_id = players.player_id",
+        "db_info": "# players ( player_id , first_name , last_name , hand , birth_date , country_code )\n# matches ( best_of , draw_size , loser_age , loser_entry , loser_hand , loser_ht , loser_id , loser_ioc , loser_name , loser_rank , loser_rank_points , loser_seed , match_num , minutes , round , score , surface , tourney_date , tourney_id , tourney_level , tourney_name , winner_age , winner_entry , winner_hand , winner_ht , winner_id , winner_ioc , winner_name , winner_rank , winner_rank_points , winner_seed , year )\n# rankings ( ranking_date , ranking , player_id , ranking_points , tours )\n# matches.winner_id = players.player_id\n# matches.loser_id = players.player_id\n# rankings.player_id = players.player_id\n",
         "question": "Find the total ranking points for each player and their first name.",
         "predicted_sql": "SELECT p.first_name,\n       SUM(r.ranking_points) AS total_ranking_points\nFROM players p\nJOIN rankings r ON p.player_id = r.player_id\nGROUP BY p.player_id,\n         p.first_name;",
         "ground_truth": "SELECT SUM (ranking_points) , players.first_name\nFROM players\nJOIN rankings ON players.player_id = rankings.player_id\nGROUP BY players.first_name",
@@ -380,7 +380,7 @@
     {
         "index": 472,
         "db_id": "wta_1",
-        "db_info": "# players ( first_name, player_id, last_name, hand, birth_date, country_code )\n# rankings ( player_id, ranking_date, ranking, ranking_points, tours )\n# rankings.player_id = players.player_id",
+        "db_info": "# players ( player_id , first_name , last_name , hand , birth_date , country_code )\n# matches ( best_of , draw_size , loser_age , loser_entry , loser_hand , loser_ht , loser_id , loser_ioc , loser_name , loser_rank , loser_rank_points , loser_seed , match_num , minutes , round , score , surface , tourney_date , tourney_id , tourney_level , tourney_name , winner_age , winner_entry , winner_hand , winner_ht , winner_id , winner_ioc , winner_name , winner_rank , winner_rank_points , winner_seed , year )\n# rankings ( ranking_date , ranking , player_id , ranking_points , tours )\n# matches.winner_id = players.player_id\n# matches.loser_id = players.player_id\n# rankings.player_id = players.player_id\n",
         "question": "What are the first names of all players, and their total ranking points?",
         "predicted_sql": "SELECT players.first_name,\n       SUM(rankings.ranking_points) AS total_ranking_points\nFROM players\nJOIN rankings ON players.player_id = rankings.player_id\nGROUP BY players.player_id,\n         players.first_name;",
         "ground_truth": "SELECT SUM (ranking_points) , players.first_name\nFROM players\nJOIN rankings ON players.player_id = rankings.player_id\nGROUP BY players.first_name",
@@ -389,7 +389,7 @@
     {
         "index": 473,
         "db_id": "wta_1",
-        "db_info": "# players ( country_code, player_id, first_name, last_name, hand, birth_date )\n# rankings ( player_id, ranking_date, ranking, ranking_points, tours )\n# matches ( winner_id, loser_id )\n# matches.winner_id = players.player_id\n# matches.loser_id = players.player_id\n# rankings.player_id = players.player_id",
+        "db_info": "# players ( player_id , first_name , last_name , hand , birth_date , country_code )\n# matches ( best_of , draw_size , loser_age , loser_entry , loser_hand , loser_ht , loser_id , loser_ioc , loser_name , loser_rank , loser_rank_points , loser_seed , match_num , minutes , round , score , surface , tourney_date , tourney_id , tourney_level , tourney_name , winner_age , winner_entry , winner_hand , winner_ht , winner_id , winner_ioc , winner_name , winner_rank , winner_rank_points , winner_seed , year )\n# rankings ( ranking_date , ranking , player_id , ranking_points , tours )\n# matches.winner_id = players.player_id\n# matches.loser_id = players.player_id\n# rankings.player_id = players.player_id\n",
         "question": "find the number of players for each country.",
         "predicted_sql": "SELECT country_code,\n       COUNT(*) AS num_players\nFROM players\nGROUP BY country_code;",
         "ground_truth": "SELECT COUNT (*) , country_code\nFROM players\nGROUP BY country_code",
@@ -398,7 +398,7 @@
     {
         "index": 479,
         "db_id": "wta_1",
-        "db_info": "# rankings ( ranking_date, ranking, player_id, ranking_points, tours )\n# players ( player_id, first_name, last_name, hand, birth_date, country_code )\n# rankings.player_id = players.player_id",
+        "db_info": "# players ( player_id , first_name , last_name , hand , birth_date , country_code )\n# matches ( best_of , draw_size , loser_age , loser_entry , loser_hand , loser_ht , loser_id , loser_ioc , loser_name , loser_rank , loser_rank_points , loser_seed , match_num , minutes , round , score , surface , tourney_date , tourney_id , tourney_level , tourney_name , winner_age , winner_entry , winner_hand , winner_ht , winner_id , winner_ioc , winner_name , winner_rank , winner_rank_points , winner_seed , year )\n# rankings ( ranking_date , ranking , player_id , ranking_points , tours )\n# matches.winner_id = players.player_id\n# matches.loser_id = players.player_id\n# rankings.player_id = players.player_id\n",
         "question": "Find the total number of tours for each ranking date.",
         "predicted_sql": "SELECT ranking_date,\n       SUM(DISTINCT tours) AS total_tours\nFROM rankings\nGROUP BY ranking_date;",
         "ground_truth": "SELECT SUM (tours) , ranking_date\nFROM rankings\nGROUP BY ranking_date",
@@ -407,7 +407,7 @@
     {
         "index": 487,
         "db_id": "wta_1",
-        "db_info": "# matches ( winner_name, winner_ioc, winner_age, winner_rank_points )\n# players ( first_name, country_code, birth_date )\n# rankings ( ranking_points, player_id )\n# matches.winner_id = players.player_id\n# matches.loser_id = players.player_id\n# rankings.player_id = players.player_id",
+        "db_info": "# players ( player_id , first_name , last_name , hand , birth_date , country_code )\n# matches ( best_of , draw_size , loser_age , loser_entry , loser_hand , loser_ht , loser_id , loser_ioc , loser_name , loser_rank , loser_rank_points , loser_seed , match_num , minutes , round , score , surface , tourney_date , tourney_id , tourney_level , tourney_name , winner_age , winner_entry , winner_hand , winner_ht , winner_id , winner_ioc , winner_name , winner_rank , winner_rank_points , winner_seed , year )\n# rankings ( ranking_date , ranking , player_id , ranking_points , tours )\n# matches.winner_id = players.player_id\n# matches.loser_id = players.player_id\n# rankings.player_id = players.player_id\n",
         "question": "Find the first name, country code and birth date of the winner who has the highest rank points in all matches.",
         "predicted_sql": "SELECT players.first_name,\n       players.country_code,\n       players.birth_date\nFROM players\nJOIN matches ON players.player_id = matches.winner_id\nJOIN rankings ON players.player_id = rankings.player_id\nORDER BY rankings.ranking_points DESC\nLIMIT 1;",
         "ground_truth": "SELECT players.first_name,\n       players.country_code,\n       players.birth_date\nFROM players\nJOIN matches ON players.player_id = matches.winner_id\nORDER BY matches.winner_rank_points DESC\nLIMIT 1",
@@ -416,7 +416,7 @@
     {
         "index": 500,
         "db_id": "battle_death",
-        "db_info": "# death ( injured, caused_by_ship_id, id, note, killed )\n# ship ( id, name, tonnage, ship_type, location, disposition_of_ship, lost_in_battle )\n# death.caused_by_ship_id = ship.id",
+        "db_info": "# battle ( id , name , date , bulgarian_commander , latin_commander , result )\n# ship ( lost_in_battle , id , name , tonnage , ship_type , location , disposition_of_ship )\n# death ( caused_by_ship_id , id , note , killed , injured )\n# ship.lost_in_battle = battle.id\n# death.caused_by_ship_id = ship.id\n",
         "question": "What is the ship id and name that caused most total injuries?",
         "predicted_sql": "SELECT ship.id,\n       ship.name\nFROM ship\nJOIN death ON ship.id = death.caused_by_ship_id\nGROUP BY ship.id,\n         ship.name\nORDER BY SUM(death.injured) DESC\nLIMIT 1;",
         "ground_truth": "SELECT ship.id,\n       ship.name\nFROM death\nJOIN ship ON death.caused_by_ship_id = ship.id\nGROUP BY ship.id\nORDER BY COUNT (*) DESC\nLIMIT 1",
@@ -425,7 +425,7 @@
     {
         "index": 505,
         "db_id": "battle_death",
-        "db_info": "# battle ( name, result, bulgarian_commander )\n# ship ( lost_in_battle, name, location )\n# ship.lost_in_battle = battle.id",
+        "db_info": "# battle ( id , name , date , bulgarian_commander , latin_commander , result )\n# ship ( lost_in_battle , id , name , tonnage , ship_type , location , disposition_of_ship )\n# death ( caused_by_ship_id , id , note , killed , injured )\n# ship.lost_in_battle = battle.id\n# death.caused_by_ship_id = ship.id\n",
         "question": "Show names, results and bulgarian commanders of the battles with no ships lost in the 'English Channel'.",
         "predicted_sql": "SELECT name,\n       RESULT,\n       bulgarian_commander\nFROM battle\nWHERE id NOT IN\n    (SELECT lost_in_battle\n     FROM ship\n     WHERE LOCATION = 'English Channel'\n       AND disposition_of_ship = 'lost' );",
         "ground_truth": "SELECT name,\n       RESULT,\n       bulgarian_commander\nFROM battle\nEXCEPT\nSELECT battle.name,\n       battle.result,\n       battle.bulgarian_commander\nFROM battle\nJOIN ship ON battle.id = ship.lost_in_battle\nWHERE ship.location = 'English Channel'",
@@ -434,7 +434,7 @@
     {
         "index": 526,
         "db_id": "student_transcripts_tracking",
-        "db_info": "# courses ( course_id, course_name, course_description, other_details )\n# sections ( section_id, course_id, section_name, section_description, other_details )\n# addresses ( address_id, line_1, line_2, line_3, city, zip_postcode, state_province_county, country, other_address_details )\n# departments ( department_id, department_name, department_description, other_details )\n# degree_programs ( degree_program_id, department_id, degree_summary_name, degree_summary_description, other_details )\n# semesters ( semester_id, semester_name, semester_description, other_details )\n# students ( student_id, current_address_id, permanent_address_id, first_name, middle_name, last_name, cell_mobile_number, email_address, ssn, date_first_registered, date_left, other_student_details )\n# student_enrolment ( student_enrolment_id, degree_program_id, semester_id, student_id, other_details )\n# student_enrolment_courses ( student_course_id, course_id, student_enrolment_id )\n# transcripts ( transcript_id, transcript_date, other_details )\n# transcript_contents ( student_course_id, transcript_id )\n# degree_programs.department_id = departments.department_id\n# sections.course_id = courses.course_id\n# students.permanent_address_id = addresses.address_id\n# students.current_address_id = addresses.address_id\n# student_enrolment.student_id = students.student_id\n# student_enrolment.semester_id = semesters.semester_id\n# student_enrolment.degree_program_id = degree_programs.degree_program_id\n# student_enrolment_courses.student_enrolment_id = student_enrolment.student_enrolment_id\n# student_enrolment_courses.course_id = courses.course_id\n# transcript_contents.transcript_id = transcripts.transcript_id\n# transcript_contents.student_course_id = student_enrolment_courses.student_course_id",
+        "db_info": "# addresses ( address_id , line_1 , line_2 , line_3 , city , zip_postcode , state_province_county , country , other_address_details )\n# courses ( course_id , course_name , course_description , other_details )\n# departments ( department_id , department_name , department_description , other_details )\n# degree_programs ( degree_program_id , department_id , degree_summary_name , degree_summary_description , other_details )\n# sections ( section_id , course_id , section_name , section_description , other_details )\n# semesters ( semester_id , semester_name , semester_description , other_details )\n# students ( student_id , current_address_id , permanent_address_id , first_name , middle_name , last_name , cell_mobile_number , email_address , ssn , date_first_registered , date_left , other_student_details )\n# student_enrolment ( student_enrolment_id , degree_program_id , semester_id , student_id , other_details )\n# student_enrolment_courses ( student_course_id , course_id , student_enrolment_id )\n# transcripts ( transcript_id , transcript_date , other_details )\n# transcript_contents ( student_course_id , transcript_id )\n# degree_programs.department_id = departments.department_id\n# sections.course_id = courses.course_id\n# students.permanent_address_id = addresses.address_id\n# students.current_address_id = addresses.address_id\n# student_enrolment.student_id = students.student_id\n# student_enrolment.semester_id = semesters.semester_id\n# student_enrolment.degree_program_id = degree_programs.degree_program_id\n# student_enrolment_courses.student_enrolment_id = student_enrolment.student_enrolment_id\n# student_enrolment_courses.course_id = courses.course_id\n# transcript_contents.transcript_id = transcripts.transcript_id\n# transcript_contents.student_course_id = student_enrolment_courses.student_course_id\n",
         "question": "What are the names and ids of every course with less than 2 sections?",
         "predicted_sql": "SELECT c.course_name,\n       c.course_id\nFROM courses c\nLEFT JOIN sections s ON c.course_id = s.course_id\nGROUP BY c.course_id,\n         c.course_name\nHAVING COUNT(s.section_id) < 2;",
         "ground_truth": "SELECT courses.course_name,\n       courses.course_id\nFROM courses\nJOIN sections ON courses.course_id = sections.course_id\nGROUP BY courses.course_id\nHAVING COUNT (*) <= 2",
@@ -443,7 +443,7 @@
     {
         "index": 537,
         "db_id": "student_transcripts_tracking",
-        "db_info": "# degree_programs ( degree_program_id, department_id, degree_summary_name, degree_summary_description, other_details )\n# student_enrolment ( student_enrolment_id, degree_program_id, semester_id, student_id, other_details )\n# students ( student_id, current_address_id, permanent_address_id, first_name, middle_name, last_name, cell_mobile_number, email_address, ssn, date_first_registered, date_left, other_student_details )\n# student_enrolment.student_id = students.student_id\n# student_enrolment.degree_program_id = degree_programs.degree_program_id",
+        "db_info": "# addresses ( address_id , line_1 , line_2 , line_3 , city , zip_postcode , state_province_county , country , other_address_details )\n# courses ( course_id , course_name , course_description , other_details )\n# departments ( department_id , department_name , department_description , other_details )\n# degree_programs ( degree_program_id , department_id , degree_summary_name , degree_summary_description , other_details )\n# sections ( section_id , course_id , section_name , section_description , other_details )\n# semesters ( semester_id , semester_name , semester_description , other_details )\n# students ( student_id , current_address_id , permanent_address_id , first_name , middle_name , last_name , cell_mobile_number , email_address , ssn , date_first_registered , date_left , other_student_details )\n# student_enrolment ( student_enrolment_id , degree_program_id , semester_id , student_id , other_details )\n# student_enrolment_courses ( student_course_id , course_id , student_enrolment_id )\n# transcripts ( transcript_id , transcript_date , other_details )\n# transcript_contents ( student_course_id , transcript_id )\n# degree_programs.department_id = departments.department_id\n# sections.course_id = courses.course_id\n# students.permanent_address_id = addresses.address_id\n# students.current_address_id = addresses.address_id\n# student_enrolment.student_id = students.student_id\n# student_enrolment.semester_id = semesters.semester_id\n# student_enrolment.degree_program_id = degree_programs.degree_program_id\n# student_enrolment_courses.student_enrolment_id = student_enrolment.student_enrolment_id\n# student_enrolment_courses.course_id = courses.course_id\n# transcript_contents.transcript_id = transcripts.transcript_id\n# transcript_contents.student_course_id = student_enrolment_courses.student_course_id\n",
         "question": "Find the kind of program which most number of students are enrolled in?",
         "predicted_sql": "SELECT degree_programs.degree_summary_name\nFROM students\nJOIN student_enrolment ON students.student_id = student_enrolment.student_id\nJOIN degree_programs ON student_enrolment.degree_program_id = degree_programs.degree_program_id\nGROUP BY student_enrolment.degree_program_id\nORDER BY COUNT (*) DESC\nLIMIT 1;",
         "ground_truth": "SELECT degree_programs.degree_summary_name\nFROM degree_programs\nJOIN student_enrolment ON degree_programs.degree_program_id = student_enrolment.degree_program_id\nGROUP BY degree_programs.degree_summary_name\nORDER BY COUNT (*) DESC\nLIMIT 1",
@@ -452,7 +452,7 @@
     {
         "index": 538,
         "db_id": "student_transcripts_tracking",
-        "db_info": "# degree_programs ( degree_summary_name, degree_program_id )\n# student_enrolment ( degree_program_id, student_id )\n# students ( student_id )\n# student_enrolment.student_id = students.student_id\n# student_enrolment.degree_program_id = degree_programs.degree_program_id",
+        "db_info": "# addresses ( address_id , line_1 , line_2 , line_3 , city , zip_postcode , state_province_county , country , other_address_details )\n# courses ( course_id , course_name , course_description , other_details )\n# departments ( department_id , department_name , department_description , other_details )\n# degree_programs ( degree_program_id , department_id , degree_summary_name , degree_summary_description , other_details )\n# sections ( section_id , course_id , section_name , section_description , other_details )\n# semesters ( semester_id , semester_name , semester_description , other_details )\n# students ( student_id , current_address_id , permanent_address_id , first_name , middle_name , last_name , cell_mobile_number , email_address , ssn , date_first_registered , date_left , other_student_details )\n# student_enrolment ( student_enrolment_id , degree_program_id , semester_id , student_id , other_details )\n# student_enrolment_courses ( student_course_id , course_id , student_enrolment_id )\n# transcripts ( transcript_id , transcript_date , other_details )\n# transcript_contents ( student_course_id , transcript_id )\n# degree_programs.department_id = departments.department_id\n# sections.course_id = courses.course_id\n# students.permanent_address_id = addresses.address_id\n# students.current_address_id = addresses.address_id\n# student_enrolment.student_id = students.student_id\n# student_enrolment.semester_id = semesters.semester_id\n# student_enrolment.degree_program_id = degree_programs.degree_program_id\n# student_enrolment_courses.student_enrolment_id = student_enrolment.student_enrolment_id\n# student_enrolment_courses.course_id = courses.course_id\n# transcript_contents.transcript_id = transcripts.transcript_id\n# transcript_contents.student_course_id = student_enrolment_courses.student_course_id\n",
         "question": "What is the degree summary name that has the most number of students enrolled?",
         "predicted_sql": "SELECT degree_programs.degree_summary_name\nFROM student_enrolment\nJOIN degree_programs ON student_enrolment.degree_program_id = degree_programs.degree_program_id\nGROUP BY student_enrolment.degree_program_id\nORDER BY COUNT (*) DESC\nLIMIT 1;",
         "ground_truth": "SELECT degree_programs.degree_summary_name\nFROM degree_programs\nJOIN student_enrolment ON degree_programs.degree_program_id = student_enrolment.degree_program_id\nGROUP BY degree_programs.degree_summary_name\nORDER BY COUNT (*) DESC\nLIMIT 1",
@@ -461,7 +461,7 @@
     {
         "index": 539,
         "db_id": "student_transcripts_tracking",
-        "db_info": "# student_enrolment ( degree_program_id, student_enrolment_id )\n# degree_programs ( degree_program_id, degree_summary_name, degree_summary_description )\n# students ( student_id )\n# student_enrolment_courses ( student_enrolment_id, course_id )\n# courses ( course_id )\n# semesters ( semester_id )\n# student_enrolment.student_id = students.student_id\n# student_enrolment.semester_id = semesters.semester_id\n# student_enrolment.degree_program_id = degree_programs.degree_program_id\n# student_enrolment_courses.student_enrolment_id = student_enrolment.student_enrolment_id\n# student_enrolment_courses.course_id = courses.course_id",
+        "db_info": "# addresses ( address_id , line_1 , line_2 , line_3 , city , zip_postcode , state_province_county , country , other_address_details )\n# courses ( course_id , course_name , course_description , other_details )\n# departments ( department_id , department_name , department_description , other_details )\n# degree_programs ( degree_program_id , department_id , degree_summary_name , degree_summary_description , other_details )\n# sections ( section_id , course_id , section_name , section_description , other_details )\n# semesters ( semester_id , semester_name , semester_description , other_details )\n# students ( student_id , current_address_id , permanent_address_id , first_name , middle_name , last_name , cell_mobile_number , email_address , ssn , date_first_registered , date_left , other_student_details )\n# student_enrolment ( student_enrolment_id , degree_program_id , semester_id , student_id , other_details )\n# student_enrolment_courses ( student_course_id , course_id , student_enrolment_id )\n# transcripts ( transcript_id , transcript_date , other_details )\n# transcript_contents ( student_course_id , transcript_id )\n# degree_programs.department_id = departments.department_id\n# sections.course_id = courses.course_id\n# students.permanent_address_id = addresses.address_id\n# students.current_address_id = addresses.address_id\n# student_enrolment.student_id = students.student_id\n# student_enrolment.semester_id = semesters.semester_id\n# student_enrolment.degree_program_id = degree_programs.degree_program_id\n# student_enrolment_courses.student_enrolment_id = student_enrolment.student_enrolment_id\n# student_enrolment_courses.course_id = courses.course_id\n# transcript_contents.transcript_id = transcripts.transcript_id\n# transcript_contents.student_course_id = student_enrolment_courses.student_course_id\n",
         "question": "Find the program which most number of students are enrolled in. List both the id and the summary.",
         "predicted_sql": "SELECT dp.degree_program_id,\n       dp.degree_summary_name\nFROM degree_programs dp\nJOIN student_enrolment se ON dp.degree_program_id = se.degree_program_id\nGROUP BY dp.degree_program_id,\n         dp.degree_summary_name\nORDER BY COUNT(se.student_id) DESC\nLIMIT 1;",
         "ground_truth": "SELECT degree_programs.degree_program_id,\n       degree_programs.degree_summary_name\nFROM degree_programs\nJOIN student_enrolment ON degree_programs.degree_program_id = student_enrolment.degree_program_id\nGROUP BY degree_programs.degree_program_id\nORDER BY COUNT (*) DESC\nLIMIT 1",
@@ -470,7 +470,7 @@
     {
         "index": 540,
         "db_id": "student_transcripts_tracking",
-        "db_info": "# degree_programs ( degree_program_id, degree_summary_name, degree_summary_description, department_id, other_details )\n# student_enrolment ( student_enrolment_id, degree_program_id, semester_id, student_id, other_details )\n# students ( student_id, first_name, middle_name, last_name, current_address_id, permanent_address_id, cell_mobile_number, email_address, ssn, date_first_registered, date_left, other_student_details )\n# student_enrolment.student_id = students.student_id\n# student_enrolment.degree_program_id = degree_programs.degree_program_id",
+        "db_info": "# addresses ( address_id , line_1 , line_2 , line_3 , city , zip_postcode , state_province_county , country , other_address_details )\n# courses ( course_id , course_name , course_description , other_details )\n# departments ( department_id , department_name , department_description , other_details )\n# degree_programs ( degree_program_id , department_id , degree_summary_name , degree_summary_description , other_details )\n# sections ( section_id , course_id , section_name , section_description , other_details )\n# semesters ( semester_id , semester_name , semester_description , other_details )\n# students ( student_id , current_address_id , permanent_address_id , first_name , middle_name , last_name , cell_mobile_number , email_address , ssn , date_first_registered , date_left , other_student_details )\n# student_enrolment ( student_enrolment_id , degree_program_id , semester_id , student_id , other_details )\n# student_enrolment_courses ( student_course_id , course_id , student_enrolment_id )\n# transcripts ( transcript_id , transcript_date , other_details )\n# transcript_contents ( student_course_id , transcript_id )\n# degree_programs.department_id = departments.department_id\n# sections.course_id = courses.course_id\n# students.permanent_address_id = addresses.address_id\n# students.current_address_id = addresses.address_id\n# student_enrolment.student_id = students.student_id\n# student_enrolment.semester_id = semesters.semester_id\n# student_enrolment.degree_program_id = degree_programs.degree_program_id\n# student_enrolment_courses.student_enrolment_id = student_enrolment.student_enrolment_id\n# student_enrolment_courses.course_id = courses.course_id\n# transcript_contents.transcript_id = transcripts.transcript_id\n# transcript_contents.student_course_id = student_enrolment_courses.student_course_id\n",
         "question": "What is the program id and the summary of the degree that has the most students enrolled?",
         "predicted_sql": "SELECT dp.degree_program_id,\n       dp.degree_summary_name\nFROM degree_programs dp\nJOIN student_enrolment se ON dp.degree_program_id = se.degree_program_id\nGROUP BY dp.degree_program_id,\n         dp.degree_summary_name\nORDER BY COUNT(se.student_id) DESC\nLIMIT 1;",
         "ground_truth": "SELECT degree_programs.degree_program_id,\n       degree_programs.degree_summary_name\nFROM degree_programs\nJOIN student_enrolment ON degree_programs.degree_program_id = student_enrolment.degree_program_id\nGROUP BY degree_programs.degree_program_id\nORDER BY COUNT (*) DESC\nLIMIT 1",
@@ -479,7 +479,7 @@
     {
         "index": 541,
         "db_id": "student_transcripts_tracking",
-        "db_info": "# student_enrolment ( student_id, degree_program_id )\n# students ( first_name, middle_name, last_name )\n# student_enrolment.student_id = students.student_id",
+        "db_info": "# addresses ( address_id , line_1 , line_2 , line_3 , city , zip_postcode , state_province_county , country , other_address_details )\n# courses ( course_id , course_name , course_description , other_details )\n# departments ( department_id , department_name , department_description , other_details )\n# degree_programs ( degree_program_id , department_id , degree_summary_name , degree_summary_description , other_details )\n# sections ( section_id , course_id , section_name , section_description , other_details )\n# semesters ( semester_id , semester_name , semester_description , other_details )\n# students ( student_id , current_address_id , permanent_address_id , first_name , middle_name , last_name , cell_mobile_number , email_address , ssn , date_first_registered , date_left , other_student_details )\n# student_enrolment ( student_enrolment_id , degree_program_id , semester_id , student_id , other_details )\n# student_enrolment_courses ( student_course_id , course_id , student_enrolment_id )\n# transcripts ( transcript_id , transcript_date , other_details )\n# transcript_contents ( student_course_id , transcript_id )\n# degree_programs.department_id = departments.department_id\n# sections.course_id = courses.course_id\n# students.permanent_address_id = addresses.address_id\n# students.current_address_id = addresses.address_id\n# student_enrolment.student_id = students.student_id\n# student_enrolment.semester_id = semesters.semester_id\n# student_enrolment.degree_program_id = degree_programs.degree_program_id\n# student_enrolment_courses.student_enrolment_id = student_enrolment.student_enrolment_id\n# student_enrolment_courses.course_id = courses.course_id\n# transcript_contents.transcript_id = transcripts.transcript_id\n# transcript_contents.student_course_id = student_enrolment_courses.student_course_id\n",
         "question": "Which student has enrolled for the most times in any program? List the id, first name, middle name, last name, the number of enrollments and student id.",
         "predicted_sql": "SELECT students.student_id,\n       students.first_name,\n       students.middle_name,\n       students.last_name,\n       COUNT(student_enrolment.student_id) AS number_of_enrollments\nFROM students\nJOIN student_enrolment ON students.student_id = student_enrolment.student_id\nGROUP BY students.student_id,\n         students.first_name,\n         students.middle_name,\n         students.last_name\nORDER BY number_of_enrollments DESC\nLIMIT 1;",
         "ground_truth": "SELECT students.student_id,\n       students.first_name,\n       students.middle_name,\n       students.last_name,\n       COUNT (*) , students.student_id\nFROM students\nJOIN student_enrolment ON students.student_id = student_enrolment.student_id\nGROUP BY students.student_id\nORDER BY COUNT (*) DESC\nLIMIT 1",
@@ -488,7 +488,7 @@
     {
         "index": 542,
         "db_id": "student_transcripts_tracking",
-        "db_info": "# students ( student_id, first_name, middle_name, last_name )\n# student_enrolment ( student_id, student_enrolment_id )\n# degree_programs ( degree_program_id )\n# departments ( department_id )\n# transcripts ( transcript_id )\n# transcript_contents ( student_course_id )\n# degree_programs.department_id = departments.department_id\n# student_enrolment.student_id = students.student_id\n# student_enrolment.degree_program_id = degree_programs.degree_program_id\n# transcript_contents.transcript_id = transcripts.transcript_id",
+        "db_info": "# addresses ( address_id , line_1 , line_2 , line_3 , city , zip_postcode , state_province_county , country , other_address_details )\n# courses ( course_id , course_name , course_description , other_details )\n# departments ( department_id , department_name , department_description , other_details )\n# degree_programs ( degree_program_id , department_id , degree_summary_name , degree_summary_description , other_details )\n# sections ( section_id , course_id , section_name , section_description , other_details )\n# semesters ( semester_id , semester_name , semester_description , other_details )\n# students ( student_id , current_address_id , permanent_address_id , first_name , middle_name , last_name , cell_mobile_number , email_address , ssn , date_first_registered , date_left , other_student_details )\n# student_enrolment ( student_enrolment_id , degree_program_id , semester_id , student_id , other_details )\n# student_enrolment_courses ( student_course_id , course_id , student_enrolment_id )\n# transcripts ( transcript_id , transcript_date , other_details )\n# transcript_contents ( student_course_id , transcript_id )\n# degree_programs.department_id = departments.department_id\n# sections.course_id = courses.course_id\n# students.permanent_address_id = addresses.address_id\n# students.current_address_id = addresses.address_id\n# student_enrolment.student_id = students.student_id\n# student_enrolment.semester_id = semesters.semester_id\n# student_enrolment.degree_program_id = degree_programs.degree_program_id\n# student_enrolment_courses.student_enrolment_id = student_enrolment.student_enrolment_id\n# student_enrolment_courses.course_id = courses.course_id\n# transcript_contents.transcript_id = transcripts.transcript_id\n# transcript_contents.student_course_id = student_enrolment_courses.student_course_id\n",
         "question": "What is the first, middle, and last name, along with the id and number of enrollments, for the student who enrolled the most in any program?",
         "predicted_sql": "SELECT s.first_name,\n       s.middle_name,\n       s.last_name,\n       s.student_id,\n       COUNT(*) AS total_enrollments\nFROM students s\nJOIN student_enrolment se ON s.student_id = se.student_id\nGROUP BY s.student_id,\n         s.first_name,\n         s.middle_name,\n         s.last_name\nORDER BY total_enrollments DESC\nLIMIT 1;",
         "ground_truth": "SELECT students.student_id,\n       students.first_name,\n       students.middle_name,\n       students.last_name,\n       COUNT (*) , students.student_id\nFROM students\nJOIN student_enrolment ON students.student_id = student_enrolment.student_id\nGROUP BY students.student_id\nORDER BY COUNT (*) DESC\nLIMIT 1",
@@ -497,7 +497,7 @@
     {
         "index": 543,
         "db_id": "student_transcripts_tracking",
-        "db_info": "# semesters ( semester_id, semester_name, semester_description, other_details )\n# student_enrolment ( semester_id, student_enrolment_id, degree_program_id, student_id, other_details )\n# student_enrolment.semester_id = semesters.semester_id",
+        "db_info": "# addresses ( address_id , line_1 , line_2 , line_3 , city , zip_postcode , state_province_county , country , other_address_details )\n# courses ( course_id , course_name , course_description , other_details )\n# departments ( department_id , department_name , department_description , other_details )\n# degree_programs ( degree_program_id , department_id , degree_summary_name , degree_summary_description , other_details )\n# sections ( section_id , course_id , section_name , section_description , other_details )\n# semesters ( semester_id , semester_name , semester_description , other_details )\n# students ( student_id , current_address_id , permanent_address_id , first_name , middle_name , last_name , cell_mobile_number , email_address , ssn , date_first_registered , date_left , other_student_details )\n# student_enrolment ( student_enrolment_id , degree_program_id , semester_id , student_id , other_details )\n# student_enrolment_courses ( student_course_id , course_id , student_enrolment_id )\n# transcripts ( transcript_id , transcript_date , other_details )\n# transcript_contents ( student_course_id , transcript_id )\n# degree_programs.department_id = departments.department_id\n# sections.course_id = courses.course_id\n# students.permanent_address_id = addresses.address_id\n# students.current_address_id = addresses.address_id\n# student_enrolment.student_id = students.student_id\n# student_enrolment.semester_id = semesters.semester_id\n# student_enrolment.degree_program_id = degree_programs.degree_program_id\n# student_enrolment_courses.student_enrolment_id = student_enrolment.student_enrolment_id\n# student_enrolment_courses.course_id = courses.course_id\n# transcript_contents.transcript_id = transcripts.transcript_id\n# transcript_contents.student_course_id = student_enrolment_courses.student_course_id\n",
         "question": "Which semesters do not have any student enrolled? List the semester name.",
         "predicted_sql": "SELECT semester_name\nFROM semesters\nEXCEPT\nSELECT semesters.semester_name\nFROM semesters\nJOIN student_enrolment ON semesters.semester_id = student_enrolment.semester_id;",
         "ground_truth": "SELECT semester_name\nFROM semesters\nWHERE semester_id NOT IN\n    (SELECT semester_id\n     FROM student_enrolment)",
@@ -506,7 +506,7 @@
     {
         "index": 544,
         "db_id": "student_transcripts_tracking",
-        "db_info": "# semesters ( semester_name, semester_description, semester_id, other_details )\n# students ( student_id, first_name, middle_name, last_name, current_address_id, permanent_address_id, cell_mobile_number, email_address, ssn, date_first_registered, date_left, other_student_details )\n# student_enrolment ( student_enrolment_id, degree_program_id, semester_id, student_id, other_details )\n# student_enrolment.student_id = students.student_id\n# student_enrolment.semester_id = semesters.semester_id",
+        "db_info": "# addresses ( address_id , line_1 , line_2 , line_3 , city , zip_postcode , state_province_county , country , other_address_details )\n# courses ( course_id , course_name , course_description , other_details )\n# departments ( department_id , department_name , department_description , other_details )\n# degree_programs ( degree_program_id , department_id , degree_summary_name , degree_summary_description , other_details )\n# sections ( section_id , course_id , section_name , section_description , other_details )\n# semesters ( semester_id , semester_name , semester_description , other_details )\n# students ( student_id , current_address_id , permanent_address_id , first_name , middle_name , last_name , cell_mobile_number , email_address , ssn , date_first_registered , date_left , other_student_details )\n# student_enrolment ( student_enrolment_id , degree_program_id , semester_id , student_id , other_details )\n# student_enrolment_courses ( student_course_id , course_id , student_enrolment_id )\n# transcripts ( transcript_id , transcript_date , other_details )\n# transcript_contents ( student_course_id , transcript_id )\n# degree_programs.department_id = departments.department_id\n# sections.course_id = courses.course_id\n# students.permanent_address_id = addresses.address_id\n# students.current_address_id = addresses.address_id\n# student_enrolment.student_id = students.student_id\n# student_enrolment.semester_id = semesters.semester_id\n# student_enrolment.degree_program_id = degree_programs.degree_program_id\n# student_enrolment_courses.student_enrolment_id = student_enrolment.student_enrolment_id\n# student_enrolment_courses.course_id = courses.course_id\n# transcript_contents.transcript_id = transcripts.transcript_id\n# transcript_contents.student_course_id = student_enrolment_courses.student_course_id\n",
         "question": "What is the name of the semester with no students enrolled?",
         "predicted_sql": "SELECT semester_name\nFROM semesters\nEXCEPT\nSELECT semesters.semester_name\nFROM semesters\nJOIN student_enrolment ON semesters.semester_id = student_enrolment.semester_id;",
         "ground_truth": "SELECT semester_name\nFROM semesters\nWHERE semester_id NOT IN\n    (SELECT semester_id\n     FROM student_enrolment)",
@@ -515,7 +515,7 @@
     {
         "index": 548,
         "db_id": "student_transcripts_tracking",
-        "db_info": "# student_enrolment ( student_id, degree_program_id, semester_id, student_enrolment_id, other_details )\n# student_enrolment_courses ( course_id, student_enrolment_id, student_course_id )\n# courses ( course_id, course_name, course_description, other_details )\n# students ( student_id, current_address_id, permanent_address_id, first_name, middle_name, last_name, cell_mobile_number, email_address, ssn, date_first_registered, date_left, other_student_details )\n# degree_programs ( degree_program_id, department_id, degree_summary_name, degree_summary_description, other_details )\n# student_enrolment.student_id = students.student_id\n# student_enrolment.degree_program_id = degree_programs.degree_program_id\n# student_enrolment_courses.student_enrolment_id = student_enrolment.student_enrolment_id\n# student_enrolment_courses.course_id = courses.course_id",
+        "db_info": "# addresses ( address_id , line_1 , line_2 , line_3 , city , zip_postcode , state_province_county , country , other_address_details )\n# courses ( course_id , course_name , course_description , other_details )\n# departments ( department_id , department_name , department_description , other_details )\n# degree_programs ( degree_program_id , department_id , degree_summary_name , degree_summary_description , other_details )\n# sections ( section_id , course_id , section_name , section_description , other_details )\n# semesters ( semester_id , semester_name , semester_description , other_details )\n# students ( student_id , current_address_id , permanent_address_id , first_name , middle_name , last_name , cell_mobile_number , email_address , ssn , date_first_registered , date_left , other_student_details )\n# student_enrolment ( student_enrolment_id , degree_program_id , semester_id , student_id , other_details )\n# student_enrolment_courses ( student_course_id , course_id , student_enrolment_id )\n# transcripts ( transcript_id , transcript_date , other_details )\n# transcript_contents ( student_course_id , transcript_id )\n# degree_programs.department_id = departments.department_id\n# sections.course_id = courses.course_id\n# students.permanent_address_id = addresses.address_id\n# students.current_address_id = addresses.address_id\n# student_enrolment.student_id = students.student_id\n# student_enrolment.semester_id = semesters.semester_id\n# student_enrolment.degree_program_id = degree_programs.degree_program_id\n# student_enrolment_courses.student_enrolment_id = student_enrolment.student_enrolment_id\n# student_enrolment_courses.course_id = courses.course_id\n# transcript_contents.transcript_id = transcripts.transcript_id\n# transcript_contents.student_course_id = student_enrolment_courses.student_course_id\n",
         "question": "What is the name of the course with the most students enrolled?",
         "predicted_sql": "SELECT courses.course_name\nFROM student_enrolment_courses\nJOIN courses ON student_enrolment_courses.course_id = courses.course_id\nGROUP BY student_enrolment_courses.course_id\nORDER BY COUNT(student_enrolment_courses.student_course_id) DESC\nLIMIT 1;",
         "ground_truth": "SELECT courses.course_name\nFROM courses\nJOIN student_enrolment_courses ON courses.course_id = student_enrolment_courses.course_id\nGROUP BY courses.course_name\nORDER BY COUNT (*) DESC\nLIMIT 1",
@@ -524,7 +524,7 @@
     {
         "index": 557,
         "db_id": "student_transcripts_tracking",
-        "db_info": "# transcripts ( transcript_date, other_details )\n# students ( first_name, middle_name, last_name, date_first_registered )",
+        "db_info": "# addresses ( address_id , line_1 , line_2 , line_3 , city , zip_postcode , state_province_county , country , other_address_details )\n# courses ( course_id , course_name , course_description , other_details )\n# departments ( department_id , department_name , department_description , other_details )\n# degree_programs ( degree_program_id , department_id , degree_summary_name , degree_summary_description , other_details )\n# sections ( section_id , course_id , section_name , section_description , other_details )\n# semesters ( semester_id , semester_name , semester_description , other_details )\n# students ( student_id , current_address_id , permanent_address_id , first_name , middle_name , last_name , cell_mobile_number , email_address , ssn , date_first_registered , date_left , other_student_details )\n# student_enrolment ( student_enrolment_id , degree_program_id , semester_id , student_id , other_details )\n# student_enrolment_courses ( student_course_id , course_id , student_enrolment_id )\n# transcripts ( transcript_id , transcript_date , other_details )\n# transcript_contents ( student_course_id , transcript_id )\n# degree_programs.department_id = departments.department_id\n# sections.course_id = courses.course_id\n# students.permanent_address_id = addresses.address_id\n# students.current_address_id = addresses.address_id\n# student_enrolment.student_id = students.student_id\n# student_enrolment.semester_id = semesters.semester_id\n# student_enrolment.degree_program_id = degree_programs.degree_program_id\n# student_enrolment_courses.student_enrolment_id = student_enrolment.student_enrolment_id\n# student_enrolment_courses.course_id = courses.course_id\n# transcript_contents.transcript_id = transcripts.transcript_id\n# transcript_contents.student_course_id = student_enrolment_courses.student_course_id\n",
         "question": "Who is the earliest graduate of the school? List the first name, middle name and last name.",
         "predicted_sql": "SELECT s.first_name,\n       s.middle_name,\n       s.last_name\nFROM students s\nJOIN student_enrolment se ON s.student_id = se.student_id\nJOIN student_enrolment_courses sec ON se.student_enrolment_id = sec.student_enrolment_id\nJOIN transcript_contents tc ON sec.student_course_id = tc.student_course_id\nJOIN transcripts t ON tc.transcript_id = t.transcript_id\nORDER BY t.transcript_date ASC\nLIMIT 1;",
         "ground_truth": "SELECT first_name,\n       middle_name,\n       last_name\nFROM students\nORDER BY date_left ASC\nLIMIT 1",
@@ -533,7 +533,7 @@
     {
         "index": 562,
         "db_id": "student_transcripts_tracking",
-        "db_info": "# students ( student_id, current_address_id, permanent_address_id, other_student_details )\n# addresses ( address_id, line_1, line_2, other_address_details )\n# student_enrolment ( student_enrolment_id, degree_program_id, semester_id, other_details )\n# students.permanent_address_id = addresses.address_id\n# students.current_address_id = addresses.address_id\n# student_enrolment.student_id = students.student_id",
+        "db_info": "# addresses ( address_id , line_1 , line_2 , line_3 , city , zip_postcode , state_province_county , country , other_address_details )\n# courses ( course_id , course_name , course_description , other_details )\n# departments ( department_id , department_name , department_description , other_details )\n# degree_programs ( degree_program_id , department_id , degree_summary_name , degree_summary_description , other_details )\n# sections ( section_id , course_id , section_name , section_description , other_details )\n# semesters ( semester_id , semester_name , semester_description , other_details )\n# students ( student_id , current_address_id , permanent_address_id , first_name , middle_name , last_name , cell_mobile_number , email_address , ssn , date_first_registered , date_left , other_student_details )\n# student_enrolment ( student_enrolment_id , degree_program_id , semester_id , student_id , other_details )\n# student_enrolment_courses ( student_course_id , course_id , student_enrolment_id )\n# transcripts ( transcript_id , transcript_date , other_details )\n# transcript_contents ( student_course_id , transcript_id )\n# degree_programs.department_id = departments.department_id\n# sections.course_id = courses.course_id\n# students.permanent_address_id = addresses.address_id\n# students.current_address_id = addresses.address_id\n# student_enrolment.student_id = students.student_id\n# student_enrolment.semester_id = semesters.semester_id\n# student_enrolment.degree_program_id = degree_programs.degree_program_id\n# student_enrolment_courses.student_enrolment_id = student_enrolment.student_enrolment_id\n# student_enrolment_courses.course_id = courses.course_id\n# transcript_contents.transcript_id = transcripts.transcript_id\n# transcript_contents.student_course_id = student_enrolment_courses.student_course_id\n",
         "question": "What is the id, line 1, and line 2 of the address with the most students?",
         "predicted_sql": "SELECT addresses.address_id,\n       addresses.line_1,\n       addresses.line_2\nFROM addresses\nJOIN students ON addresses.address_id = students.permanent_address_id\nGROUP BY addresses.address_id\nORDER BY COUNT (*) DESC\nLIMIT 1;",
         "ground_truth": "SELECT addresses.address_id,\n       addresses.line_1,\n       addresses.line_2\nFROM addresses\nJOIN students ON addresses.address_id = students.current_address_id\nGROUP BY addresses.address_id\nORDER BY COUNT (*) DESC\nLIMIT 1",
@@ -542,7 +542,7 @@
     {
         "index": 571,
         "db_id": "student_transcripts_tracking",
-        "db_info": "# transcripts ( transcript_id, transcript_date, other_details )\n# transcript_contents ( student_course_id, transcript_id )\n# transcript_contents.transcript_id = transcripts.transcript_id",
+        "db_info": "# addresses ( address_id , line_1 , line_2 , line_3 , city , zip_postcode , state_province_county , country , other_address_details )\n# courses ( course_id , course_name , course_description , other_details )\n# departments ( department_id , department_name , department_description , other_details )\n# degree_programs ( degree_program_id , department_id , degree_summary_name , degree_summary_description , other_details )\n# sections ( section_id , course_id , section_name , section_description , other_details )\n# semesters ( semester_id , semester_name , semester_description , other_details )\n# students ( student_id , current_address_id , permanent_address_id , first_name , middle_name , last_name , cell_mobile_number , email_address , ssn , date_first_registered , date_left , other_student_details )\n# student_enrolment ( student_enrolment_id , degree_program_id , semester_id , student_id , other_details )\n# student_enrolment_courses ( student_course_id , course_id , student_enrolment_id )\n# transcripts ( transcript_id , transcript_date , other_details )\n# transcript_contents ( student_course_id , transcript_id )\n# degree_programs.department_id = departments.department_id\n# sections.course_id = courses.course_id\n# students.permanent_address_id = addresses.address_id\n# students.current_address_id = addresses.address_id\n# student_enrolment.student_id = students.student_id\n# student_enrolment.semester_id = semesters.semester_id\n# student_enrolment.degree_program_id = degree_programs.degree_program_id\n# student_enrolment_courses.student_enrolment_id = student_enrolment.student_enrolment_id\n# student_enrolment_courses.course_id = courses.course_id\n# transcript_contents.transcript_id = transcripts.transcript_id\n# transcript_contents.student_course_id = student_enrolment_courses.student_course_id\n",
         "question": "How many times at most can a course enrollment result show in different transcripts? Also show the course enrollment id.",
         "predicted_sql": "SELECT student_course_id,\n       COUNT(*) AS times_in_transcripts\nFROM transcript_contents\nGROUP BY student_course_id\nORDER BY times_in_transcripts DESC\nLIMIT 1;",
         "ground_truth": "SELECT COUNT (*) , student_course_id\nFROM transcript_contents\nGROUP BY student_course_id\nORDER BY COUNT (*) DESC\nLIMIT 1",
@@ -551,7 +551,7 @@
     {
         "index": 575,
         "db_id": "student_transcripts_tracking",
-        "db_info": "# degree_programs ( degree_program_id, department_id, degree_summary_name, degree_summary_description, other_details )\n# students ( student_id, current_address_id, permanent_address_id, first_name, middle_name, last_name, cell_mobile_number, email_address, ssn, date_first_registered, date_left, other_student_details )\n# semesters ( semester_id, semester_name, semester_description, other_details )",
+        "db_info": "# addresses ( address_id , line_1 , line_2 , line_3 , city , zip_postcode , state_province_county , country , other_address_details )\n# courses ( course_id , course_name , course_description , other_details )\n# departments ( department_id , department_name , department_description , other_details )\n# degree_programs ( degree_program_id , department_id , degree_summary_name , degree_summary_description , other_details )\n# sections ( section_id , course_id , section_name , section_description , other_details )\n# semesters ( semester_id , semester_name , semester_description , other_details )\n# students ( student_id , current_address_id , permanent_address_id , first_name , middle_name , last_name , cell_mobile_number , email_address , ssn , date_first_registered , date_left , other_student_details )\n# student_enrolment ( student_enrolment_id , degree_program_id , semester_id , student_id , other_details )\n# student_enrolment_courses ( student_course_id , course_id , student_enrolment_id )\n# transcripts ( transcript_id , transcript_date , other_details )\n# transcript_contents ( student_course_id , transcript_id )\n# degree_programs.department_id = departments.department_id\n# sections.course_id = courses.course_id\n# students.permanent_address_id = addresses.address_id\n# students.current_address_id = addresses.address_id\n# student_enrolment.student_id = students.student_id\n# student_enrolment.semester_id = semesters.semester_id\n# student_enrolment.degree_program_id = degree_programs.degree_program_id\n# student_enrolment_courses.student_enrolment_id = student_enrolment.student_enrolment_id\n# student_enrolment_courses.course_id = courses.course_id\n# transcript_contents.transcript_id = transcripts.transcript_id\n# transcript_contents.student_course_id = student_enrolment_courses.student_course_id\n",
         "question": "Find the semester when both Master students and Bachelor students got enrolled in.",
         "predicted_sql": "SELECT DISTINCT a.semester_id\nFROM student_enrolment a\nJOIN student_enrolment b ON a.semester_id = b.semester_id\nWHERE a.degree_program_id = 1\n  AND b.degree_program_id = 2;",
         "ground_truth": "SELECT DISTINCT student_enrolment.semester_id\nFROM degree_programs\nJOIN student_enrolment ON degree_programs.degree_program_id = student_enrolment.degree_program_id\nWHERE degree_summary_name = 'Master' INTERSECT\n  SELECT DISTINCT student_enrolment.semester_id\n  FROM degree_programs\n  JOIN student_enrolment ON degree_programs.degree_program_id = student_enrolment.degree_program_id WHERE degree_summary_name = 'Bachelor'",
@@ -560,7 +560,7 @@
     {
         "index": 620,
         "db_id": "tvshow",
-        "db_info": "# tv_channel ( id, series_name, country, language )\n# tv_series ( episode, air_date )\n# cartoon ( title, original_air_date )\n# tv_series.channel = tv_channel.id\n# cartoon.channel = tv_channel.id",
+        "db_info": "# tv_channel ( id , series_name , country , language , content , pixel_aspect_ratio_par , hight_definition_tv , pay_per_view_ppv , package_option )\n# tv_series ( id , episode , air_date , rating , share , 18_49_rating_share , viewers_m , weekly_rank , channel )\n# cartoon ( id , title , directed_by , written_by , original_air_date , production_code , channel )\n# tv_series.channel = tv_channel.id\n# cartoon.channel = tv_channel.id\n",
         "question": "When did the episode \"A Love of a Lifetime\" air?",
         "predicted_sql": "SELECT cartoon.original_air_date\nFROM cartoon\nWHERE cartoon.title = 'A Love of a Lifetime';",
         "ground_truth": "SELECT air_date\nFROM tv_series\nWHERE episode = 'A Love of a Lifetime'",
@@ -569,7 +569,7 @@
     {
         "index": 623,
         "db_id": "tvshow",
-        "db_info": "# tv_channel ( series_name, id, country, language, content, pixel_aspect_ratio_par, hight_definition_tv, pay_per_view_ppv, package_option )\n# tv_series ( channel, episode, air_date, rating, share, 18_49_rating_share, viewers_m, weekly_rank )\n# tv_series.channel = tv_channel.id",
+        "db_info": "# tv_channel ( id , series_name , country , language , content , pixel_aspect_ratio_par , hight_definition_tv , pay_per_view_ppv , package_option )\n# tv_series ( id , episode , air_date , rating , share , 18_49_rating_share , viewers_m , weekly_rank , channel )\n# cartoon ( id , title , directed_by , written_by , original_air_date , production_code , channel )\n# tv_series.channel = tv_channel.id\n# cartoon.channel = tv_channel.id\n",
         "question": "What is the TV Channel of TV series with Episode \"A Love of a Lifetime\"? List the TV Channel's series name.",
         "predicted_sql": "SELECT series_name\nFROM tv_channel\nWHERE id =\n    (SELECT channel\n     FROM tv_series\n     WHERE episode = 'A Love of a Lifetime' );",
         "ground_truth": "SELECT tv_channel.series_name\nFROM tv_channel\nJOIN tv_series ON tv_channel.id = tv_series.channel\nWHERE tv_series.episode = 'A Love of a Lifetime'",
@@ -578,7 +578,7 @@
     {
         "index": 626,
         "db_id": "tvshow",
-        "db_info": "# tv_series ( episode, air_date, channel, id, rating, share, 18_49_rating_share, viewers_m, weekly_rank )\n# tv_channel ( series_name, id, country, language, content, pixel_aspect_ratio_par, hight_definition_tv, pay_per_view_ppv, package_option )\n# cartoon ( channel, id, title, directed_by, written_by, original_air_date, production_code )\n# tv_series.channel = tv_channel.id\n# cartoon.channel = tv_channel.id",
+        "db_info": "# tv_channel ( id , series_name , country , language , content , pixel_aspect_ratio_par , hight_definition_tv , pay_per_view_ppv , package_option )\n# tv_series ( id , episode , air_date , rating , share , 18_49_rating_share , viewers_m , weekly_rank , channel )\n# cartoon ( id , title , directed_by , written_by , original_air_date , production_code , channel )\n# tv_series.channel = tv_channel.id\n# cartoon.channel = tv_channel.id\n",
         "question": "What is the episode for the TV series named \"Sky Radio\"?",
         "predicted_sql": "SELECT episode\nFROM tv_series\nWHERE channel =\n    (SELECT id\n     FROM tv_channel\n     WHERE series_name = 'Sky Radio' );",
         "ground_truth": "SELECT tv_series.episode\nFROM tv_channel\nJOIN tv_series ON tv_channel.id = tv_series.channel\nWHERE tv_channel.series_name = 'Sky Radio'",
@@ -587,7 +587,7 @@
     {
         "index": 627,
         "db_id": "tvshow",
-        "db_info": "# cartoon ( directed_by, id, title )\n# tv_channel ( id, series_name, country, language, content, pixel_aspect_ratio_par, pay_per_view_ppv, package_option )\n# tv_series ( channel, id, episode, air_date, rating, share, 18_49_rating_share, viewers_m, weekly_rank )\n# tv_series.channel = tv_channel.id\n# cartoon.channel = tv_channel.id",
+        "db_info": "# tv_channel ( id , series_name , country , language , content , pixel_aspect_ratio_par , hight_definition_tv , pay_per_view_ppv , package_option )\n# tv_series ( id , episode , air_date , rating , share , 18_49_rating_share , viewers_m , weekly_rank , channel )\n# cartoon ( id , title , directed_by , written_by , original_air_date , production_code , channel )\n# tv_series.channel = tv_channel.id\n# cartoon.channel = tv_channel.id\n",
         "question": "Find the number of cartoons directed by each of the listed directors.",
         "predicted_sql": "SELECT directed_by,\n       COUNT(*) AS total_cartoons\nFROM cartoon\nGROUP BY directed_by\nORDER BY total_cartoons DESC;",
         "ground_truth": "SELECT COUNT (*) , directed_by\nFROM cartoon\nGROUP BY directed_by",
@@ -596,7 +596,7 @@
     {
         "index": 641,
         "db_id": "tvshow",
-        "db_info": "# tv_channel ( country, id )\n# tv_series ( channel, id )\n# cartoon ( channel, id )\n# tv_series.channel = tv_channel.id\n# cartoon.channel = tv_channel.id",
+        "db_info": "# tv_channel ( id , series_name , country , language , content , pixel_aspect_ratio_par , hight_definition_tv , pay_per_view_ppv , package_option )\n# tv_series ( id , episode , air_date , rating , share , 18_49_rating_share , viewers_m , weekly_rank , channel )\n# cartoon ( id , title , directed_by , written_by , original_air_date , production_code , channel )\n# tv_series.channel = tv_channel.id\n# cartoon.channel = tv_channel.id\n",
         "question": "find id of the tv channels that from the countries where have more than two tv channels.",
         "predicted_sql": "SELECT id\nFROM tv_channel\nWHERE country IN\n    (SELECT country\n     FROM tv_channel\n     GROUP BY country\n     HAVING COUNT(id) > 2);",
         "ground_truth": "SELECT id\nFROM tv_channel\nGROUP BY country\nHAVING COUNT (*) > 2",
@@ -605,7 +605,7 @@
     {
         "index": 642,
         "db_id": "tvshow",
-        "db_info": "# tv_channel ( id, series_name, country, language, content, pixel_aspect_ratio_par, pay_per_view_ppv, package_option )\n# tv_series ( id, episode, air_date, rating, share, 18_49_rating_share, viewers_m, weekly_rank, channel )\n# cartoon ( id, title, directed_by, written_by, original_air_date, production_code, channel )\n# tv_series.channel = tv_channel.id\n# cartoon.channel = tv_channel.id",
+        "db_info": "# tv_channel ( id , series_name , country , language , content , pixel_aspect_ratio_par , hight_definition_tv , pay_per_view_ppv , package_option )\n# tv_series ( id , episode , air_date , rating , share , 18_49_rating_share , viewers_m , weekly_rank , channel )\n# cartoon ( id , title , directed_by , written_by , original_air_date , production_code , channel )\n# tv_series.channel = tv_channel.id\n# cartoon.channel = tv_channel.id\n",
         "question": "What are the ids of all tv channels that have more than 2 TV channels?",
         "predicted_sql": "SELECT tc.id\nFROM tv_channel tc\nLEFT JOIN tv_series ts ON tc.id = ts.channel\nLEFT JOIN cartoon c ON tc.id = c.channel\nGROUP BY tc.id\nHAVING COUNT(DISTINCT ts.id) + COUNT(DISTINCT c.id) > 2;",
         "ground_truth": "SELECT id\nFROM tv_channel\nGROUP BY country\nHAVING COUNT (*) > 2",
@@ -614,7 +614,7 @@
     {
         "index": 704,
         "db_id": "world_1",
-        "db_info": "# country ( governmentform, name )\n# city ( countrycode )\n# countrylanguage ( countrycode )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "How many countries have a republic as their form of government?",
         "predicted_sql": "SELECT count(*)\nFROM country\nWHERE governmentform LIKE '%Republic%';",
         "ground_truth": "SELECT COUNT (*)\nFROM country\nWHERE governmentform = 'Republic'",
@@ -623,7 +623,7 @@
     {
         "index": 705,
         "db_id": "world_1",
-        "db_info": "# country ( governmentform, name )\n# countrylanguage ( countrycode, language )\n# city ( countrycode, name )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "How many countries have governments that are republics?",
         "predicted_sql": "SELECT COUNT(*)\nFROM country\nWHERE TRIM(LOWER(governmentform)) LIKE '%republic%';",
         "ground_truth": "SELECT COUNT (*)\nFROM country\nWHERE governmentform = 'Republic'",
@@ -632,7 +632,7 @@
     {
         "index": 713,
         "db_id": "world_1",
-        "db_info": "# country ( code, name, continent, region, surfacearea, indepyear, population, lifeexpectancy, gnp, gnpold, localname, governmentform, headofstate, capital, code2 )\n# countrylanguage ( language, countrycode, isofficial, percentage )\n# countrylanguage.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "What language is predominantly spoken in Aruba?",
         "predicted_sql": "SELECT LANGUAGE\nFROM countrylanguage\nWHERE countrycode =\n    (SELECT code\n     FROM country\n     WHERE name = 'Aruba')\n  AND isofficial = 'T'\nORDER BY percentage DESC\nLIMIT 1;",
         "ground_truth": "SELECT countrylanguage.language\nFROM country\nJOIN countrylanguage ON country.code = countrylanguage.countrycode\nWHERE country.name = 'Aruba'\nORDER BY percentage DESC\nLIMIT 1",
@@ -641,7 +641,7 @@
     {
         "index": 716,
         "db_id": "world_1",
-        "db_info": "# country ( region, population, code, name, continent, surfacearea, indepyear, lifeexpectancy, gnp, gnpold, localname, governmentform, headofstate, capital, code2 )\n# city ( population, name, countrycode, district, id )\n# countrylanguage ( percentage, language, isofficial, countrycode )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "What are the region and population of Angola?",
         "predicted_sql": "SELECT c.region,\n       cty.population\nFROM country AS c\nJOIN city AS cty ON c.capital = cty.id\nWHERE c.name = 'Angola';",
         "ground_truth": "SELECT population,\n       region\nFROM country\nWHERE name = 'Angola'",
@@ -650,7 +650,7 @@
     {
         "index": 736,
         "db_id": "world_1",
-        "db_info": "# countrylanguage ( language, isofficial, percentage )\n# country ( code, name, continent, region, surfacearea, indepyear, population, lifeexpectancy, gnp, gnpold, localname, governmentform, headofstate, capital, code2 )\n# countrylanguage.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "What is the total number of languages used in Aruba?",
         "predicted_sql": "SELECT COUNT (*)\nFROM countrylanguage\nWHERE countrycode = 'ABW';",
         "ground_truth": "SELECT COUNT (countrylanguage.language)\nFROM country\nJOIN countrylanguage ON country.code = countrylanguage.countrycode\nWHERE country.name = 'Aruba'",
@@ -659,7 +659,7 @@
     {
         "index": 737,
         "db_id": "world_1",
-        "db_info": "# country ( name, code )\n# countrylanguage ( countrycode, language )\n# countrylanguage.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "How many languages are spoken in Aruba?",
         "predicted_sql": "SELECT COUNT (*)\nFROM countrylanguage\nWHERE countrycode = 'ABW';",
         "ground_truth": "SELECT COUNT (countrylanguage.language)\nFROM country\nJOIN countrylanguage ON country.code = countrylanguage.countrycode\nWHERE country.name = 'Aruba'",
@@ -668,7 +668,7 @@
     {
         "index": 740,
         "db_id": "world_1",
-        "db_info": "# country ( name, code, population, continent, surfacearea, indepyear, lifeexpectancy, gnp, gnpold, localname, governmentform, headofstate, capital, code2 )\n# countrylanguage ( language, countrycode, isofficial, percentage )\n# countrylanguage.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "What is name of the country that speaks the largest number of languages?",
         "predicted_sql": "SELECT country.name\nFROM countrylanguage\nJOIN country ON countrylanguage.countrycode = country.code\nGROUP BY countrylanguage.countrycode\nORDER BY COUNT(DISTINCT countrylanguage.language) DESC\nLIMIT 1;",
         "ground_truth": "SELECT country.name\nFROM country\nJOIN countrylanguage ON country.code = countrylanguage.countrycode\nGROUP BY country.name\nORDER BY COUNT (*) DESC\nLIMIT 1",
@@ -677,7 +677,7 @@
     {
         "index": 741,
         "db_id": "world_1",
-        "db_info": "# country ( name )\n# countrylanguage ( countrycode, language )\n# countrylanguage.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "Give the name of the nation that uses the greatest amount of languages.",
         "predicted_sql": "SELECT country.name\nFROM country\nJOIN countrylanguage ON country.code = countrylanguage.countrycode\nGROUP BY country.code\nORDER BY COUNT(DISTINCT countrylanguage.language) DESC\nLIMIT 1;",
         "ground_truth": "SELECT country.name\nFROM country\nJOIN countrylanguage ON country.code = countrylanguage.countrycode\nGROUP BY country.name\nORDER BY COUNT (*) DESC\nLIMIT 1",
@@ -686,7 +686,7 @@
     {
         "index": 743,
         "db_id": "world_1",
-        "db_info": "# country ( continent, code, name, population )\n# countrylanguage ( countrycode, language, percentage )\n# countrylanguage.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "Which continent speaks the most languages?",
         "predicted_sql": "SELECT continent\nFROM country\nGROUP BY continent\nORDER BY COUNT (*) DESC\nLIMIT 1;",
         "ground_truth": "SELECT country.continent\nFROM country\nJOIN countrylanguage ON country.code = countrylanguage.countrycode\nGROUP BY country.continent\nORDER BY COUNT (*) DESC\nLIMIT 1",
@@ -695,7 +695,7 @@
     {
         "index": 745,
         "db_id": "world_1",
-        "db_info": "# countrylanguage ( language, countrycode, isofficial, percentage )\n# country ( name, code, continent, region, surfacearea, indepyear, population, lifeexpectancy, gnp, gnpold, localname, governmentform, headofstate, capital, code2 )\n# countrylanguage.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "What is the number of nations that use English and Dutch?",
         "predicted_sql": "SELECT COUNT(DISTINCT countrycode)\nFROM countrylanguage\nWHERE LANGUAGE IN ('English',\n                   'Dutch')\nGROUP BY countrycode\nHAVING COUNT(DISTINCT LANGUAGE) = 2;",
         "ground_truth": "SELECT COUNT (*)\nFROM\n  (SELECT country.name\n   FROM country\n   JOIN countrylanguage ON country.code = countrylanguage.countrycode\n   WHERE countrylanguage.language = 'English' INTERSECT\n     SELECT country.name\n     FROM country\n     JOIN countrylanguage ON country.code = countrylanguage.countrycode WHERE countrylanguage.language = 'Dutch' )",
@@ -704,7 +704,7 @@
     {
         "index": 746,
         "db_id": "world_1",
-        "db_info": "# country ( name, code, population, governmentform )\n# countrylanguage ( countrycode, language, isofficial, percentage )\n# countrylanguage.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "What are the names of nations speak both English and French?",
         "predicted_sql": "SELECT country.name\nFROM country\nJOIN countrylanguage AS cl1 ON country.code = cl1.countrycode\nWHERE cl1.language = 'English'\n  AND cl1.isofficial = 'T' INTERSECT\n  SELECT country.name\n  FROM country\n  JOIN countrylanguage AS cl2 ON country.code = cl2.countrycode WHERE cl2.language = 'French'\n  AND cl2.isofficial = 'T';",
         "ground_truth": "SELECT country.name\nFROM country\nJOIN countrylanguage ON country.code = countrylanguage.countrycode\nWHERE countrylanguage.language = 'English' INTERSECT\n  SELECT country.name\n  FROM country\n  JOIN countrylanguage ON country.code = countrylanguage.countrycode WHERE countrylanguage.language = 'French'",
@@ -713,7 +713,7 @@
     {
         "index": 750,
         "db_id": "world_1",
-        "db_info": "# countrylanguage ( language, countrycode )\n# country ( continent, code )\n# city ( countrycode )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "What is the number of distinct continents where Chinese is spoken?",
         "predicted_sql": "SELECT COUNT(DISTINCT continent)\nFROM country\nJOIN countrylanguage ON country.code = countrylanguage.countrycode\nWHERE countrylanguage.language = 'Chinese'\n  AND countrylanguage.isofficial = 1;",
         "ground_truth": "SELECT COUNT (DISTINCT continent)\nFROM country\nJOIN countrylanguage ON country.code = countrylanguage.countrycode\nWHERE countrylanguage.language = 'Chinese'",
@@ -722,7 +722,7 @@
     {
         "index": 751,
         "db_id": "world_1",
-        "db_info": "# country ( continent, code, name )\n# countrylanguage ( countrycode, language, percentage )\n# countrylanguage.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "How many continents speak Chinese?",
         "predicted_sql": "SELECT COUNT(DISTINCT c.continent)\nFROM country AS c\nJOIN countrylanguage AS cl ON c.code = cl.countrycode\nWHERE cl.language = 'Chinese'\n  AND cl.isofficial = 1;",
         "ground_truth": "SELECT COUNT (DISTINCT continent)\nFROM country\nJOIN countrylanguage ON country.code = countrylanguage.countrycode\nWHERE countrylanguage.language = 'Chinese'",
@@ -731,7 +731,7 @@
     {
         "index": 753,
         "db_id": "world_1",
-        "db_info": "# countrylanguage ( language, countrycode, isofficial, percentage )\n# country ( region, name, code, continent )\n# city ( countrycode, name, district )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "Which regions speak Dutch or English?",
         "predicted_sql": "SELECT DISTINCT region\nFROM country\nWHERE code IN\n    (SELECT countrycode\n     FROM countrylanguage\n     WHERE (LANGUAGE = 'Dutch'\n            OR LANGUAGE = 'English')\n       AND isofficial = 'T' );",
         "ground_truth": "SELECT DISTINCT country.region\nFROM country\nJOIN countrylanguage ON country.code = countrylanguage.countrycode\nWHERE countrylanguage.language = 'English'\n  OR countrylanguage.language = 'Dutch'",
@@ -740,7 +740,7 @@
     {
         "index": 755,
         "db_id": "world_1",
-        "db_info": "# country ( name, governmentform, code, population, continent, indepyear, capital, region, surfacearea, lifeexpectancy, gnp, gnpold, localname, headofstate, code2 )\n# countrylanguage ( countrycode, language, isofficial, percentage )\n# countrylanguage.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "Which countries have either English or Dutch as an official language?",
         "predicted_sql": "SELECT DISTINCT c.name\nFROM country c\nJOIN countrylanguage cl ON c.code = cl.countrycode\nWHERE (cl.language = 'English'\n       OR cl.language = 'Dutch')\n  AND cl.isofficial = 'T';",
         "ground_truth": "SELECT *\nFROM country\nJOIN countrylanguage ON country.code = countrylanguage.countrycode\nWHERE countrylanguage.language = 'English'\n  AND isofficial = 'T'\nUNION\nSELECT *\nFROM country\nJOIN countrylanguage ON country.code = countrylanguage.countrycode\nWHERE countrylanguage.language = 'Dutch'\n  AND isofficial = 'T'",
@@ -749,7 +749,7 @@
     {
         "index": 756,
         "db_id": "world_1",
-        "db_info": "# country ( continent )\n# countrylanguage ( language, percentage, countrycode )\n# city ( countrycode )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "Which language is the most popular on the Asian continent?",
         "predicted_sql": "SELECT LANGUAGE\nFROM countrylanguage\nJOIN country ON countrylanguage.countrycode = country.code\nWHERE continent = 'Asia'\nGROUP BY LANGUAGE\nORDER BY SUM (percentage) DESC\nLIMIT 1;",
         "ground_truth": "SELECT countrylanguage.language\nFROM country\nJOIN countrylanguage ON country.code = countrylanguage.countrycode\nWHERE country.continent = 'Asia'\nGROUP BY countrylanguage.language\nORDER BY COUNT (*) DESC\nLIMIT 1",
@@ -758,7 +758,7 @@
     {
         "index": 760,
         "db_id": "world_1",
-        "db_info": "# city ( population, name, countrycode, district, id )\n# country ( population, code, name, capital, continent, region )\n# countrylanguage ( language, countrycode, isofficial, percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "Find the city with the largest population that uses English.",
         "predicted_sql": "SELECT city.name,\n       city.population\nFROM city\nJOIN countrylanguage ON city.countrycode = countrylanguage.countrycode\nWHERE countrylanguage.language = 'English'\n  AND countrylanguage.isofficial = 'T'\nORDER BY city.population DESC\nLIMIT 1;",
         "ground_truth": "SELECT city.name,\n       city.population\nFROM city\nJOIN countrylanguage ON city.countrycode = countrylanguage.countrycode\nWHERE countrylanguage.language = 'English'\nORDER BY city.population DESC\nLIMIT 1",
@@ -767,7 +767,7 @@
     {
         "index": 766,
         "db_id": "world_1",
-        "db_info": "# city ( population )\n# country ( population, code )\n# countrylanguage ( percentage, countrycode )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "What is the total number of people living in the nations that do not use English?",
         "predicted_sql": "SELECT SUM(c.population) AS TotalPopulation\nFROM country c\nWHERE NOT EXISTS\n    (SELECT 1\n     FROM countrylanguage cl\n     WHERE cl.countrycode = c.code\n       AND cl.language = 'English'\n       AND cl.isofficial = 'T' );",
         "ground_truth": "SELECT SUM (population)\nFROM country\nWHERE name NOT IN\n    (SELECT country.name\n     FROM country\n     JOIN countrylanguage ON country.code = countrylanguage.countrycode\n     WHERE countrylanguage.language = 'English' )",
@@ -776,7 +776,7 @@
     {
         "index": 767,
         "db_id": "world_1",
-        "db_info": "# country ( population, code, name, continent, surfacearea, indepyear, lifeexpectancy, gnp, gnpold, localname, governmentform, headofstate, capital, code2 )\n# countrylanguage ( countrycode, language, isofficial, percentage )\n# countrylanguage.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "How many people live in countries that do not speak English?",
         "predicted_sql": "SELECT SUM(c.population)\nFROM country AS c\nWHERE NOT EXISTS\n    (SELECT 1\n     FROM countrylanguage AS cl\n     WHERE cl.countrycode = c.code\n       AND cl.language = 'English' );",
         "ground_truth": "SELECT SUM (population)\nFROM country\nWHERE name NOT IN\n    (SELECT country.name\n     FROM country\n     JOIN countrylanguage ON country.code = countrylanguage.countrycode\n     WHERE countrylanguage.language = 'English' )",
@@ -785,7 +785,7 @@
     {
         "index": 772,
         "db_id": "world_1",
-        "db_info": "# country ( name, surfacearea, continent, code )\n# city ( countrycode, name )\n# city.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "What are the countries that have greater surface area than any country in Europe?",
         "predicted_sql": "SELECT c.name\nFROM country AS c\nWHERE c.surfacearea >\n    (SELECT MAX(c2.surfacearea)\n     FROM country AS c2\n     WHERE c2.continent = 'Europe' )\n  AND c.continent <> 'Europe';",
         "ground_truth": "SELECT name\nFROM country\nWHERE surfacearea >\n    (SELECT MIN (surfacearea)\n     FROM country\n     WHERE continent = 'Europe' )",
@@ -794,7 +794,7 @@
     {
         "index": 773,
         "db_id": "world_1",
-        "db_info": "# country ( surfacearea, name, continent, code, indepyear, population, lifeexpectancy, gnp, gnpold, localname, governmentform, headofstate, capital, code2 )\n# city ( countrycode, id, name, district, population )\n# city.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "Which countries have greater area than that of any country in Europe?",
         "predicted_sql": "SELECT name\nFROM country\nWHERE surfacearea >\n    (SELECT MAX(surfacearea)\n     FROM country\n     WHERE continent = 'Europe');",
         "ground_truth": "SELECT name\nFROM country\nWHERE surfacearea >\n    (SELECT MIN (surfacearea)\n     FROM country\n     WHERE continent = 'Europe' )",
@@ -803,7 +803,7 @@
     {
         "index": 774,
         "db_id": "world_1",
-        "db_info": "# country ( name, continent, population, region )\n# city ( countrycode, population )\n# city.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "What are the African countries that have a  population less than any country in Asia?",
         "predicted_sql": "SELECT name\nFROM country\nWHERE population <\n    (SELECT MIN(population)\n     FROM country\n     WHERE continent = 'Asia' )\n  AND continent = 'Africa';",
         "ground_truth": "SELECT name\nFROM country\nWHERE continent = 'Africa'\n  AND population <\n    (SELECT MAX (population)\n     FROM country\n     WHERE continent = 'Asia' )",
@@ -812,7 +812,7 @@
     {
         "index": 778,
         "db_id": "world_1",
-        "db_info": "# country ( code, name, population, continent, region, surfacearea, indepyear, lifeexpectancy, gnp, gnpold, localname, governmentform, headofstate, capital, code2 )\n# countrylanguage ( countrycode, language, isofficial, percentage )\n# countrylanguage.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "What are the country codes for countries that do not speak English?",
         "predicted_sql": "SELECT code\nFROM country\nWHERE NOT EXISTS\n    (SELECT 1\n     FROM countrylanguage\n     WHERE country.code = countrylanguage.countrycode\n       AND LANGUAGE = 'English' );",
         "ground_truth": "SELECT countrycode\nFROM countrylanguage\nEXCEPT\nSELECT countrycode\nFROM countrylanguage\nWHERE LANGUAGE = 'English'",
@@ -821,7 +821,7 @@
     {
         "index": 792,
         "db_id": "world_1",
-        "db_info": "# country ( name, code, population, indepyear, governmentform )\n# countrylanguage ( countrycode, language )\n# countrylanguage.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "Return the country name and the numbers of languages spoken for each country that speaks at least 3 languages.",
         "predicted_sql": "SELECT country.name,\n       COUNT(countrylanguage.language) AS num_languages\nFROM country\nJOIN countrylanguage ON country.code = countrylanguage.countrycode\nGROUP BY country.code\nHAVING COUNT(countrylanguage.language) >= 3;",
         "ground_truth": "SELECT COUNT (countrylanguage.language) , country.name\nFROM country\nJOIN countrylanguage ON country.code = countrylanguage.countrycode\nGROUP BY country.name\nHAVING COUNT (*) > 2",
@@ -830,7 +830,7 @@
     {
         "index": 793,
         "db_id": "world_1",
-        "db_info": "# country ( name, code, population, governmentform, continent, region )\n# countrylanguage ( countrycode, language, isofficial, percentage )\n# countrylanguage.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "What are the names of countries that speak more than 2 languages, as well as how many languages they speak?",
         "predicted_sql": "SELECT country.name,\n       COUNT(DISTINCT countrylanguage.language) AS language_count\nFROM country\nJOIN countrylanguage ON country.code = countrylanguage.countrycode\nGROUP BY country.code,\n         country.name\nHAVING COUNT(DISTINCT countrylanguage.language) > 2;",
         "ground_truth": "SELECT COUNT (countrylanguage.language) , country.name\nFROM country\nJOIN countrylanguage ON country.code = countrylanguage.countrycode\nGROUP BY country.name\nHAVING COUNT (*) > 2",
@@ -839,7 +839,7 @@
     {
         "index": 796,
         "db_id": "world_1",
-        "db_info": "# country ( governmentform, population, lifeexpectancy, code, name, continent, region, surfacearea, indepyear, gnp, gnpold, localname, headofstate, capital, code2 )\n# city ( countrycode, population, id, name, district )\n# city.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "Find the government form name and total population for each government form whose average life expectancy is longer than 72.",
         "predicted_sql": "SELECT governmentform,\n       SUM(population) AS total_population\nFROM country\nGROUP BY governmentform\nHAVING AVG(lifeexpectancy) > 72;",
         "ground_truth": "SELECT SUM (population) , governmentform\nFROM country\nGROUP BY governmentform\nHAVING AVG (lifeexpectancy) > 72",
@@ -848,7 +848,7 @@
     {
         "index": 797,
         "db_id": "world_1",
-        "db_info": "# country ( governmentform, population, lifeexpectancy )\n# countrylanguage ( countrycode )\n# city ( countrycode, population )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "What are the different government forms and what is the total population of each for government forms that have an average life expectancy greater than 72?",
         "predicted_sql": "SELECT c.governmentform,\n       SUM(c.population) AS total_population\nFROM country c\nJOIN\n  (SELECT governmentform\n   FROM country\n   GROUP BY governmentform\n   HAVING AVG(lifeexpectancy) > 72) AS subquery ON c.governmentform = subquery.governmentform\nGROUP BY c.governmentform;",
         "ground_truth": "SELECT SUM (population) , governmentform\nFROM country\nGROUP BY governmentform\nHAVING AVG (lifeexpectancy) > 72",
@@ -857,7 +857,7 @@
     {
         "index": 799,
         "db_id": "world_1",
-        "db_info": "# country ( continent, population, lifeexpectancy, name )\n# city ( countrycode, population, district )\n# city.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "What are the different continents and the total popuation and average life expectancy corresponding to each, for continents that have an average life expectancy less than 72?",
         "predicted_sql": "SELECT continent,\n       SUM(population) AS total_population,\n       AVG(lifeexpectancy) AS average_life_expectancy\nFROM country\nGROUP BY continent\nHAVING AVG(lifeexpectancy) < 72;",
         "ground_truth": "SELECT SUM (population) , AVG (lifeexpectancy) , continent\nFROM country\nGROUP BY continent\nHAVING AVG (lifeexpectancy) < 72",
@@ -866,7 +866,7 @@
     {
         "index": 810,
         "db_id": "world_1",
-        "db_info": "# country ( continent, population, surfacearea, name, indepyear, code, region, indepyear, gnp, gnpold, localname, governmentform, headofstate, capital, code2 )\n# city ( population, name, countrycode, district, id )\n# city.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "What is the total population and average area of countries in the continent of North America whose area is bigger than 3000 ?",
         "predicted_sql": "SELECT SUM(population) AS total_population,\n       AVG(surfacearea) AS average_area\nFROM country\nWHERE continent = 'North America'\n  AND surfacearea > 3000;",
         "ground_truth": "SELECT SUM (population) , AVG (surfacearea)\nFROM country\nWHERE continent = 'north america'\n  AND surfacearea > 3000",
@@ -875,7 +875,7 @@
     {
         "index": 811,
         "db_id": "world_1",
-        "db_info": "# country ( name, continent, surfacearea, population, region )\n# city ( countrycode, population, district, name )\n# city.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "Give the total population and average surface area corresponding to countries in North America that have a surface area greater than 3000 .",
         "predicted_sql": "SELECT SUM(population) AS total_population,\n       AVG(surfacearea) AS average_surface_area\nFROM country\nWHERE surfacearea > 3000\n  AND continent = 'North America';",
         "ground_truth": "SELECT SUM (population) , AVG (surfacearea)\nFROM country\nWHERE continent = 'north america'\n  AND surfacearea > 3000",
@@ -884,7 +884,7 @@
     {
         "index": 814,
         "db_id": "world_1",
-        "db_info": "# countrylanguage ( language, countrycode )\n# country ( name, code )\n# countrylanguage.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "Which language is spoken by the largest number of countries?",
         "predicted_sql": "SELECT LANGUAGE\nFROM countrylanguage\nWHERE isofficial = 'T'\nGROUP BY LANGUAGE\nORDER BY COUNT (*) DESC\nLIMIT 1;",
         "ground_truth": "SELECT LANGUAGE\nFROM countrylanguage\nGROUP BY LANGUAGE\nORDER BY COUNT (*) DESC\nLIMIT 1",
@@ -893,7 +893,7 @@
     {
         "index": 816,
         "db_id": "world_1",
-        "db_info": "# country ( code, name, population, continent, region, surfacearea, indepyear, lifeexpectancy, gnp, gnpold, localname, governmentform, headofstate, capital, code2 )\n# countrylanguage ( countrycode, language, isofficial, percentage )\n# countrylanguage.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "What is the language spoken by the largest percentage of people in each country?",
         "predicted_sql": "SELECT cl.countrycode,\n       cl.language,\n       cl.percentage\nFROM countrylanguage cl\nJOIN\n  (SELECT countrycode,\n          MAX(percentage) AS max_percentage\n   FROM countrylanguage\n   WHERE isofficial = 'T'\n   GROUP BY countrycode) AS subq ON cl.countrycode = subq.countrycode\nAND cl.percentage = subq.max_percentage\nWHERE cl.isofficial = 'T'\nORDER BY cl.countrycode;",
         "ground_truth": "SELECT LANGUAGE,\n       countrycode,\n       MAX (percentage)\nFROM countrylanguage\nGROUP BY countrycode",
@@ -902,7 +902,7 @@
     {
         "index": 817,
         "db_id": "world_1",
-        "db_info": "# country ( code, name, continent, population, indepyear, governmentform, headofstate, capital )\n# countrylanguage ( countrycode, language, isofficial, percentage )\n# city ( countrycode )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "What are the country codes of the different countries, and what are the languages spoken by the greatest percentage of people for each?",
         "predicted_sql": "SELECT cl.countrycode,\n       cl.language,\n       cl.percentage\nFROM countrylanguage cl\nINNER JOIN\n  (SELECT countrycode,\n          MAX(percentage) AS max_percentage\n   FROM countrylanguage\n   GROUP BY countrycode) AS max_cl ON cl.countrycode = max_cl.countrycode\nAND cl.percentage = max_cl.max_percentage;",
         "ground_truth": "SELECT LANGUAGE,\n       countrycode,\n       MAX (percentage)\nFROM countrylanguage\nGROUP BY countrycode",
@@ -911,7 +911,7 @@
     {
         "index": 818,
         "db_id": "world_1",
-        "db_info": "# countrylanguage ( language, isofficial, percentage )\n# country ( population, name, code )\n# countrylanguage.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "What is the total number of countries where Spanish is spoken by the largest percentage of people?",
         "predicted_sql": "SELECT COUNT(*)\nFROM\n  (SELECT cl.countrycode\n   FROM countrylanguage cl\n   INNER JOIN\n     (SELECT countrycode,\n             MAX(percentage) AS max_percentage\n      FROM countrylanguage\n      GROUP BY countrycode) AS max_lang ON cl.countrycode = max_lang.countrycode\n   WHERE cl.language = 'Spanish'\n     AND cl.percentage = max_lang.max_percentage ) AS spanish_speaking_countries;",
         "ground_truth": "SELECT COUNT (*) , MAX (percentage)\nFROM countrylanguage\nWHERE LANGUAGE = 'Spanish'\nGROUP BY countrycode",
@@ -920,7 +920,7 @@
     {
         "index": 820,
         "db_id": "world_1",
-        "db_info": "# country ( code, name, population, region, surfacearea, continent, indepyear, lifeexpectancy, gnp, gnpold, localname, governmentform, headofstate, capital, code2 )\n# countrylanguage ( countrycode, language, isofficial, percentage )\n# countrylanguage.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "What are the codes of countries where Spanish is spoken by the largest percentage of people?",
         "predicted_sql": "WITH SpanishSpeaking AS\n  (SELECT countrycode,\n          MAX(percentage) AS max_percentage\n   FROM countrylanguage\n   WHERE LANGUAGE = 'Spanish'\n   GROUP BY countrycode),\n     MaxPercentage AS\n  (SELECT MAX(max_percentage) AS max_percentage\n   FROM SpanishSpeaking)\nSELECT s.countrycode\nFROM SpanishSpeaking s\nJOIN MaxPercentage mp ON s.max_percentage = mp.max_percentage;",
         "ground_truth": "SELECT countrycode,\n       MAX (percentage)\nFROM countrylanguage\nWHERE LANGUAGE = 'Spanish'\nGROUP BY countrycode",
@@ -929,7 +929,7 @@
     {
         "index": 821,
         "db_id": "world_1",
-        "db_info": "# countrylanguage ( language, isofficial, percentage )\n# country ( code, name, continent, region )\n# countrylanguage.countrycode = country.code",
+        "db_info": "# city ( id , name , countrycode , district , population )\n# sqlite_sequence ( name , seq )\n# country ( code , name , continent , region , surfacearea , indepyear , population , lifeexpectancy , gnp , gnpold , localname , governmentform , headofstate , capital , code2 )\n# countrylanguage ( countrycode , language , isofficial , percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code\n",
         "question": "Return the codes of countries for which Spanish is the predominantly spoken language.",
         "predicted_sql": "SELECT cl.countrycode\nFROM countrylanguage cl\nJOIN\n  (SELECT countrycode,\n          MAX(percentage) AS max_percentage\n   FROM countrylanguage\n   WHERE LANGUAGE = 'Spanish'\n   GROUP BY countrycode) AS subq ON cl.countrycode = subq.countrycode\nAND cl.percentage = subq.max_percentage\nWHERE cl.language = 'Spanish';",
         "ground_truth": "SELECT countrycode,\n       MAX (percentage)\nFROM countrylanguage\nWHERE LANGUAGE = 'Spanish'\nGROUP BY countrycode",
@@ -938,7 +938,7 @@
     {
         "index": 842,
         "db_id": "orchestra",
-        "db_info": "# conductor ( name, conductor_id, age, nationality, year_of_work )\n# orchestra ( conductor_id, orchestra_id, orchestra, record_company, year_of_founded, major_record_format )\n# orchestra.conductor_id = conductor.conductor_id",
+        "db_info": "# conductor ( conductor_id , name , age , nationality , year_of_work )\n# orchestra ( orchestra_id , orchestra , conductor_id , record_company , year_of_founded , major_record_format )\n# performance ( performance_id , orchestra_id , type , date , official_ratings_(millions) , weekly_rank , share )\n# show ( show_id , performance_id , if_first_show , result , attendance )\n# orchestra.conductor_id = conductor.conductor_id\n# performance.orchestra_id = orchestra.orchestra_id\n# show.performance_id = performance.performance_id\n",
         "question": "Show the names of conductors that have conducted more than one orchestras.",
         "predicted_sql": "SELECT conductor.name\nFROM conductor\nJOIN orchestra ON conductor.conductor_id = orchestra.conductor_id\nGROUP BY conductor.name\nHAVING COUNT (*) > 1 ;",
         "ground_truth": "SELECT conductor.name\nFROM conductor\nJOIN orchestra ON conductor.conductor_id = orchestra.conductor_id\nGROUP BY orchestra.conductor_id\nHAVING COUNT (*) > 1",
@@ -947,7 +947,7 @@
     {
         "index": 896,
         "db_id": "network_1",
-        "db_info": "# highschooler ( name, id, grade )\n# friend ( student_id, friend_id )\n# friend.friend_id = highschooler.id\n# friend.student_id = highschooler.id",
+        "db_info": "# highschooler ( id , name , grade )\n# friend ( student_id , friend_id )\n# likes ( student_id , liked_id )\n# friend.friend_id = highschooler.id\n# friend.student_id = highschooler.id\n# likes.student_id = highschooler.id\n# likes.liked_id = highschooler.id\n",
         "question": "Show names of all high school students who do not have any friends.",
         "predicted_sql": "SELECT name\nFROM highschooler\nWHERE id NOT IN\n    (SELECT student_id\n     FROM friend);",
         "ground_truth": "SELECT name\nFROM highschooler\nEXCEPT\nSELECT highschooler.name\nFROM friend\nJOIN highschooler ON friend.student_id = highschooler.id",
@@ -956,7 +956,7 @@
     {
         "index": 897,
         "db_id": "network_1",
-        "db_info": "# highschooler ( name, id, grade )\n# friend ( friend_id, student_id )\n# likes ( liked_id, student_id )\n# friend.friend_id = highschooler.id\n# friend.student_id = highschooler.id\n# likes.student_id = highschooler.id\n# likes.liked_id = highschooler.id",
+        "db_info": "# highschooler ( id , name , grade )\n# friend ( student_id , friend_id )\n# likes ( student_id , liked_id )\n# friend.friend_id = highschooler.id\n# friend.student_id = highschooler.id\n# likes.student_id = highschooler.id\n# likes.liked_id = highschooler.id\n",
         "question": "What are the names of students who have no friends?",
         "predicted_sql": "SELECT name\nFROM highschooler\nWHERE id NOT IN\n    (SELECT student_id\n     FROM friend);",
         "ground_truth": "SELECT name\nFROM highschooler\nEXCEPT\nSELECT highschooler.name\nFROM friend\nJOIN highschooler ON friend.student_id = highschooler.id",
@@ -965,7 +965,7 @@
     {
         "index": 936,
         "db_id": "dog_kennels",
-        "db_info": "# owners ( owner_id, last_name )\n# treatments ( dog_id, cost_of_treatment )\n# dogs ( dog_id, owner_id )\n# professionals ( professional_id )\n# treatment_types ( treatment_type_code )\n# dogs.owner_id = owners.owner_id\n# dogs.owner_id = owners.owner_id\n# treatments.dog_id = dogs.dog_id\n# treatments.professional_id = professionals.professional_id\n# treatments.treatment_type_code = treatment_types.treatment_type_code",
+        "db_info": "# breeds ( breed_code , breed_name )\n# charges ( charge_id , charge_type , charge_amount )\n# sizes ( size_code , size_description )\n# treatment_types ( treatment_type_code , treatment_type_description )\n# owners ( owner_id , first_name , last_name , street , city , state , zip_code , email_address , home_phone , cell_number )\n# dogs ( dog_id , owner_id , abandoned_yn , breed_code , size_code , name , age , date_of_birth , gender , weight , date_arrived , date_adopted , date_departed )\n# professionals ( professional_id , role_code , first_name , street , city , state , zip_code , last_name , email_address , home_phone , cell_number )\n# treatments ( treatment_id , dog_id , professional_id , treatment_type_code , date_of_treatment , cost_of_treatment )\n# dogs.owner_id = owners.owner_id\n# dogs.owner_id = owners.owner_id\n# dogs.size_code = sizes.size_code\n# dogs.breed_code = breeds.breed_code\n# treatments.dog_id = dogs.dog_id\n# treatments.professional_id = professionals.professional_id\n# treatments.treatment_type_code = treatment_types.treatment_type_code\n",
         "question": "Which owner has paid for the most treatments on his or her dogs? List the owner id and last name.",
         "predicted_sql": "SELECT owners.owner_id,\n       owners.last_name\nFROM owners\nJOIN dogs ON owners.owner_id = dogs.owner_id\nJOIN treatments ON dogs.dog_id = treatments.dog_id\nGROUP BY owners.owner_id,\n         owners.last_name\nORDER BY SUM(treatments.cost_of_treatment) DESC\nLIMIT 1;",
         "ground_truth": "SELECT owners.owner_id,\n       owners.last_name\nFROM owners\nJOIN dogs ON owners.owner_id = dogs.owner_id\nJOIN treatments ON dogs.dog_id = treatments.dog_id\nGROUP BY owners.owner_id\nORDER BY COUNT (*) DESC\nLIMIT 1",
@@ -974,7 +974,7 @@
     {
         "index": 937,
         "db_id": "dog_kennels",
-        "db_info": "# treatments ( cost_of_treatment, treatment_id, dog_id, professional_id, treatment_type_code, date_of_treatment )\n# dogs ( owner_id, dog_id, name, breed_code, size_code )\n# owners ( owner_id, last_name, first_name )\n# dogs.owner_id = owners.owner_id\n# dogs.owner_id = owners.owner_id\n# treatments.dog_id = dogs.dog_id",
+        "db_info": "# breeds ( breed_code , breed_name )\n# charges ( charge_id , charge_type , charge_amount )\n# sizes ( size_code , size_description )\n# treatment_types ( treatment_type_code , treatment_type_description )\n# owners ( owner_id , first_name , last_name , street , city , state , zip_code , email_address , home_phone , cell_number )\n# dogs ( dog_id , owner_id , abandoned_yn , breed_code , size_code , name , age , date_of_birth , gender , weight , date_arrived , date_adopted , date_departed )\n# professionals ( professional_id , role_code , first_name , street , city , state , zip_code , last_name , email_address , home_phone , cell_number )\n# treatments ( treatment_id , dog_id , professional_id , treatment_type_code , date_of_treatment , cost_of_treatment )\n# dogs.owner_id = owners.owner_id\n# dogs.owner_id = owners.owner_id\n# dogs.size_code = sizes.size_code\n# dogs.breed_code = breeds.breed_code\n# treatments.dog_id = dogs.dog_id\n# treatments.professional_id = professionals.professional_id\n# treatments.treatment_type_code = treatment_types.treatment_type_code\n",
         "question": "Tell me the owner id and last name of the owner who spent the most on treatments of his or her dogs.",
         "predicted_sql": "SELECT owners.owner_id,\n       owners.last_name,\n       SUM(treatments.cost_of_treatment) AS total_cost\nFROM owners\nJOIN dogs ON owners.owner_id = dogs.owner_id\nJOIN treatments ON dogs.dog_id = treatments.dog_id\nGROUP BY owners.owner_id,\n         owners.last_name\nORDER BY total_cost DESC\nLIMIT 1;",
         "ground_truth": "SELECT owners.owner_id,\n       owners.last_name\nFROM owners\nJOIN dogs ON owners.owner_id = dogs.owner_id\nJOIN treatments ON dogs.dog_id = treatments.dog_id\nGROUP BY owners.owner_id\nORDER BY COUNT (*) DESC\nLIMIT 1",
@@ -983,7 +983,7 @@
     {
         "index": 941,
         "db_id": "dog_kennels",
-        "db_info": "# treatments ( dog_id, cost_of_treatment )\n# dogs ( dog_id, owner_id )\n# owners ( owner_id, zip_code )\n# professionals ( professional_id )\n# treatment_types ( treatment_type_code )\n# breeds ( breed_code )\n# sizes ( size_code )\n# dogs.owner_id = owners.owner_id\n# dogs.owner_id = owners.owner_id\n# dogs.size_code = sizes.size_code\n# dogs.breed_code = breeds.breed_code\n# treatments.dog_id = dogs.dog_id\n# treatments.professional_id = professionals.professional_id\n# treatments.treatment_type_code = treatment_types.treatment_type_code",
+        "db_info": "# breeds ( breed_code , breed_name )\n# charges ( charge_id , charge_type , charge_amount )\n# sizes ( size_code , size_description )\n# treatment_types ( treatment_type_code , treatment_type_description )\n# owners ( owner_id , first_name , last_name , street , city , state , zip_code , email_address , home_phone , cell_number )\n# dogs ( dog_id , owner_id , abandoned_yn , breed_code , size_code , name , age , date_of_birth , gender , weight , date_arrived , date_adopted , date_departed )\n# professionals ( professional_id , role_code , first_name , street , city , state , zip_code , last_name , email_address , home_phone , cell_number )\n# treatments ( treatment_id , dog_id , professional_id , treatment_type_code , date_of_treatment , cost_of_treatment )\n# dogs.owner_id = owners.owner_id\n# dogs.owner_id = owners.owner_id\n# dogs.size_code = sizes.size_code\n# dogs.breed_code = breeds.breed_code\n# treatments.dog_id = dogs.dog_id\n# treatments.professional_id = professionals.professional_id\n# treatments.treatment_type_code = treatment_types.treatment_type_code\n",
         "question": "Find the owner id and zip code of the owner who spent the most money in total for his or her dogs.",
         "predicted_sql": "SELECT dogs.owner_id,\n       owners.zip_code\nFROM dogs\nJOIN owners ON dogs.owner_id = owners.owner_id\nGROUP BY dogs.owner_id\nORDER BY SUM (dogs.weight) DESC\nLIMIT 1;",
         "ground_truth": "SELECT owners.owner_id,\n       owners.zip_code\nFROM owners\nJOIN dogs ON owners.owner_id = dogs.owner_id\nJOIN treatments ON dogs.dog_id = treatments.dog_id\nGROUP BY owners.owner_id\nORDER BY SUM (treatments.cost_of_treatment) DESC\nLIMIT 1",
@@ -992,7 +992,7 @@
     {
         "index": 944,
         "db_id": "dog_kennels",
-        "db_info": "# professionals ( first_name, last_name )\n# treatments ( professional_id, cost_of_treatment )\n# treatments.professional_id = professionals.professional_id",
+        "db_info": "# breeds ( breed_code , breed_name )\n# charges ( charge_id , charge_type , charge_amount )\n# sizes ( size_code , size_description )\n# treatment_types ( treatment_type_code , treatment_type_description )\n# owners ( owner_id , first_name , last_name , street , city , state , zip_code , email_address , home_phone , cell_number )\n# dogs ( dog_id , owner_id , abandoned_yn , breed_code , size_code , name , age , date_of_birth , gender , weight , date_arrived , date_adopted , date_departed )\n# professionals ( professional_id , role_code , first_name , street , city , state , zip_code , last_name , email_address , home_phone , cell_number )\n# treatments ( treatment_id , dog_id , professional_id , treatment_type_code , date_of_treatment , cost_of_treatment )\n# dogs.owner_id = owners.owner_id\n# dogs.owner_id = owners.owner_id\n# dogs.size_code = sizes.size_code\n# dogs.breed_code = breeds.breed_code\n# treatments.dog_id = dogs.dog_id\n# treatments.professional_id = professionals.professional_id\n# treatments.treatment_type_code = treatment_types.treatment_type_code\n",
         "question": "What are the first name and last name of the professionals who have done treatment with cost below average?",
         "predicted_sql": "SELECT DISTINCT p.first_name,\n                p.last_name\nFROM professionals p\nJOIN treatments t ON p.professional_id = t.professional_id\nWHERE t.cost_of_treatment <\n    (SELECT AVG(cost_of_treatment)\n     FROM treatments);",
         "ground_truth": "SELECT DISTINCT professionals.first_name,\n                professionals.last_name\nFROM professionals\nJOIN treatments\nWHERE cost_of_treatment <\n    (SELECT AVG (cost_of_treatment)\n     FROM treatments)",
@@ -1001,7 +1001,7 @@
     {
         "index": 945,
         "db_id": "dog_kennels",
-        "db_info": "# professionals ( professional_id, role_code, first_name, last_name, street, city, state, zip_code, email_address, home_phone, cell_number )\n# treatments ( treatment_id, dog_id, professional_id, treatment_type_code, date_of_treatment, cost_of_treatment )\n# treatments.professional_id = professionals.professional_id",
+        "db_info": "# breeds ( breed_code , breed_name )\n# charges ( charge_id , charge_type , charge_amount )\n# sizes ( size_code , size_description )\n# treatment_types ( treatment_type_code , treatment_type_description )\n# owners ( owner_id , first_name , last_name , street , city , state , zip_code , email_address , home_phone , cell_number )\n# dogs ( dog_id , owner_id , abandoned_yn , breed_code , size_code , name , age , date_of_birth , gender , weight , date_arrived , date_adopted , date_departed )\n# professionals ( professional_id , role_code , first_name , street , city , state , zip_code , last_name , email_address , home_phone , cell_number )\n# treatments ( treatment_id , dog_id , professional_id , treatment_type_code , date_of_treatment , cost_of_treatment )\n# dogs.owner_id = owners.owner_id\n# dogs.owner_id = owners.owner_id\n# dogs.size_code = sizes.size_code\n# dogs.breed_code = breeds.breed_code\n# treatments.dog_id = dogs.dog_id\n# treatments.professional_id = professionals.professional_id\n# treatments.treatment_type_code = treatment_types.treatment_type_code\n",
         "question": "Which professionals have operated a treatment that costs less than the average? Give me theor first names and last names.",
         "predicted_sql": "SELECT DISTINCT professionals.first_name,\n                professionals.last_name\nFROM professionals\nJOIN treatments ON professionals.professional_id = treatments.professional_id\nWHERE treatments.cost_of_treatment <\n    (SELECT AVG(treatments.cost_of_treatment)\n     FROM treatments);",
         "ground_truth": "SELECT DISTINCT professionals.first_name,\n                professionals.last_name\nFROM professionals\nJOIN treatments\nWHERE cost_of_treatment <\n    (SELECT AVG (cost_of_treatment)\n     FROM treatments)",
@@ -1010,7 +1010,7 @@
     {
         "index": 954,
         "db_id": "dog_kennels",
-        "db_info": "# breeds ( breed_code, breed_name )\n# dogs ( breed_code, name, dog_id, date_of_birth )\n# treatments ( dog_id, date_of_treatment )\n# dogs.breed_code = breeds.breed_code\n# treatments.dog_id = dogs.dog_id",
+        "db_info": "# breeds ( breed_code , breed_name )\n# charges ( charge_id , charge_type , charge_amount )\n# sizes ( size_code , size_description )\n# treatment_types ( treatment_type_code , treatment_type_description )\n# owners ( owner_id , first_name , last_name , street , city , state , zip_code , email_address , home_phone , cell_number )\n# dogs ( dog_id , owner_id , abandoned_yn , breed_code , size_code , name , age , date_of_birth , gender , weight , date_arrived , date_adopted , date_departed )\n# professionals ( professional_id , role_code , first_name , street , city , state , zip_code , last_name , email_address , home_phone , cell_number )\n# treatments ( treatment_id , dog_id , professional_id , treatment_type_code , date_of_treatment , cost_of_treatment )\n# dogs.owner_id = owners.owner_id\n# dogs.owner_id = owners.owner_id\n# dogs.size_code = sizes.size_code\n# dogs.breed_code = breeds.breed_code\n# treatments.dog_id = dogs.dog_id\n# treatments.professional_id = professionals.professional_id\n# treatments.treatment_type_code = treatment_types.treatment_type_code\n",
         "question": "List the names of the dogs of the rarest breed and the treatment dates of them.",
         "predicted_sql": "SELECT dogs.name,\n       treatments.date_of_treatment\nFROM treatments\nJOIN dogs ON treatments.dog_id = dogs.dog_id\nJOIN breeds ON dogs.breed_code = breeds.breed_code\nWHERE breeds.breed_name =\n    (SELECT breeds.breed_name\n     FROM dogs\n     JOIN breeds ON dogs.breed_code = breeds.breed_code\n     GROUP BY breeds.breed_name\n     ORDER BY COUNT (*) ASC\n     LIMIT 1);",
         "ground_truth": "SELECT dogs.name,\n       treatments.date_of_treatment\nFROM dogs\nJOIN treatments ON dogs.dog_id = treatments.dog_id\nWHERE dogs.breed_code =\n    (SELECT breed_code\n     FROM dogs\n     GROUP BY breed_code\n     ORDER BY COUNT (*) ASC\n     LIMIT 1)",
@@ -1019,7 +1019,7 @@
     {
         "index": 960,
         "db_id": "dog_kennels",
-        "db_info": "# dogs ( age, owner_id, dog_id, abandoned_yn, breed_code, size_code, name, date_of_birth, gender, weight, date_arrived, date_adopted, date_departed )\n# owners ( owner_id, last_name, first_name, street, city, state, zip_code, email_address, home_phone, cell_number )\n# dogs.owner_id = owners.owner_id\n# dogs.owner_id = owners.owner_id",
+        "db_info": "# breeds ( breed_code , breed_name )\n# charges ( charge_id , charge_type , charge_amount )\n# sizes ( size_code , size_description )\n# treatment_types ( treatment_type_code , treatment_type_description )\n# owners ( owner_id , first_name , last_name , street , city , state , zip_code , email_address , home_phone , cell_number )\n# dogs ( dog_id , owner_id , abandoned_yn , breed_code , size_code , name , age , date_of_birth , gender , weight , date_arrived , date_adopted , date_departed )\n# professionals ( professional_id , role_code , first_name , street , city , state , zip_code , last_name , email_address , home_phone , cell_number )\n# treatments ( treatment_id , dog_id , professional_id , treatment_type_code , date_of_treatment , cost_of_treatment )\n# dogs.owner_id = owners.owner_id\n# dogs.owner_id = owners.owner_id\n# dogs.size_code = sizes.size_code\n# dogs.breed_code = breeds.breed_code\n# treatments.dog_id = dogs.dog_id\n# treatments.professional_id = professionals.professional_id\n# treatments.treatment_type_code = treatment_types.treatment_type_code\n",
         "question": "List the last name of the owner owning the youngest dog.",
         "predicted_sql": "SELECT o.last_name\nFROM owners o\nJOIN dogs d ON o.owner_id = d.owner_id\nWHERE d.date_of_birth =\n    (SELECT MAX(date_of_birth)\n     FROM dogs);",
         "ground_truth": "SELECT owners.last_name\nFROM owners\nJOIN dogs ON owners.owner_id = dogs.owner_id\nWHERE dogs.age =\n    (SELECT MAX (age)\n     FROM dogs)",
@@ -1028,7 +1028,7 @@
     {
         "index": 961,
         "db_id": "dog_kennels",
-        "db_info": "# dogs ( owner_id, date_of_birth, abandoned_yn, breed_code, size_code, name, age, gender, weight, date_arrived, date_adopted, date_departed )\n# owners ( owner_id, last_name, first_name, street, city, state, zip_code, email_address, home_phone, cell_number )\n# breeds ( breed_code, breed_name )\n# sizes ( size_code, size_description )\n# dogs.owner_id = owners.owner_id\n# dogs.owner_id = owners.owner_id\n# dogs.size_code = sizes.size_code\n# dogs.breed_code = breeds.breed_code",
+        "db_info": "# breeds ( breed_code , breed_name )\n# charges ( charge_id , charge_type , charge_amount )\n# sizes ( size_code , size_description )\n# treatment_types ( treatment_type_code , treatment_type_description )\n# owners ( owner_id , first_name , last_name , street , city , state , zip_code , email_address , home_phone , cell_number )\n# dogs ( dog_id , owner_id , abandoned_yn , breed_code , size_code , name , age , date_of_birth , gender , weight , date_arrived , date_adopted , date_departed )\n# professionals ( professional_id , role_code , first_name , street , city , state , zip_code , last_name , email_address , home_phone , cell_number )\n# treatments ( treatment_id , dog_id , professional_id , treatment_type_code , date_of_treatment , cost_of_treatment )\n# dogs.owner_id = owners.owner_id\n# dogs.owner_id = owners.owner_id\n# dogs.size_code = sizes.size_code\n# dogs.breed_code = breeds.breed_code\n# treatments.dog_id = dogs.dog_id\n# treatments.professional_id = professionals.professional_id\n# treatments.treatment_type_code = treatment_types.treatment_type_code\n",
         "question": "Who owns the youngest dog? Give me his or her last name.",
         "predicted_sql": "SELECT o.last_name\nFROM owners o\nJOIN dogs d ON o.owner_id = d.owner_id\nORDER BY d.age ASC;",
         "ground_truth": "SELECT owners.last_name\nFROM owners\nJOIN dogs ON owners.owner_id = dogs.owner_id\nWHERE dogs.age =\n    (SELECT MAX (age)\n     FROM dogs)",
@@ -1037,7 +1037,7 @@
     {
         "index": 981,
         "db_id": "dog_kennels",
-        "db_info": "# owners ( owner_id, first_name, last_name, email_address, street, city, state, zip_code, home_phone, cell_number )\n# dogs ( owner_id, abandoned_yn, breed_code, size_code, name, age, date_of_birth, gender, weight, date_arrived, date_adopted, date_departed )\n# dogs.owner_id = owners.owner_id\n# dogs.owner_id = owners.owner_id",
+        "db_info": "# breeds ( breed_code , breed_name )\n# charges ( charge_id , charge_type , charge_amount )\n# sizes ( size_code , size_description )\n# treatment_types ( treatment_type_code , treatment_type_description )\n# owners ( owner_id , first_name , last_name , street , city , state , zip_code , email_address , home_phone , cell_number )\n# dogs ( dog_id , owner_id , abandoned_yn , breed_code , size_code , name , age , date_of_birth , gender , weight , date_arrived , date_adopted , date_departed )\n# professionals ( professional_id , role_code , first_name , street , city , state , zip_code , last_name , email_address , home_phone , cell_number )\n# treatments ( treatment_id , dog_id , professional_id , treatment_type_code , date_of_treatment , cost_of_treatment )\n# dogs.owner_id = owners.owner_id\n# dogs.owner_id = owners.owner_id\n# dogs.size_code = sizes.size_code\n# dogs.breed_code = breeds.breed_code\n# treatments.dog_id = dogs.dog_id\n# treatments.professional_id = professionals.professional_id\n# treatments.treatment_type_code = treatment_types.treatment_type_code\n",
         "question": "Find the number of owners who do not own any dogs at this moment.",
         "predicted_sql": "SELECT COUNT(*)\nFROM owners\nWHERE owner_id NOT IN\n    (SELECT DISTINCT owner_id\n     FROM dogs\n     WHERE date_departed IS NULL );",
         "ground_truth": "SELECT COUNT (*)\nFROM owners\nWHERE owner_id NOT IN\n    (SELECT owner_id\n     FROM dogs)",
@@ -1046,7 +1046,7 @@
     {
         "index": 996,
         "db_id": "dog_kennels",
-        "db_info": "# breeds ( breed_code, breed_name )\n# sizes ( size_code, size_description )\n# dogs ( breed_code, size_code )\n# treatments ( dog_id )\n# dogs.size_code = sizes.size_code\n# dogs.breed_code = breeds.breed_code\n# treatments.dog_id = dogs.dog_id",
+        "db_info": "# breeds ( breed_code , breed_name )\n# charges ( charge_id , charge_type , charge_amount )\n# sizes ( size_code , size_description )\n# treatment_types ( treatment_type_code , treatment_type_description )\n# owners ( owner_id , first_name , last_name , street , city , state , zip_code , email_address , home_phone , cell_number )\n# dogs ( dog_id , owner_id , abandoned_yn , breed_code , size_code , name , age , date_of_birth , gender , weight , date_arrived , date_adopted , date_departed )\n# professionals ( professional_id , role_code , first_name , street , city , state , zip_code , last_name , email_address , home_phone , cell_number )\n# treatments ( treatment_id , dog_id , professional_id , treatment_type_code , date_of_treatment , cost_of_treatment )\n# dogs.owner_id = owners.owner_id\n# dogs.owner_id = owners.owner_id\n# dogs.size_code = sizes.size_code\n# dogs.breed_code = breeds.breed_code\n# treatments.dog_id = dogs.dog_id\n# treatments.professional_id = professionals.professional_id\n# treatments.treatment_type_code = treatment_types.treatment_type_code\n",
         "question": "What are all the possible breed type and size type combinations?",
         "predicted_sql": "SELECT breeds.breed_code,\n       breeds.breed_name,\n       sizes.size_code,\n       sizes.size_description\nFROM breeds\nCROSS JOIN sizes;",
         "ground_truth": "SELECT DISTINCT breed_code,\n                size_code\nFROM dogs",

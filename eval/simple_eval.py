@@ -205,7 +205,7 @@ def evaluate(input, dataset_path, db_root_path, partial_match_threshold, repair)
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Evaluate SQL Predictions")
     parser.add_argument("--input", type=str, default="predictions/chatgpt_example_then_error_best.txt", help="Path to the predictions file.")
-    parser.add_argument("--dataset_path", type=str, default="../data/validation_sql_ranked.json", help="Path to the dataset file.")
+    parser.add_argument("--dataset_path", type=str, default="../data/validation_sql_clear.json", help="Path to the dataset file.")
     parser.add_argument("--db_root_path", type=str, default="./data/database", help="Root path to the databases.")
     parser.add_argument("--partial_match_threshold", type=float, default=0.8, help="Threshold for similarity to consider as a partial match.")
     parser.add_argument("--repair", action="store_true", default=False, help="Whether to perform mutation repair on incorrect queries.")

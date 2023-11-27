@@ -504,7 +504,7 @@ def print_scores(scores, etype, include_turn_acc=True):
 def evaluate(gold, predict, db_dir, etype, kmaps, plug_value, keep_distinct, progress_bar_for_each_datapoint):
     incorrect_entries = []
 
-    with open('../data/validation_sql_ranked.json', 'r') as validation:
+    with open('../data/validation_sql_clear.json', 'r') as validation:
         validation_data = json.load(validation)
 
     with open(gold) as f:
