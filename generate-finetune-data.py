@@ -70,7 +70,7 @@ def process_dataset(input_dataset_path, output_dataset_path, mode, sql_type, use
             output_dataset.append({
                 "db_id": db_id,
                 "question": data["question"],
-                "db_info": schema if mode == "train" else schema_dict[i if i < 1034 else 0]['db_info'],
+                "db_info": schema,
                 "ground_truth": ground_truth,
             })
 

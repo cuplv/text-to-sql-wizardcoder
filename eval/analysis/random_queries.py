@@ -20,5 +20,5 @@ selected_medium_difficulty_queries = random.sample(medium_difficulty_queries, mi
 selected_queries = selected_extra_difficulty_queries + selected_hard_difficulty_queries + selected_medium_difficulty_queries
 
 # Write selected queries to file
-with open('selected_queries.json', 'w') as f:
+with open('incorrect_random_sample.json', 'w') as f:
     json.dump(selected_queries, f, indent=4)

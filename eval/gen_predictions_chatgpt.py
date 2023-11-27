@@ -119,7 +119,7 @@ def fetch_response(i, entry, args):
     return i, response_text
 
 def main(args):
-    with open('../data/validation_sql_ranked.json', 'r') as f:
+    with open('../data/validation_sql_clear.json', 'r') as f:
         dataset = json.load(f)
 
     responses = {}
