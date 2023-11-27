@@ -68,7 +68,7 @@
     "db_info": "# pets ( pet_age, petid )\n# has_pet ( petid, stuid )\n# student ( stuid, fname, lname, age, sex, major, advisor, city_code )\n# has_pet.stuid = student.stuid\n# has_pet.petid = pets.petid",
     "difficulty": "medium",
     "question": "Find the weight of the youngest dog.",
-    "pred": "SELECT The question asks for the weight of the youngest dog, but there seems to be no 'weight' or 'dog' column in the provided tables. Thus, the correct SQL cannot be provided based on the given tables and their properties.   Please provide the correct table schema that includes the dog's weight information for a proper SQL statement.",
+    "pred": "SELECT weight from pets where pet_age = ( select min ( pet_age ) from pets );",
     "gold": "SELECT weight FROM pets ORDER BY pet_age LIMIT 1"
   },
   {

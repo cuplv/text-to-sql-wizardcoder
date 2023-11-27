@@ -41,7 +41,7 @@ def clean_sql_file(input_file, output_file):
             file.write(query + ';\n')
 
 # Usage
-input_file = 'predictions/chatgpt_finetune_example_then_error_gpt4turbo.txt'  # Replace with your input file path
-output_file = 'predictions/chatgpt_finetune_example_then_error_gpt4turbo_clean.txt'  # Replace with your desired output file path
+input_file = 'predictions/chatgpt_finetune_example_then_error_best.txt'  # Replace with your input file path
+output_file = 'predictions/chatgpt_finetune_example_then_error_best_clean.txt'  # Replace with your desired output file path
 
 clean_sql_file(input_file, output_file)

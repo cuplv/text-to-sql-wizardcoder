@@ -18,6 +18,15 @@
         "similarity": 0.0
     },
     {
+        "index": 28,
+        "db_id": "concert_singer",
+        "db_info": "# stadium ( stadium_id )\n# concert ( stadium_id, concert_name )\n# singer_in_concert ( concert_id, singer_id )\n# concert.stadium_id = stadium.stadium_id\n# singer_in_concert.concert_id = concert.concert_id",
+        "question": "Show the stadium names without any concert.",
+        "predicted_sql": "SELECT stadium.stadium_id\nFROM stadium\nLEFT JOIN concert ON stadium.stadium_id = concert.stadium_id\nWHERE concert.stadium_id IS NULL",
+        "ground_truth": "SELECT name\nFROM stadium\nWHERE stadium_id NOT IN\n    (SELECT stadium_id\n     FROM concert)",
+        "similarity": 0.0
+    },
+    {
         "index": 36,
         "db_id": "concert_singer",
         "db_info": "# singer ( name, singer_id )\n# concert ( concert_id, concert_name )\n# singer_in_concert ( singer_id, concert_id )\n# singer_in_concert.singer_id = singer.singer_id\n# singer_in_concert.concert_id = concert.concert_id",
@@ -207,6 +216,15 @@
         "similarity": 0.0
     },
     {
+        "index": 220,
+        "db_id": "flight_2",
+        "db_info": "# flights ( airline, flightno, sourceairport, destairport )\n# airlines ( airline, uid, abbreviation, country )\n# airports ( airportcode, city, airportname, country, countryabbrev )\n# flights.destairport = airports.airportcode\n# flights.sourceairport = airports.airportcode",
+        "question": "Count the number of United Airlines flights that arrive in Aberdeen.",
+        "predicted_sql": "SELECT COUNT (*)\nFROM flights\nJOIN airlines ON flights.airline = airlines.abbreviation\nJOIN airports ON flights.destairport = airports.airportcode\nWHERE airlines.airline = 'United Airlines'\n  AND airports.city = 'Aberdeen';",
+        "ground_truth": "SELECT COUNT (*)\nFROM flights\nJOIN airports ON flights.destairport = airports.airportcode\nJOIN airlines ON airlines.uid = flights.airline\nWHERE airports.city = 'Aberdeen'\n  AND airlines.airline = 'United Airlines'",
+        "similarity": 0.0
+    },
+    {
         "index": 225,
         "db_id": "flight_2",
         "db_info": "# airports ( airportcode, city, airportname, country, countryabbrev )",
@@ -387,12 +405,30 @@
         "similarity": 0.0
     },
     {
+        "index": 294,
+        "db_id": "employee_hire_evaluation",
+        "db_info": "# shop ( number_products, location )",
+        "question": "Find the districts in which there are both shops selling less than 3000 products and shops selling more than 10000 products.",
+        "predicted_sql": "SELECT LOCATION\nFROM shop\nWHERE number_products < 3000 INTERSECT\n  SELECT LOCATION\n  FROM shop WHERE number_products > 10000",
+        "ground_truth": "SELECT district\nFROM shop\nWHERE number_products < 3000 INTERSECT\n  SELECT district\n  FROM shop WHERE number_products > 10000",
+        "similarity": 0.3076923076923077
+    },
+    {
         "index": 336,
         "db_id": "cre_Doc_Template_Mgt",
         "db_info": "# templates ( template_id, version_number, template_type_code, date_effective_from, date_effective_to, template_details )\n# ref_template_types ( template_type_code, template_type_description )\n# documents ( document_id, template_id, document_name, document_description, other_details )\n# paragraphs ( paragraph_id, document_id, paragraph_text, other_details )\n# templates.template_type_code = ref_template_types.template_type_code\n# documents.template_id = templates.template_id\n# paragraphs.document_id = documents.document_id",
         "question": "Return the lowest version number, along with its corresponding template type code.",
         "predicted_sql": "SELECT template_type_code,\n       MIN (version_number)\nFROM templates\nGROUP BY template_type_code;",
         "ground_truth": "SELECT MIN (version_number) , template_type_code\nFROM templates",
+        "similarity": 0.0
+    },
+    {
+        "index": 361,
+        "db_id": "cre_Doc_Template_Mgt",
+        "db_info": "# paragraphs ( paragraph_text, paragraph_id, document_id, other_details )\n# documents ( document_id, document_name, document_description, template_id, other_details )\n# templates ( template_id, version_number, template_type_code, date_effective_from, date_effective_to, template_details )\n# ref_template_types ( template_type_code, template_type_description )\n# templates.template_type_code = ref_template_types.template_type_code\n# documents.template_id = templates.template_id\n# paragraphs.document_id = documents.document_id",
+        "question": "Show paragraph details for paragraph with text 'Korea ' .",
+        "predicted_sql": "SELECT *\nFROM paragraphs\nWHERE paragraph_text LIKE '%Korea%';",
+        "ground_truth": "SELECT other_details\nFROM paragraphs\nWHERE paragraph_text like 'korea'",
         "similarity": 0.0
     },
     {
@@ -411,7 +447,7 @@
         "question": "List the first name and birth date of all players from the country with code USA.",
         "predicted_sql": "SELECT players.first_name,\n       players.birth_date\nFROM players\nJOIN matches ON players.player_id = matches.winner_id\nWHERE matches.winner_ioc = 'USA'",
         "ground_truth": "SELECT first_name,\n       birth_date\nFROM players\nWHERE country_code = 'USA'",
-        "similarity": 0.0
+        "similarity": 0.045454545454545456
     },
     {
         "index": 453,
@@ -546,6 +582,15 @@
         "question": "Find the first name, country code and birth date of the winner who has the highest rank points in all matches.",
         "predicted_sql": "SELECT players.first_name,\n       players.country_code,\n       players.birth_date\nFROM players\nJOIN matches ON players.player_id = matches.winner_id\nJOIN rankings ON players.player_id = rankings.player_id\nORDER BY rankings.ranking_points DESC\nLIMIT 1;",
         "ground_truth": "SELECT players.first_name,\n       players.country_code,\n       players.birth_date\nFROM players\nJOIN matches ON players.player_id = matches.winner_id\nORDER BY matches.winner_rank_points DESC\nLIMIT 1",
+        "similarity": 0.0
+    },
+    {
+        "index": 493,
+        "db_id": "battle_death",
+        "db_info": "# battle ( name, date, result )\n# ship ( id )\n# death ( caused_by_ship_id )\n# ship.lost_in_battle = battle.id\n# death.caused_by_ship_id = ship.id",
+        "question": "List the name, date and result of each battle.",
+        "predicted_sql": "SELECT name, date, RESULT\nFROM battle",
+        "ground_truth": "SELECT name , date\nFROM battle",
         "similarity": 0.0
     },
     {
@@ -756,6 +801,15 @@
         "similarity": 0.0
     },
     {
+        "index": 760,
+        "db_id": "world_1",
+        "db_info": "# city ( population, name, countrycode, district, id )\n# country ( population, code, name, capital, continent, region )\n# countrylanguage ( language, countrycode, isofficial, percentage )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code",
+        "question": "Find the city with the largest population that uses English.",
+        "predicted_sql": "SELECT city.name\nFROM city\nJOIN countrylanguage ON city.countrycode = countrylanguage.countrycode\nWHERE countrylanguage.language = 'English'\nORDER BY city.population DESC\nLIMIT 1;",
+        "ground_truth": "SELECT city.name,\n       city.population\nFROM city\nJOIN countrylanguage ON city.countrycode = countrylanguage.countrycode\nWHERE countrylanguage.language = 'English'\nORDER BY city.population DESC\nLIMIT 1",
+        "similarity": 0.0
+    },
+    {
         "index": 766,
         "db_id": "world_1",
         "db_info": "# city ( population )\n# country ( population, code )\n# countrylanguage ( percentage, countrycode )\n# city.countrycode = country.code\n# countrylanguage.countrycode = country.code",
@@ -870,6 +924,24 @@
         "question": "What are the different continents and the total popuation and average life expectancy corresponding to each, for continents that have an average life expectancy less than 72?",
         "predicted_sql": "SELECT continent,\n       SUM(population) AS total_population,\n       AVG(lifeexpectancy) AS avg_life_expectancy\nFROM country\nGROUP BY continent\nHAVING AVG(lifeexpectancy) < 72;",
         "ground_truth": "SELECT SUM (population) , AVG (lifeexpectancy) , continent\nFROM country\nGROUP BY continent\nHAVING AVG (lifeexpectancy) < 72",
+        "similarity": 0.0
+    },
+    {
+        "index": 810,
+        "db_id": "world_1",
+        "db_info": "# country ( continent, population, surfacearea, name, indepyear, code, region, indepyear, gnp, gnpold, localname, governmentform, headofstate, capital, code2 )\n# city ( population, name, countrycode, district, id )\n# city.countrycode = country.code",
+        "question": "What is the total population and average area of countries in the continent of North America whose area is bigger than 3000 ?",
+        "predicted_sql": "SELECT SUM(population),\n       AVG(surfacearea)\nFROM country\nWHERE continent = 'North America'\n  AND surfacearea > 3000",
+        "ground_truth": "SELECT SUM (population) , AVG (surfacearea)\nFROM country\nWHERE continent = 'north america'\n  AND surfacearea > 3000",
+        "similarity": 0.0
+    },
+    {
+        "index": 811,
+        "db_id": "world_1",
+        "db_info": "# country ( name, continent, surfacearea, population, region )\n# city ( countrycode, population, district, name )\n# city.countrycode = country.code",
+        "question": "Give the total population and average surface area corresponding to countries in North America that have a surface area greater than 3000 .",
+        "predicted_sql": "SELECT SUM (population), AVG (surfacearea)\nFROM country\nWHERE surfacearea > 3000\n  AND continent = 'North America'",
+        "ground_truth": "SELECT SUM (population) , AVG (surfacearea)\nFROM country\nWHERE continent = 'north america'\n  AND surfacearea > 3000",
         "similarity": 0.0
     },
     {
@@ -1113,6 +1185,15 @@
         "question": "Find the distinct breed type and size type combinations for dogs.",
         "predicted_sql": "SELECT DISTINCT breeds.breed_name,\n                sizes.size_description\nFROM dogs\nJOIN breeds ON dogs.breed_code = breeds.breed_code\nJOIN sizes ON dogs.size_code = sizes.size_code;",
         "ground_truth": "SELECT DISTINCT breed_code,\n                size_code\nFROM dogs",
+        "similarity": 0.0
+    },
+    {
+        "index": 1008,
+        "db_id": "singer",
+        "db_info": "# singer ( birth_year, singer_id )\n# song ( singer_id, title, sales, highest_position, song_id )\n# song.singer_id = singer.singer_id",
+        "question": "Show the name of singers whose birth year is either 1948 or 1949?",
+        "predicted_sql": "SELECT singer_id\nFROM singer\nWHERE birth_year IN (1948,\n                     1949)",
+        "ground_truth": "SELECT name\nFROM singer\nWHERE birth_year = 1948\n  OR birth_year = 1949",
         "similarity": 0.0
     }
 ]

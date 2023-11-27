@@ -4,31 +4,13 @@ import os
 import argparse
 from tqdm import tqdm
 import sqlparse
-import glob
 import re
-from scripts.helpers import compare_pred_to_gold_on_db
+from scripts.helpers import compare_pred_to_gold_on_db, compare_pred_to_results_on_db, get_result_table_from_db, jaccard_similarity, find_all_dbs_for_entry
 from itertools import combinations, product
+from mo_sql_parsing import parse
+from mo_sql_parsing import format as mo_format
 
-def normalize_sql(sql):
-    # Remove table names and aliases from columns
-    sql = re.sub(r"\w+\.", "", sql)
-    # Remove aliases altogether
-    sql = re.sub(r" AS \w+", "", sql)
-    # Normalize numbers and strings
-    sql = re.sub(r"'\d+'", "'NUM'", sql)
-    sql = re.sub(r"\d+", "NUM", sql)
-    sql = re.sub(r"'[^']+'", "'STR'", sql)
-    # Sort conditions for order-agnostic comparison
-    conditions = re.findall(r"(WHERE|AND|OR) ([^AND|OR]+)", sql)
-    conditions = sorted([cond[1] for cond in conditions])
-    for cond in conditions:
-        sql = sql.replace(cond, "", 1)
-    sql = sql.replace("WHERE", "") + " WHERE " + " AND ".join(conditions)
-    # Strip excessive spaces
-    sql = re.sub(r"\s+", " ", sql).strip()
-    return sql
-
-def format(text):
+def sql_format(text):
     # Split the text by "|", and get the last element in the list which should be the final query
     try:
         final_query = text.split("|")[1].strip()
@@ -47,107 +29,87 @@ def format(text):
 
     return final_query_markdown
 
-def execute_sql_on_db(db_path, sql_query):
+def perform_select_repair(incorrect_query, gold_column_names):
+    if gold_column_names is None:
+        return incorrect_query
+    # Parse the incorrect SQL query into a JSON structure
     try:
-        conn = sqlite3.connect(db_path)
-        cursor = conn.cursor()
-        cursor.execute(sql_query)
-        results = cursor.fetchall()
-        conn.close()
-        return results
+        incorrect_query_json = parse(incorrect_query)
     except Exception as e:
-        return None
-    
-def find_all_dbs_for_entry(db_folder):
-    return glob.glob(os.path.join(db_folder, "*.sqlite"))
+        #print(f"Error parsing SQL query: {e}")
+        return incorrect_query
 
-def jaccard_similarity(set1, set2):
-    # Calculate the Jaccard similarity coefficient between two sets
-    intersection = set1.intersection(set2)
-    union = set1.union(set2)
-    return len(intersection) / len(union)
+    # Construct the new SELECT clause
+    new_select_clause = []
+    for col in gold_column_names:
+        if "(" in col and ")" in col:  # rudimentary check for aggregate functions
+            # Handle as a raw expression
+            new_select_clause.append({"value": col, "name": col})
+        else:
+            new_select_clause.append({"value": col})
 
-def perform_mutation_repair(incorrect_query, gold_result, connection):
+    # Replace the SELECT part of the JSON structure
+    incorrect_query_json['select'] = new_select_clause
+
+    # Convert the modified JSON back into an SQL query string
+    try:
+        repaired_query = mo_format(incorrect_query_json)
+    except Exception as e:
+        #print(f"Error formatting SQL query: {e}")
+        return incorrect_query
+
+    return repaired_query
+
+
+def perform_where_repair(incorrect_query, gold_result, connection):
     cursor = connection.cursor()
-    cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-    tables = [row[0] for row in cursor.fetchall()]
 
-    # Identify the number of columns in the gold result
-    gold_columns_count = len(gold_result[0]) if gold_result and len(gold_result[0]) > 0 else 0
-
-    # Try to extract the SELECT part of the query
-    select_clause_match = re.search(r"SELECT\s+(.*?)\s+FROM", incorrect_query, re.IGNORECASE)
-    if not select_clause_match:
-        return None
-
-    original_select_columns = select_clause_match.group(1).split(',')
-    original_select_columns = [col.strip() for col in original_select_columns]
-
-    for table_name in tables:
-        cursor.execute(f"PRAGMA table_info({table_name})")
-        columns = [row[1] for row in cursor.fetchall()]
-
-        # Generate possible new SELECT clauses by adding or removing columns
-        for num_columns in range(max(1, gold_columns_count - 1), gold_columns_count + 2):
-            possible_column_combinations = combinations(columns, num_columns)
-            for column_combination in possible_column_combinations:
-                # Construct a new SELECT clause
-                new_select_clause = ", ".join(column_combination)
-
-                # Replace the original SELECT clause with the new one
-                modified_query = re.sub(r"SELECT\s+.*?\s+FROM", f"SELECT {new_select_clause} FROM", incorrect_query, flags=re.IGNORECASE)
-
-                try:
-                    cursor.execute(modified_query)
-                    result = cursor.fetchall()
-                    if result == gold_result:
-                        return modified_query
-                except sqlite3.OperationalError:
-                    pass
-
-    return None
-
-def perform_where_clause_repair(incorrect_query, gold_result, connection):
-    cursor = connection.cursor()
-    cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-    tables = [row[0] for row in cursor.fetchall()]
+    # Parse the incorrect SQL query into JSON structure
+    try:
+        incorrect_query_json = parse(incorrect_query)
+    except Exception as e:
+        print(f"Error parsing SQL query: {e}")
+        return incorrect_query
 
     gold_result_size = len(gold_result)
+
+    # Retrieve table information
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+    tables = [row[0] for row in cursor.fetchall()]
 
     for table_name in tables:
         cursor.execute(f"PRAGMA table_info({table_name})")
         columns = [row[1] for row in cursor.fetchall()]
 
         for column in columns:
-            # Ensure column names are properly quoted
-            quoted_column = f'"{column}"' if not column.isidentifier() else column
-
+            quoted_column = f'"{column}"' if not column.isidentifier() or column[0].isdigit() else column
             cursor.execute(f"SELECT DISTINCT {quoted_column} FROM {table_name}")
             distinct_values = [row[0] for row in cursor.fetchall()]
 
             for value in distinct_values:
-                # Construct conditions for WHERE clause
-                conditions = [f"{quoted_column} = '{value}'", f"{quoted_column} != '{value}'"]
+                # Define multiple conditions to test
+                conditions = [
+                    {"eq": [quoted_column, value]}, 
+                    {"neq": [quoted_column, value]},
+                    {"like": [quoted_column, f'%{value}%']},
+                    {"is": [quoted_column, None]},
+                    {"is_not": [quoted_column, None]}
+                ]
 
                 for condition in conditions:
-                    # Modify the query by adding or modifying the WHERE clause
-                    if "WHERE" in incorrect_query.upper():
-                        modified_query = re.sub(r"WHERE\s+(.*)", r"WHERE \1 AND " + condition, incorrect_query, flags=re.IGNORECASE)
+                    if 'where' in incorrect_query_json:
+                        incorrect_query_json['where'] = {"and": [incorrect_query_json['where'], condition]}
                     else:
-                        modified_query = incorrect_query + f" WHERE {condition}"
-
-                    # Ensure that modified_query contains only a single SQL statement
-                    statements = sqlparse.split(modified_query)
-                    if len(statements) == 1:
-                        try:
-                            cursor.execute(statements[0])
-                            result = cursor.fetchall()
-                            if len(result) == gold_result_size:
-                                return statements[0]
-                        except sqlite3.OperationalError:
-                            pass
-
-    return None
+                        incorrect_query_json['where'] = condition
+                
+                # Convert the modified JSON back into an SQL query string
+                try:
+                    return mo_format(incorrect_query_json)
+                except Exception as e:
+                    #print(f"Error formatting SQL query: {e}")
+                    return incorrect_query
+             
+    return incorrect_query
 
 def evaluate(input, dataset_path, db_root_path, partial_match_threshold, repair):
     with open(input, 'r') as f:
@@ -167,71 +129,70 @@ def evaluate(input, dataset_path, db_root_path, partial_match_threshold, repair)
         db_folder = os.path.join(db_root_path, entry["db_id"])
         all_dbs = find_all_dbs_for_entry(db_folder)
 
-        ground_truth = format(entry['ground_truth'])
-        predicted_sql = format(input[idx])
+        ground_truth = sql_format(entry['ground_truth'])
+        predicted_sql = sql_format(input[idx])
 
         gt_results = None
+        gt_columns = None
         pred_results = None
+        pred_columns = None
         non_empty_db_path = None
         for db_path in all_dbs:
             # Try executing the SQL on each database until we get non-empty results
-            gt_results_temp = execute_sql_on_db(db_path, ground_truth)
-            pred_results_temp = execute_sql_on_db(db_path, predicted_sql)
+            gt_cols_temp, gt_results_temp = get_result_table_from_db(db_path, ground_truth)
+            pred_cols_temp, pred_results_temp = get_result_table_from_db(db_path, predicted_sql)
             
-            if gt_results_temp and pred_results_temp:
+            if gt_results_temp and pred_results_temp and gt_cols_temp and pred_cols_temp:
                 gt_results = gt_results_temp
+                gt_columns = gt_cols_temp
                 pred_results = pred_results_temp
+                pred_columns = pred_cols_temp
                 non_empty_db_path = db_path
                 break
 
-        if gt_results and pred_results:
-            if set(gt_results) == set(pred_results):
-                correct_count += 1
+        if not gt_results or not pred_results or not gt_columns or not pred_columns:
+            #print(f"Could not find non-empty database for {entry['db_id']}")
+            continue
+
+        if compare_pred_to_gold_on_db(predicted_sql, ground_truth, non_empty_db_path):
+            correct_count += 1
+        else:
+            if repair:
+                repaired_query = predicted_sql
+                connection = sqlite3.connect(non_empty_db_path)
+                # Attempt to repair the SELECT clause
+                repaired_query_select = perform_select_repair(predicted_sql, gt_columns)
+                if compare_pred_to_gold_on_db(repaired_query_select, ground_truth, non_empty_db_path):
+                    repaired_query = repaired_query_select
+                    print(f"Repaired SELECT clause: {repaired_query_select}")
+
+                # Attempt to repair the WHERE clause
+                repaired_query_where = perform_where_repair(repaired_query, gt_results, connection)
+                if compare_pred_to_gold_on_db(repaired_query_where, ground_truth, non_empty_db_path):
+                    repaired_query = repaired_query_where
+                    print(f"Repaired WHERE clause: {repaired_query_where}")
+                
+                connection.close()
+
+                # Check if any repair worked
+                if repaired_query != predicted_sql:
+                    correct_count += 1
+                    continue
+
+            similarity = jaccard_similarity(set(gt_results), set(pred_results))
+
+            if similarity < partial_match_threshold:
+                incorrect_queries.append({
+                    'index': idx,
+                    'db_id': entry['db_id'],
+                    'db_info': entry['db_info'],
+                    'question': entry['question'],
+                    'predicted_sql': predicted_sql,
+                    'ground_truth': ground_truth,
+                    'similarity': similarity
+                })
             else:
-                repaired_results = None
-                if repair:
-                    # Perform mutation repair
-                    conn = sqlite3.connect(non_empty_db_path)
-                    
-                    # First, try mutation repair
-                    repaired_query = perform_mutation_repair(predicted_sql, gt_results, conn)
-                    
-                    # If mutation repair didn't work, try where clause repair on the original query
-                    if not repaired_query:
-                        repaired_query = perform_where_clause_repair(predicted_sql, gt_results, conn)
-                    
-                    # If mutation repair worked, try where clause repair on the repaired query
-                    else:
-                        repaired_query_with_where = perform_where_clause_repair(repaired_query, gt_results, conn)
-                        
-                        # Use the further repaired query only if it's not None, otherwise keep the mutation repair
-                        if repaired_query_with_where:
-                            repaired_query = repaired_query_with_where
-
-                    conn.close()
-                    
-                    # Check if the repaired query is correct
-                    
-                    if repaired_query:
-                        repaired_results = execute_sql_on_db(non_empty_db_path, repaired_query)
-                        if set(gt_results) == set(repaired_results):
-                            correct_count += 1
-                            print(f"Repaired query for {entry['question']}:\n{repaired_query}\n")
-
-                similarity = jaccard_similarity(set(gt_results), set(repaired_results if repaired_results else pred_results))
-
-                if similarity < partial_match_threshold:
-                    incorrect_queries.append({
-                        'index': idx,
-                        'db_id': entry['db_id'],
-                        'db_info': entry['db_info'],
-                        'question': entry['question'],
-                        'predicted_sql': predicted_sql,
-                        'ground_truth': ground_truth,
-                        'similarity': similarity
-                    })
-                else:
-                    partial_count += 1
+                partial_count += 1
 
     accuracy = (correct_count + partial_count * 0.5) / total_count
     print(f"\nAccuracy: {accuracy:.4f} ({correct_count + partial_count}/{total_count})")

@@ -7,6 +7,8 @@ import requests
 import sqlite3
 import sqlparse
 import time
+import glob
+
 
 # Load environment variables from .env file
 load_dotenv()
@@ -358,8 +360,39 @@ def compare_pred_to_gold_on_db(pred_query, gold_query, db):
         return pred_result == gold_result
 
     except Exception as e:
-        print(f"equal: false\n{e}")
+        #print(f"equal: false\n{e}")
         return False
+    
+def compare_pred_to_results_on_db(pred_query, gold_results, db):
+    try:
+        # Connect to an SQLite database in memory
+        conn = sqlite3.connect(db)
+        cursor = conn.cursor()
+
+        # Run the provided test query against the database
+        cursor.execute(pred_query)
+        pred_result = cursor.fetchall()
+
+        # Close the connection
+        conn.close()
+
+        #print(f"pred: {pred_result}\ngold: {pred_result}\nequal: {pred_result == gold_result}")
+
+        # If everything executed without errors, return True
+        return pred_result == gold_results
+
+    except Exception as e:
+        #print(f"equal: false\n{e}")
+        return False
+    
+def jaccard_similarity(set1, set2):
+    # Calculate the Jaccard similarity coefficient between two sets
+    intersection = set1.intersection(set2)
+    union = set1.union(set2)
+    return len(intersection) / len(union)
+
+def find_all_dbs_for_entry(db_folder):
+    return glob.glob(os.path.join(db_folder, "*.sqlite"))
     
 
 # schema_str = """
