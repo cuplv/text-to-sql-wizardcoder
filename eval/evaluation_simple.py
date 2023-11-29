@@ -5,7 +5,13 @@ import argparse
 from tqdm import tqdm
 import sqlparse
 import re
-from scripts.helpers import compare_pred_to_gold_on_db, compare_pred_to_results_on_db, get_result_table_from_db, jaccard_similarity, find_all_dbs_for_entry
+from scripts.helpers import (
+    compare_pred_to_gold_on_db,
+    compare_pred_to_results_on_db,
+    get_result_table_from_db,
+    jaccard_similarity, 
+    find_all_dbs_for_entry,
+)
 from itertools import combinations, product
 from mo_sql_parsing import parse
 from mo_sql_parsing import format as mo_format
@@ -99,15 +105,37 @@ def perform_where_repair(incorrect_query, gold_result, connection):
                 for condition in conditions:
                     if 'where' in incorrect_query_json:
                         incorrect_query_json['where'] = {"and": [incorrect_query_json['where'], condition]}
+                        if compare_pred_to_results_on_db(incorrect_query_json, gold_result, connection):
+                            return mo_format(incorrect_query_json)
+                        else:
+                            incorrect_query_json['where'] = {"or": [incorrect_query_json['where'], condition]}
+                            if compare_pred_to_results_on_db(incorrect_query_json, gold_result, connection):
+                                return mo_format(incorrect_query_json)
+                            else:
+                                incorrect_query_json['where'] = {"and": [incorrect_query_json['where'], condition]}
                     else:
                         incorrect_query_json['where'] = condition
-                
-                # Convert the modified JSON back into an SQL query string
-                try:
-                    return mo_format(incorrect_query_json)
-                except Exception as e:
-                    #print(f"Error formatting SQL query: {e}")
-                    return incorrect_query
+                        if compare_pred_to_results_on_db(incorrect_query_json, gold_result, connection):
+                            return mo_format(incorrect_query_json)
+                        else:
+                            # Try adding an AND condition
+                            incorrect_query_json['where'] = {"and": [incorrect_query_json['where'], condition]}
+                            if compare_pred_to_results_on_db(incorrect_query_json, gold_result, connection):
+                                return mo_format(incorrect_query_json)
+                            else:
+                                # Try adding an OR condition
+                                incorrect_query_json['where'] = {"or": [incorrect_query_json['where'], condition]}
+                                if compare_pred_to_results_on_db(incorrect_query_json, gold_result, connection):
+                                    return mo_format(incorrect_query_json)
+                                
+                    # Convert the modified JSON back into an SQL query string
+                    try:
+                        repaired_query = mo_format(incorrect_query_json)
+                        #print(f"Repaired WHERE clause: {repaired_query}")
+                        return repaired_query
+                    except Exception as e:
+                        #print(f"Error formatting SQL query: {e}")
+                        return incorrect_query
              
     return incorrect_query
 
@@ -207,9 +235,9 @@ if __name__ == "__main__":
     parser.add_argument("--input", type=str, default="predictions/chatgpt_example_then_error_best.txt", help="Path to the predictions file.")
     parser.add_argument("--dataset_path", type=str, default="../data/validation_sql_clear.json", help="Path to the dataset file.")
     parser.add_argument("--db_root_path", type=str, default="./data/database", help="Root path to the databases.")
-    parser.add_argument("--partial_match_threshold", type=float, default=0.8, help="Threshold for similarity to consider as a partial match.")
+    parser.add_argument("--threshold", type=float, default=0.8, help="Threshold for similarity to consider as a partial match.")
     parser.add_argument("--repair", action="store_true", default=False, help="Whether to perform mutation repair on incorrect queries.")
 
     args = parser.parse_args()
 
-    evaluate(args.input, args.dataset_path, args.db_root_path, args.partial_match_threshold, args.repair)
+    evaluate(args.input, args.dataset_path, args.db_root_path, args.threshold, args.repair)

@@ -322,6 +322,9 @@ def get_error_from_query(db, query):
     
 def generate_md_table(cols, results):
     # Create table header
+    if not cols:
+        return "No results"
+    
     header = '| ' + ' | '.join(cols) + ' |'
     
     # Create separator
