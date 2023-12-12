@@ -326,6 +326,7 @@ WHERE T1.Continent = 'Europe'
 | ~700 more rows |
 
 **Analysis:**
+- Actually incorrect
 - The SQLChatGPT query uses a left join with the countrylanguage table and checks for NULL values in countrylanguage.language. This approach has two potential issues:
   1. It might miss cities in countries where English is an official language but is not listed in the countrylanguage table. This could happen due to incomplete data.
   2. It might include cities from countries where English is listed in the countrylanguage table but not marked as an official language. In this case, since the query checks for NULL values, it would ignore any non-null entries for English, whether it's official or not.
@@ -557,6 +558,7 @@ WHERE T1.Year =
 | hi 1200d | 1970 |
 
 **Analysis:**
+- Actually incorrect.
 - The predicted query SELECTS the wrong columns. It should select cn.make and cd.year, but it selects cd.maker and cd.year.
 - This query is corrected in my simple evaluation tool by changing the SELECT clause to the correct one.
 
@@ -1469,6 +1471,7 @@ WHERE T2.SourceAirport = "AHD"
 | --- |
 
 **Analysis:**
+- Actually incorrect.
 - Even though the predicted query is returning the same results as the gold query it is still incorrect.
 - The predicted query is incorrect becuase it uses the wrong WHERE condition. It should be `WHERE airports.airportcode = 'AHD'`, but it is `WHERE airports.airportname = 'AHD'`.
 

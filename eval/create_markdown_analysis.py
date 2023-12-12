@@ -1,5 +1,5 @@
 import json
-import random
+import numpy as np
 from sqlparse import format
 import sqlite3
 import os
@@ -46,7 +46,7 @@ def create_markdown(json_data):
     return markdown_content
 
 # Load JSON data
-with open('analysis/incorrect.json') as f:
+with open('analysis/simple_incorrect.json') as f:
     json_data = f.read()
 data = json.loads(json_data)
 
@@ -55,16 +55,19 @@ extra_difficulty_queries = [item for item in data if item['difficulty'] == 'extr
 hard_difficulty_queries = [item for item in data if item['difficulty'] == 'hard']
 medium_difficulty_queries = [item for item in data if item['difficulty'] == 'medium']
 
-# Randomly select the required number of queries
-selected_extra_difficulty_queries = random.sample(extra_difficulty_queries, min(15, len(extra_difficulty_queries)))
-selected_hard_difficulty_queries = random.sample(hard_difficulty_queries, min(5, len(hard_difficulty_queries)))
-selected_medium_difficulty_queries = random.sample(medium_difficulty_queries, min(5, len(medium_difficulty_queries)))
+# Set seed
+#np.random.seed(0)
+
+# Randomly select the required number of queries using numpy
+selected_extra_difficulty_queries = np.random.choice(extra_difficulty_queries, min(15, len(extra_difficulty_queries)), replace=False)
+selected_hard_difficulty_queries = np.random.choice(hard_difficulty_queries, min(5, len(hard_difficulty_queries)), replace=False)
+selected_medium_difficulty_queries = np.random.choice(medium_difficulty_queries, min(5, len(medium_difficulty_queries)), replace=False)
 
 # Combine selected queries
-selected_queries = selected_extra_difficulty_queries + selected_hard_difficulty_queries + selected_medium_difficulty_queries
+selected_queries = np.concatenate((selected_extra_difficulty_queries, selected_hard_difficulty_queries, selected_medium_difficulty_queries))
 
 # Generate Markdown content
-markdown_content = create_markdown(selected_queries)
+markdown_content = create_markdown(selected_queries.tolist())
 
 # Writing to a markdown file
 with open("analysis/incorrect_random_sample.md", "w") as file:

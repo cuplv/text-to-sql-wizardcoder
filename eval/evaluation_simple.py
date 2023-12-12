@@ -9,224 +9,241 @@ from scripts.helpers import (
     compare_pred_to_gold_on_db,
     compare_pred_to_results_on_db,
     get_result_table_from_db,
-    jaccard_similarity, 
+    get_error_from_query, 
     find_all_dbs_for_entry,
 )
-from itertools import combinations, product
 from mo_sql_parsing import parse
 from mo_sql_parsing import format as mo_format
 
 def sql_format(text):
-    # Split the text by "|", and get the last element in the list which should be the final query
     try:
         final_query = text.split("|")[1].strip()
     except Exception:
         final_query = text
 
     try:
-        # Attempt to format SQL query using sqlparse
         formatted_query = sqlparse.format(final_query, reindent=True, keyword_case='upper')
     except Exception:
-        # If formatting fails, use the original, unformatted query
         formatted_query = final_query
 
-    # Convert SQL to markdown (not required, but just to show how to use the markdown module)
     final_query_markdown = f"{formatted_query}"
-
     return final_query_markdown
 
-def perform_select_repair(incorrect_query, gold_column_names):
+def select_repair(incorrect_query, gold_column_names):
     if gold_column_names is None:
         return incorrect_query
-    # Parse the incorrect SQL query into a JSON structure
+
     try:
         incorrect_query_json = parse(incorrect_query)
     except Exception as e:
-        #print(f"Error parsing SQL query: {e}")
         return incorrect_query
 
-    # Construct the new SELECT clause
     new_select_clause = []
     for col in gold_column_names:
-        if "(" in col and ")" in col:  # rudimentary check for aggregate functions
-            # Handle as a raw expression
+        if "(" in col and ")" in col:  # Handling aggregate functions
             new_select_clause.append({"value": col, "name": col})
         else:
             new_select_clause.append({"value": col})
 
-    # Replace the SELECT part of the JSON structure
     incorrect_query_json['select'] = new_select_clause
 
-    # Convert the modified JSON back into an SQL query string
     try:
         repaired_query = mo_format(incorrect_query_json)
     except Exception as e:
-        #print(f"Error formatting SQL query: {e}")
         return incorrect_query
-
+    
     return repaired_query
 
-
-def perform_where_repair(incorrect_query, gold_result, connection):
-    cursor = connection.cursor()
-
-    # Parse the incorrect SQL query into JSON structure
+def select_flip(incorrect_query):
+    # if there are two columns in select, flip them
     try:
         incorrect_query_json = parse(incorrect_query)
     except Exception as e:
-        print(f"Error parsing SQL query: {e}")
+        return incorrect_query
+    
+    select_clause = incorrect_query_json.get('select', {})
+    if isinstance(select_clause, list) and len(select_clause) == 2:
+        new_select_clause = [select_clause[1], select_clause[0]]
+        #print(f"Flipped SELECT: {new_select_clause}")
+        incorrect_query_json['select'] = new_select_clause
+
+    try:
+        repaired_query = mo_format(incorrect_query_json)
+    except Exception as e:
+        return incorrect_query
+    
+    return repaired_query
+
+def groupby_repair(incorrect_query, gold_sql, db_path):
+    try:
+        incorrect_query_json = parse(incorrect_query)
+    except Exception as e:
         return incorrect_query
 
-    gold_result_size = len(gold_result)
+    # Check if there is a GROUP BY clause
+    if 'groupby' in incorrect_query_json:
+        # Extract the select clause
+        select_clause = incorrect_query_json.get('select', {})
 
-    # Retrieve table information
-    cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-    tables = [row[0] for row in cursor.fetchall()]
-
-    for table_name in tables:
-        cursor.execute(f"PRAGMA table_info({table_name})")
-        columns = [row[1] for row in cursor.fetchall()]
-
-        for column in columns:
-            quoted_column = f'"{column}"' if not column.isidentifier() or column[0].isdigit() else column
-            cursor.execute(f"SELECT DISTINCT {quoted_column} FROM {table_name}")
-            distinct_values = [row[0] for row in cursor.fetchall()]
-
-            for value in distinct_values:
-                # Define multiple conditions to test
-                conditions = [
-                    {"eq": [quoted_column, value]}, 
-                    {"neq": [quoted_column, value]},
-                    {"like": [quoted_column, f'%{value}%']},
-                    {"is": [quoted_column, None]},
-                    {"is_not": [quoted_column, None]}
-                ]
-
-                for condition in conditions:
-                    if 'where' in incorrect_query_json:
-                        incorrect_query_json['where'] = {"and": [incorrect_query_json['where'], condition]}
-                        if compare_pred_to_results_on_db(incorrect_query_json, gold_result, connection):
-                            return mo_format(incorrect_query_json)
-                        else:
-                            incorrect_query_json['where'] = {"or": [incorrect_query_json['where'], condition]}
-                            if compare_pred_to_results_on_db(incorrect_query_json, gold_result, connection):
-                                return mo_format(incorrect_query_json)
-                            else:
-                                incorrect_query_json['where'] = {"and": [incorrect_query_json['where'], condition]}
-                    else:
-                        incorrect_query_json['where'] = condition
-                        if compare_pred_to_results_on_db(incorrect_query_json, gold_result, connection):
-                            return mo_format(incorrect_query_json)
-                        else:
-                            # Try adding an AND condition
-                            incorrect_query_json['where'] = {"and": [incorrect_query_json['where'], condition]}
-                            if compare_pred_to_results_on_db(incorrect_query_json, gold_result, connection):
-                                return mo_format(incorrect_query_json)
-                            else:
-                                # Try adding an OR condition
-                                incorrect_query_json['where'] = {"or": [incorrect_query_json['where'], condition]}
-                                if compare_pred_to_results_on_db(incorrect_query_json, gold_result, connection):
-                                    return mo_format(incorrect_query_json)
-                                
-                    # Convert the modified JSON back into an SQL query string
-                    try:
-                        repaired_query = mo_format(incorrect_query_json)
-                        #print(f"Repaired WHERE clause: {repaired_query}")
+        # Check if select_clause is a list (multiple columns)
+        if isinstance(select_clause, list):
+            # First, try each column individually
+            for col in select_clause:
+                if isinstance(col, dict) and 'value' in col:
+                    if not isinstance(col['value'], dict):  # Exclude aggregate functions
+                        incorrect_query_json['groupby'] = {'value': col['value']}
+                        try:
+                            repaired_query = mo_format(incorrect_query_json)
+                            if compare_pred_to_gold_on_db(repaired_query, gold_sql, db_path):
+                                return repaired_query
+                        except Exception as e:
+                            continue
+            
+            # If individual columns don't work, try using all columns
+            all_columns = [col['value'] for col in select_clause if isinstance(col, dict) and 'value' in col and not isinstance(col['value'], dict)]
+            if all_columns:
+                incorrect_query_json['groupby'] = {'value': all_columns}
+                try:
+                    repaired_query = mo_format(incorrect_query_json)
+                    if compare_pred_to_gold_on_db(repaired_query, gold_sql, db_path):
                         return repaired_query
-                    except Exception as e:
-                        #print(f"Error formatting SQL query: {e}")
-                        return incorrect_query
-             
+                except Exception as e:
+                    pass
+
     return incorrect_query
 
-def evaluate(input, dataset_path, db_root_path, partial_match_threshold, repair):
-    with open(input, 'r') as f:
-        input = [line.strip() for line in f.readlines()]
+
+def evaluate(input_path, dataset_path, db_root_path, repair, single_index=None):
+    with open(input_path, 'r') as f:
+        input_queries = [line.strip() for line in f.readlines()]
     
     with open(dataset_path, 'r') as f:
         dataset = json.load(f)
 
+    with open('analysis/all_entries.json', 'r') as all_entries_f:
+        all_entries = json.load(all_entries_f)
+
+    if single_index is not None:
+        if 0 <= single_index < len(dataset):
+            dataset = [dataset[single_index]]
+        else:
+            raise ValueError("Provided index is out of dataset range")
+
     correct_count = 0
-    partial_count = 0
+    empty_result_count = 0
     total_count = len(dataset)
-    
-    # Initialize the log for incorrect queries
     incorrect_queries = []
 
+    # Keep repairs count
+    select_repair_count = 0
+    group_by_repair_count = 0
+    select_flip_count = 0
+
     for idx, entry in tqdm(enumerate(dataset), total=total_count, desc="Evaluating"):
-        db_folder = os.path.join(db_root_path, entry["db_id"])
-        all_dbs = find_all_dbs_for_entry(db_folder)
+        db_path = os.path.join(db_root_path, entry["db_id"], entry["db_id"] + ".sqlite")
 
-        ground_truth = sql_format(entry['ground_truth'])
-        predicted_sql = sql_format(input[idx])
+        gold_sql = sql_format(entry['ground_truth'])
+        predicted_sql = sql_format(input_queries[single_index] if single_index is not None else input_queries[idx])
 
-        gt_results = None
-        gt_columns = None
-        pred_results = None
-        pred_columns = None
-        non_empty_db_path = None
-        for db_path in all_dbs:
-            # Try executing the SQL on each database until we get non-empty results
-            gt_cols_temp, gt_results_temp = get_result_table_from_db(db_path, ground_truth)
-            pred_cols_temp, pred_results_temp = get_result_table_from_db(db_path, predicted_sql)
-            
-            if gt_results_temp and pred_results_temp and gt_cols_temp and pred_cols_temp:
-                gt_results = gt_results_temp
-                gt_columns = gt_cols_temp
-                pred_results = pred_results_temp
-                pred_columns = pred_cols_temp
-                non_empty_db_path = db_path
-                break
+        error = get_error_from_query(db_path, predicted_sql)
+        
+        if error is False:
+            pred_cols, pred_results = get_result_table_from_db(db_path, predicted_sql)
+            gold_cols, gold_results = get_result_table_from_db(db_path, gold_sql)
 
-        if not gt_results or not pred_results or not gt_columns or not pred_columns:
-            #print(f"Could not find non-empty database for {entry['db_id']}")
-            continue
+            result_empty = True
+            if pred_results:
+                result_empty = False
 
-        if compare_pred_to_gold_on_db(predicted_sql, ground_truth, non_empty_db_path):
-            correct_count += 1
-        else:
-            if repair:
-                repaired_query = predicted_sql
-                connection = sqlite3.connect(non_empty_db_path)
-                # Attempt to repair the SELECT clause
-                repaired_query_select = perform_select_repair(predicted_sql, gt_columns)
-                if compare_pred_to_gold_on_db(repaired_query_select, ground_truth, non_empty_db_path):
-                    repaired_query = repaired_query_select
-                    print(f"Repaired SELECT clause: {repaired_query_select}")
+            if single_index:
+                print(f"\nIndex: {idx}")
+                print(f"Question: {entry['question']}")
+                print(f'DB_path: {db_path}')
+                # print queries
+                print(f"Predicted SQL: {predicted_sql}")
+                print(f"Gold SQL: {gold_sql}")
+                # prints results
+                print(f"Predicted Results: {pred_results}")
+                print(f"Gold Results: {gold_results}")
 
-                # Attempt to repair the WHERE clause
-                repaired_query_where = perform_where_repair(repaired_query, gt_results, connection)
-                if compare_pred_to_gold_on_db(repaired_query_where, ground_truth, non_empty_db_path):
-                    repaired_query = repaired_query_where
-                    print(f"Repaired WHERE clause: {repaired_query_where}")
-                
-                connection.close()
+            if result_empty:
+                empty_result_count += 1
+                continue
 
-                # Check if any repair worked
-                if repaired_query != predicted_sql:
+            match_found = False
+            if compare_pred_to_gold_on_db(predicted_sql, gold_sql, db_path):
+                match_found = True
+                correct_count += 1
+
+            # Try flipping select
+            if not match_found and repair:
+                repaired_query = select_flip(predicted_sql)
+                if compare_pred_to_gold_on_db(repaired_query, gold_sql, db_path):
+                    print(f"Repaired SELECT by flipping cols: {repaired_query}")
+                    match_found = True
                     correct_count += 1
-                    continue
+                    select_flip_count += 1
 
-            similarity = jaccard_similarity(set(gt_results), set(pred_results))
+            # Try repair group by
+            if not match_found and repair:
+                repaired_query = groupby_repair(predicted_sql, gold_sql, db_path)
+                if compare_pred_to_gold_on_db(repaired_query, gold_sql, db_path):
+                    print(f"Repaired GROUP BY: {repaired_query}")
+                    match_found = True
+                    correct_count += 1
+                    group_by_repair_count += 1
+            
+            #Try repair group by and select flip
+            if not match_found and repair:
+                repaired_query = select_flip(predicted_sql)
+                repaired_query = groupby_repair(repaired_query, gold_sql, db_path)
+                if compare_pred_to_gold_on_db(repaired_query, gold_sql, db_path):
+                    print(f"Repaired SELECT by flipping cols and GROUP BY: {repaired_query}")
+                    match_found = True
+                    correct_count += 1
+                    select_flip_count += 1
+                    group_by_repair_count += 1
 
-            if similarity < partial_match_threshold:
-                incorrect_queries.append({
-                    'index': idx,
-                    'db_id': entry['db_id'],
-                    'db_info': entry['db_info'],
-                    'question': entry['question'],
-                    'predicted_sql': predicted_sql,
-                    'ground_truth': ground_truth,
-                    'similarity': similarity
-                })
-            else:
-                partial_count += 1
+            # Try repair select
+            if not match_found and repair:
+                repaired_query = select_repair(predicted_sql, gold_cols)
+                if compare_pred_to_gold_on_db(repaired_query, gold_sql, db_path):
+                    print(f"Repaired SELECT: {repaired_query}")
+                    match_found = True
+                    correct_count += 1
+                    select_repair_count += 1
 
-    accuracy = (correct_count + partial_count * 0.5) / total_count
-    print(f"\nAccuracy: {accuracy:.4f} ({correct_count + partial_count}/{total_count})")
-    print(f"Full Matches: {correct_count}/{total_count}, Partial Matches (>{partial_match_threshold * 100}% similarity): {partial_count}/{total_count}")
-    
-    # Save the incorrect queries to a JSON file
+            # Try repair group by and select
+            if not match_found and repair:
+                repaired_query = select_repair(predicted_sql, gold_cols)
+                repaired_query = groupby_repair(repaired_query, gold_sql, db_path)
+                if compare_pred_to_gold_on_db(repaired_query, gold_sql, db_path):
+                    print(f"Repaired SELECT and GROUP BY: {repaired_query}")
+                    match_found = True
+                    correct_count += 1
+                    select_repair_count += 1
+                    group_by_repair_count += 1
+
+        if not match_found or error:
+            incorrect_queries.append({
+                'index': idx,
+                'difficulty': all_entries[single_index if single_index is not None else idx]['difficulty'],
+                'db_id': entry['db_id'],
+                'db_info': entry['db_info'],
+                'question': entry['question'],
+                'pred': predicted_sql,
+                'gold': gold_sql,
+            })
+
+    accuracy = correct_count / total_count
+    print(f"\nAccuracy: {accuracy:.4f} ({correct_count}/{total_count})")
+    print(f"Empty Results Count: {empty_result_count}")
+    # Print all repairs count in nice format
+    if repair:
+        print(f"Select Flip Repairs: {select_flip_count}")
+        print(f"Select Repairs: {select_repair_count}")
+        print(f"Group By Repairs: {group_by_repair_count}")
+
     with open('analysis/simple_incorrect.json', 'w') as f:
         json.dump(incorrect_queries, f, indent=4)
         
@@ -235,9 +252,9 @@ if __name__ == "__main__":
     parser.add_argument("--input", type=str, default="predictions/chatgpt_example_then_error_best.txt", help="Path to the predictions file.")
     parser.add_argument("--dataset_path", type=str, default="../data/validation_sql_clear.json", help="Path to the dataset file.")
     parser.add_argument("--db_root_path", type=str, default="./data/database", help="Root path to the databases.")
-    parser.add_argument("--threshold", type=float, default=0.8, help="Threshold for similarity to consider as a partial match.")
     parser.add_argument("--repair", action="store_true", default=False, help="Whether to perform mutation repair on incorrect queries.")
+    parser.add_argument("--index", type=int, default=None, help="Index of the single dataset entry to test")
 
     args = parser.parse_args()
 
-    evaluate(args.input, args.dataset_path, args.db_root_path, args.threshold, args.repair)
+    evaluate(args.input, args.dataset_path, args.db_root_path, args.repair, args.index)

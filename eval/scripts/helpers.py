@@ -314,11 +314,11 @@ def get_error_from_query(db, query):
         conn.close()
 
         # Return column names along with results
-        return columns, result
+        return False
 
     except Exception as e:
         #print(f"Query: {query}\tError encountered: {e}")
-        return e
+        return True
     
 def generate_md_table(cols, results):
     # Create table header

@@ -502,7 +502,7 @@ def print_scores(scores, etype, include_turn_acc=True):
 
 
 def evaluate(gold, predict, db_dir, etype, kmaps, plug_value, keep_distinct, progress_bar_for_each_datapoint):
-    incorrect_entries = []
+    all_entries = []
 
     with open('../data/validation_sql_clear.json', 'r') as validation:
         validation_data = json.load(validation)
@@ -617,10 +617,21 @@ def evaluate(gold, predict, db_dir, etype, kmaps, plug_value, keep_distinct, pro
                     scores[turn_id]['exec'] += 1
                     scores['all']['exec'] += 1
                     turn_scores['exec'].append(1)
+                    all_entries.append({
+                        "index": len(turn_scores['exec'])-1,
+                        "correct": True,
+                        "db_id": db_name,
+                        "db_info": validation_data[len(turn_scores['exec'])-1]["db_info"],
+                        "difficulty": hardness,
+                        "question": validation_data[len(turn_scores['exec'])-1]["question"],
+                        "pred": p_str,
+                        "gold": g_str
+                    })
                 else:
                     turn_scores['exec'].append(0)
                     incorrect_entry = {
                         "index": len(turn_scores['exec'])-1,
+                        "correct": False,
                         "db_id": db_name,
                         "db_info": validation_data[len(turn_scores['exec'])-1]["db_info"],
                         "difficulty": hardness,
@@ -628,7 +639,7 @@ def evaluate(gold, predict, db_dir, etype, kmaps, plug_value, keep_distinct, pro
                         "pred": p_str,
                         "gold": g_str
                     }
-                    incorrect_entries.append(incorrect_entry)
+                    all_entries.append(incorrect_entry)
                     # with open('analysis/incorrect.json', 'w') as incorrect_log_file:
                     #     json.dump(incorrect_entries, incorrect_log_file, indent=2)
 
@@ -718,8 +729,8 @@ def evaluate(gold, predict, db_dir, etype, kmaps, plug_value, keep_distinct, pro
                         2.0 * scores[level]['partial'][type_]['acc'] * scores[level]['partial'][type_]['rec'] / (
                         scores[level]['partial'][type_]['rec'] + scores[level]['partial'][type_]['acc'])
 
-    with open('analysis/incorrect.json', 'w') as incorrect_log_file:
-        json.dump(incorrect_entries, incorrect_log_file, indent=2)
+    with open('analysis/all_entries.json', 'w') as incorrect_log_file:
+        json.dump(all_entries, incorrect_log_file, indent=2)
     incorrect_log_file.close()
     #print(scores)
     print_scores(scores, etype, include_turn_acc=include_turn_acc)
